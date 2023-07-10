@@ -1,0 +1,51 @@
+.aside {
+    display: none;
+}
+
+.forumContent {
+    display: block;
+}
+
+.suppression,
+.cancelSupp {
+    width: 100%;
+}
+
+.contentSuppression,
+.cancelSupp {
+    width: 600px;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    flex-direction: column;
+    border: solid 1px var(--gris1);
+}
+
+.cancelSupp {
+    margin-top: 50px;
+    border: none;
+
+}
+
+.btnSuppression,
+.btnCancel {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: #FF4242;
+    padding: 10px 10px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 20px
+}
+
+.btnCancel {
+    background-color: #126e40;
+}

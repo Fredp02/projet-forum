@@ -1,0 +1,281 @@
+.aside {
+    display: none;
+}
+
+.profil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+}
+
+/********* FORM AVATAR **********/
+.contentFormAvatar {
+    width: 100%;
+
+    background-color: transparent;
+    margin-right: auto;
+    margin-left: auto;
+    align-items: center;
+    display: none;
+    /* display: flex; */
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
+
+.divFormAvatar {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    backdrop-filter: blur(30px) saturate(100%);
+    -webkit-backdrop-filter: blur(30px) saturate(100%);
+    background-color: transparent;
+    border-radius: 10px;
+    width: 430px;
+    height: 300px;
+    padding: 10px;
+}
+
+.divFormAvatar label {
+    font-size: 26px;
+    color: #FFA500;
+    font-weight: 700;
+}
+
+.divFormAvatar form {
+    width: 100%;
+}
+
+#formAvatar {
+    background-color: #eeeeee;
+    color: #131313;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+
+}
+
+#formAvatar::placeholder {
+    color: #131313;
+}
+
+#formAvatar:focus {
+    outline: none;
+}
+
+.hideDivFormAvatar {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--orange);
+    padding: 13px 19px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 20px;
+    width: 30%;
+
+}
+
+.hideDivFormAvatar:hover {
+    background-color: var(--orange2);
+
+}
+
+
+/********* visuel avatar **********/
+
+.divAvatar {
+    position: relative;
+    cursor: pointer;
+}
+
+.divAvatar div {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.534);
+    text-align: center;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.divAvatar:hover div {
+    opacity: 1;
+}
+
+/*******INFO*********/
+
+.textDateInscription,
+.textRang {
+    margin: 3px;
+}
+
+/**********IDENTIFIANTS*****/
+.contentInfos {
+    width: 80%;
+    margin: auto;
+}
+
+.identifiants,
+.about {
+    width: 100%;
+    background-color: #29292a;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.identifiants h3,
+.about h3 {
+    font-size: 22px;
+}
+
+.contentEmail,
+.contentPassword {
+    margin-bottom: 15px;
+}
+
+.divAbout div {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.divFormEmail,
+.divFormPassword,
+.divFormAbout {
+    display: none;
+    /* display: block; */
+}
+
+.divEmail,
+.divPassword,
+.topAbout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.divAbout {
+    display: flex;
+    /* align-items: center; */
+    /* justify-content: space-between; */
+    flex-direction: column;
+}
+
+.divFormEmail form {
+    display: flex;
+    justify-content: space-between;
+}
+
+.divInputEmail {
+    width: 60%;
+}
+
+.divBtnEmail,
+.divBtnAbout {
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.inputEmail,
+.inputGuitare,
+.inputEmploi,
+.inputVille {
+    background-color: var(--text-primary);
+    color: var(--noir-clair);
+    border: none;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* Utilisation d'un sélecteur commun pour les boutons */
+button[class*="Edit"],
+.btnDeleteAccount {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--orange);
+    padding: 10px 10px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-left: 10px
+}
+
+/* Utilisation d'un sélecteur d'attribut pour les boutons qui contiennent "display" */
+button[class*="display"] {
+    background-color: transparent;
+    border: solid 3px white;
+}
+
+/* Utilisation d'un sélecteur d'attribut pour les boutons qui contiennent "cancel" */
+button[class*="cancel"],
+.btnDeleteAccount {
+    background-color: #FF4242;
+}
+
+/* Utilisation de la pseudo-classe :hover pour les effets au survol */
+button:hover {
+    filter: brightness(1.2);
+}
+
+/*********** PASSWORD ***********/
+
+
+.divFormPassword form {
+    /* background-color: rgb(30, 87, 103); */
+    width: 100%;
+
+}
+
+/* Utilisation d'un sélecteur enfant pour les divs dans le formulaire */
+.divFormPassword form>div,
+.divFormAbout form>div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Utilisation d'un sélecteur universel pour les inputs dans le formulaire */
+.divFormPassword form * input,
+.divFormAbout form * input {
+    width: 60%;
+    border: none;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.divBtnPassword,
+.divBtnAbout {
+    width: 30%;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.alertAbout,
+.alertIdentifiants {
+    text-align: center;
+    padding: 3px;
+}
+
+.inputError {
+    border: solid 1px #FF4242;
+    box-shadow: 0 0 8px 5px #ff424281;
+}

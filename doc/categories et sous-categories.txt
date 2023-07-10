@@ -1,0 +1,30 @@
+
+Général : 
+	- Règles du site
+	- Suggestions et remarques
+	- Présentation des membres
+	- Actus et évènements
+	- Discussions libres
+
+Instruments : 
+	- Guitare classique
+	- Guitare folk
+	- Guitare electrique
+	- Guitare Basse
+	- Autre instruments
+
+Matériel : 
+	- Amplification
+	- Pédales et effets
+	- Accessoires
+
+Apprendre :
+	- Débutant
+	- Partitions et tablatures
+	- Théorie
+	- technique
+
+Création : 
+	- Conpositions et arrangements
+	- Enregistrements et mixages
+	- Partage et critique

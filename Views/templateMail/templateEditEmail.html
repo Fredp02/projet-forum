@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <style type="text/css">
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: #f1f1f1;
+      }
+
+      .container {
+        width: 600px;
+        margin: 0 auto;
+      }
+
+      .logo {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .content {
+        background-color: #373737;
+        padding: 20px;
+      }
+
+      .title {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .button {
+        display: inline-block;
+        background-color: #126e40;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <p class="title">Bienvenue sur GUITARE Forum !</p>
+        <p>Bonjour {name},</p>
+        <p>
+          Pour valider le changement de votre adresse email cliquez sur ce lien
+          :
+        </p>
+        <p>
+          <a href="{activation_link}" class="button">Valider adresse email</a>
+        </p>
+        <p>
+          Ce lien est valable pendant 3 heures. Si vous n'êtes pas à l'origine
+          de cette demande, ignorez ce mail.
+        </p>
+        <p>A bientôt sur le forum !</p>
+      </div>
+    </div>
+  </body>
+</html>

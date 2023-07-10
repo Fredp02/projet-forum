@@ -1,0 +1,446 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --gris-fonce1: #1a1a1b;
+    --gris-fonce2: #222223;
+    --gris-clair1: #D1D1D1;
+    --noir-clair: #131313;
+    --gris1: #858585;
+    --blanc: #FFFFFF;
+    --orange: #FFA500;
+    --orange2: #ffb429;
+    --text-primary: #eeeeee;
+    --text-primaryOpacity: #eeeeee7e;
+    --text-primaryOpacity2: rgba(238, 238, 238, 0.753);
+
+}
+
+body {
+    background-color: var(--gris-fonce1);
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    color: var(--text-primary);
+
+}
+
+.overflowHidden {
+    overflow: hidden;
+}
+
+header {
+    height: 180px;
+    position: relative;
+}
+
+.banner {
+    background-image: url(../images/banner/imageHeader-min.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100%;
+
+}
+
+.blocMessage {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 65px;
+    /* border-radius: 8px; */
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+}
+
+.textMessage {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0px;
+    font-size: 12px;
+    /* text-transform: uppercase; */
+}
+
+.textMessage a {
+    color: white;
+}
+
+.rouge {
+    background-color: #FF4242;
+
+}
+
+.vert {
+    background-color: #126e40;
+
+}
+
+.orange {
+    background-color: #e98d0d;
+
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+/* Application de l'animation à la classe fade-out */
+.fade-out {
+    animation: fade-out 1s;
+}
+
+nav {
+
+    background-color: rgba(0, 0, 0, 0.708);
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navPosition {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--noir-clair);
+    z-index: 10;
+}
+
+.conteneurNav {
+    max-width: 1200px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+}
+
+.headerTitle {
+    width: 30%;
+    display: flex;
+    text-decoration: none;
+}
+
+.textHeaderTitle {
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.headerTitle span:nth-child(1) {
+    color: var(--orange);
+    text-transform: uppercase;
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Caveat', cursive;
+}
+
+.headerTitle span:nth-child(2) {
+    color: var(--blanc);
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.search {
+    width: 40%;
+}
+
+.inputSearch {
+    background-color: var(--text-primary);
+    color: var(--noir-clair);
+    border: none;
+    width: 100%;
+    padding: 10px;
+
+}
+
+.inputSearch::placeholder {
+    color: var(--noir-clair);
+}
+
+.inputSearch:focus {
+    outline: none;
+}
+
+.headerLinks {
+    width: 30%;
+    text-align: end;
+
+}
+
+.linkProfil,
+.logout,
+.linkLogin {
+    text-decoration: none;
+    color: var(--gris-clair1);
+    transition: .2s;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-weight: 700;
+
+}
+
+.linkProfil,
+.linkLogin:hover {
+    color: var(--orange);
+}
+
+.linkProfil:hover {
+    color: var(--orange2)
+}
+
+.logout:hover {
+    color: var(--orange);
+}
+
+
+/* .topContainer{
+    position: relative;
+} */
+
+
+/******** M A I N *****************/
+.container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    display: flex;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* **** Section LOGIN **** */
+
+
+.loginAside {
+    /* width: 100%; */
+    background-color: var(--gris-fonce1);
+    /* padding-left: 10px; */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    /* backdrop-filter: blur(30px) saturate(100%);
+    -webkit-backdrop-filter: blur(30px) saturate(100%);
+    background-color: transparent; */
+    /* border-radius: 10px; */
+    width: 100%;
+    margin-top: 15px;
+}
+
+.displayFlex {
+    display: flex;
+}
+
+
+
+.loginMessage {
+    display: none;
+}
+
+.headerLogin {
+    width: 90%;
+}
+
+.headerLogin h2 {
+    font-size: 18px;
+}
+
+.formLogin {
+    width: 90%;
+}
+
+.inputLogin,
+.inputPassword {
+
+    background-color: var(--text-primary);
+    color: var(--noir-clair);
+    border: none;
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+
+
+}
+
+.inputLogin::placeholder,
+.inputPassword::placeholder {
+    color: var(--noir-clair);
+}
+
+.inputLogin:focus,
+.inputPassword:focus {
+    outline: none;
+}
+
+
+.btnLogin,
+.btnEnvoyer,
+.btnCreateTopic {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--orange);
+    padding: 7px 13px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.btnLogin:hover,
+.btnEnvoyer:hover,
+.btnCreateTopic:hover {
+    background-color: var(--orange2);
+}
+
+.linkForgot {
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: .2s;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.linkForgot:hover {
+    color: var(--orange);
+}
+
+.footerLogin {
+    width: 100%;
+}
+
+
+
+.footerLogin {
+    width: 100%;
+    background-color: var(--gris-fonce1);
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+
+
+.footerLogin a {
+    color: var(--gris-clair1);
+    transition: .2s;
+    font-weight: 700;
+
+    /*le margin-bottom n'a pas effet sur un élément de type "inline"*/
+    display: inline-block;
+    margin-bottom: 10px;
+
+}
+
+.footerLogin a:hover {
+    color: var(--orange)
+}
+
+.inputError {
+    border: solid 1px #FF4242;
+    box-shadow: 0 0 8px 5px #ff424281;
+}
+
+
+/* .cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ff00fb
+} */
+
+
+
+
+
+
+
+
+/********FORUM CONTENT*********/
+.forumContent {
+    display: flex;
+    width: 100%;
+}
+
+
+
+
+/************ ASIDE ***********/
+
+.aside {
+    background-color: var(--noir-clair);
+    padding-right: 7px;
+    width: 25%;
+}
+
+.loginAside .divAvatar img {
+    max-width: 90%;
+    height: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/********** FOOTER  *********/
+
+footer {
+    height: 200px;
+    background-color: var(--noir-clair);
+    margin-top: 20px;
+    display: flex;
+}
+
+.contentFooter {
+    max-width: 1200px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.footerNav li {
+    list-style: none;
+}

@@ -1,0 +1,147 @@
+#filAriane {
+    color: var(--text-primaryOpacity2)
+}
+
+.forumContent section {
+    width: 100%;
+}
+
+
+.forumListBloc {
+    background-color: var(--noir-clair);
+    padding: 15px;
+}
+
+
+
+
+
+/** EN-TETE CATEGORYS **/
+.headerCategoryContent {
+    margin-top: 20px;
+}
+
+.headerCategory {
+    list-style: none;
+}
+
+
+.headerCategoryContent span {
+    font-size: 12px;
+}
+
+.titreCat {
+    text-transform: uppercase;
+    margin: 0 0 0 12px;
+}
+
+
+
+/** LISTE DES SOUS FORUM */
+
+.categorys a {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.subCategorysList {
+    list-style: none;
+    background-color: var(--gris-fonce1);
+    margin-bottom: 10px;
+}
+
+.headerCategoryContent,
+.subCategory {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.subCategoryIcon {
+    width: 40px;
+}
+
+.headerCategoryIcone span,
+.subCategoryIcon span {
+    /** Permet de changer la couleur du SVG*/
+    display: block;
+    width: 25px;
+    height: 25px;
+    -webkit-mask: url(../public/images/icons/comments-regular.svg) no-repeat center;
+    mask: url(../public/images/icons/comments-regular.svg) no-repeat center;
+    background-color: var(--orange);
+    margin-left: 3px;
+}
+
+.headerCategoryIcone span {
+    background-color: transparent
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.subCategoryIcon,
+.categoryNameAndDesc,
+.topicsNumber,
+.responsesNumber,
+.lastResponse {
+    display: table-cell;
+    padding: 10px 5px;
+    /* display: list-item; */
+    /* align-items: center;
+    justify-content: space-between; */
+}
+
+.subCategoryIcon {
+    min-width: 40px
+}
+
+
+.categoryNameAndDesc {
+    /* max-width: 400px; */
+    width: 100%;
+}
+
+.categoryName {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.categoryDesc {
+    font-size: 14px;
+    color: var(--text-primaryOpacity);
+}
+
+
+
+
+.topicsNumber,
+.responsesNumber {
+    /* width: 100px; */
+    /* width: 5%; */
+    min-width: 100px;
+    text-align: center;
+}
+
+
+.lastResponse {
+    /* width: 100px; */
+    width: 40%;
+    min-width: 150px;
+    text-align: end
+}
+
+.lastTopicTitle,
+.lastActivityUser,
+.lastActivityDate {
+    font-size: 12px;
+}

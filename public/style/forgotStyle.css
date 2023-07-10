@@ -1,0 +1,64 @@
+.aside {
+    display: none;
+}
+
+.forgot {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+
+}
+
+.emailLabelForgot {
+    font-size: 14px;
+    width: 100%;
+    display: inline-block;
+}
+
+
+.inputEmailForgot {
+
+    background-color: var(--text-primary);
+    color: var(--noir-clair);
+    border: none;
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+
+
+}
+
+.btnForgot {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--orange);
+    padding: 7px 13px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+
+.btnForgot {
+    background-color: #126e40;
+    transition: .2s;
+}
+
+.btnForgot:hover {
+    background-color: #158c50;
+
+}
+
+
+
+.formForgot {
+    margin-top: 20px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 300px
+        /* display: none; */
+}

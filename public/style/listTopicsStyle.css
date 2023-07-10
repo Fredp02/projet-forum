@@ -1,0 +1,163 @@
+.forumContent section {
+    width: 100%;
+}
+
+#filAriane,
+#filAriane a {
+    color: var(--text-primaryOpacity2);
+    text-decoration: none;
+
+}
+
+#filAriane a:hover {
+    text-decoration: underline;
+}
+
+
+
+.forumListBloc {
+    background-color: var(--noir-clair);
+    padding: 15px;
+}
+
+.topformList {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+
+.divBtnCreateTopic a {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+
+
+
+/** EN-TETE SOUS-CATEGORYS **/
+.headerCategoryContent {
+    margin-top: 20px;
+}
+
+.headerCategory {
+    list-style: none;
+}
+
+
+.headerCategoryContent span {
+    font-size: 12px;
+}
+
+.titreCat {
+    text-transform: uppercase;
+    margin: 0 0 0 12px;
+}
+
+
+
+/** LISTE DES SOUS FORUM */
+.filAriane a,
+.categorys a {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.filAriane a:hover {
+    text-decoration: underline;
+}
+
+.subCategorysList {
+    list-style: none;
+    background-color: var(--gris-fonce1);
+    margin-bottom: 10px;
+}
+
+.headerCategoryContent,
+.subCategory {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.subCategoryIcon {
+    width: 40px;
+}
+
+.headerCategoryIcone span,
+.subCategoryIcon span {
+    /** Permet de changer la couleur du SVG*/
+    display: block;
+    width: 25px;
+    height: 25px;
+    -webkit-mask: url(../public/images/icons/comments-regular.svg) no-repeat center;
+    mask: url(../public/images/icons/comments-regular.svg) no-repeat center;
+    background-color: var(--orange);
+    margin-left: 3px;
+}
+
+.headerCategoryIcone span {
+    background-color: transparent
+}
+
+
+
+
+.subCategoryIcon,
+.infosTopic,
+.responsesNumber,
+.viewNumber,
+.lastResponse {
+    display: table-cell;
+    padding: 10px 5px;
+    /* display: list-item; */
+    /* align-items: center;
+    justify-content: space-between; */
+}
+
+.subCategoryIcon {
+    min-width: 40px
+}
+
+
+.infosTopic {
+    /* max-width: 400px; */
+    width: 100%;
+}
+
+.topicName {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.topicAuthor {
+    font-size: 14px;
+    color: var(--text-primaryOpacity);
+}
+
+
+
+
+.responsesNumber,
+.viewNumber {
+    /* width: 100px; */
+    /* width: 5%; */
+    min-width: 100px;
+    text-align: center;
+}
+
+
+.lastResponse {
+    /* width: 100px; */
+    width: 40%;
+    min-width: 150px;
+    text-align: end
+}
+
+
+.lastActivityUser,
+.lastActivityDate {
+    font-size: 12px;
+    padding: 3px;
+}

@@ -1,0 +1,15 @@
+{
+    "require-dev": {
+        "symfony/var-dumper": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Controllers\\": "Controllers/",
+            "Models\\": "Models/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.8",
+        "ezyang/htmlpurifier": "^4.16"
+    }
+}

@@ -1,0 +1,100 @@
+.aside {
+    display: none;
+}
+
+.inscription {
+    width: 100%;
+}
+
+.contentInscription {
+    max-width: 600px;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    flex-direction: column;
+    border: solid 1px var(--gris1);
+}
+
+.topContentInscription {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.contentInscription h1 {
+    margin-top: 0;
+    font-size: 25px;
+    text-transform: uppercase;
+    /* width: 40%; */
+}
+
+.messageInscription {
+    display: none;
+    text-align: center;
+    padding: 5px;
+    width: 60%;
+}
+
+.contentInscription form label {
+    padding: 5px 5px 5px 0;
+}
+
+.inputPseudoInscription,
+.inputEmailInscription,
+.inputPasswordInscription,
+.inputConfirmPassword {
+    background-color: var(--text-primary);
+    color: var(--noir-clair);
+    border: none;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+}
+
+.inputConfirmPassword {
+    margin-bottom: 0;
+}
+
+/* .inputPasswordInscription{
+    margin-bottom: 10px;
+} */
+.inputError {
+    border: solid 1px #FF4242;
+    box-shadow: 0 0 8px 5px #ff424281;
+}
+
+.inputError::placeholder {
+    /* font-weight: bold; */
+    color: #FF4242;
+}
+
+.alertAccept {
+    margin-bottom: 5px;
+    padding: 3px;
+    visibility: hidden;
+    background-color: #FF4242;
+}
+
+.btnInscription {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--orange);
+    padding: 13px 19px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.btnInscription:hover {
+    background-color: var(--orange2);
+}

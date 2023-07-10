@@ -1,0 +1,238 @@
+.forumContent section {
+    width: 100%;
+    margin-right: 10px;
+}
+
+
+#filAriane,
+#filAriane a {
+    color: var(--text-primary);
+    text-decoration: none;
+
+}
+
+#filAriane a:hover {
+    text-decoration: underline;
+}
+
+.headerPageTopic {
+    background-color: #272727;
+    padding: 10px;
+
+    border-radius: 0px 0px 10px 10px;
+}
+
+.headerPageTopic h1 {
+    font-size: 36px;
+    margin: 15px 0;
+
+}
+
+.messageBloc {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 10px 0 30px 0;
+}
+
+.userInfos {
+    width: 20%;
+    padding-right: 15px;
+
+}
+
+.userMessage {
+    width: 80%;
+    background-color: #272727;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.avatar img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.pseudo span {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.guitare span,
+.totalMessagesUser span {
+    font-size: 14px;
+}
+
+/*********** REPONSE **********/
+
+
+/** QUILL **/
+
+.editor {
+    height: 200px;
+    background-color: rgb(36, 36, 40);
+    color: rgb(255, 255, 255);
+    border-radius: 0 0 10px 10px;
+    border-color: #d60000;
+}
+
+.ql-toolbar {
+    background-color: rgb(36, 36, 40);
+    border-radius: 10px 10px 0 0;
+    border-color: #d60000;
+}
+
+.ql-formats .ql-stroke {
+    fill: none;
+    stroke: #ffffff;
+}
+
+.ql-formats .ql-fill {
+    fill: none;
+    stroke: #ffffff !important;
+}
+
+.ql-formats .ql-fill {
+    fill: #ffffff;
+    stroke: none;
+}
+
+.ql-formats .ql-picker {
+    color: #ffffff;
+}
+
+.ql-picker-options .ql-selected {
+    color: #ffffff !important;
+}
+
+
+.ql-snow .ql-picker-options {
+    background-color: rgb(36, 36, 40);
+}
+
+.ql-formats button:hover>svg>.ql-stroke,
+.ql-formats button:hover>svg>.ql-fill {
+    stroke: #e98d0d !important;
+}
+
+.ql-formats .ql-picker .ql-picker-label:hover,
+.ql-formats .ql-picker .ql-picker-options span:hover {
+    color: #e98d0d;
+}
+
+.ql-formats .ql-picker .ql-picker-label:hover>svg>.ql-stroke {
+    stroke: #e98d0d !important;
+}
+
+.ql-picker-options .ql-selected:hover {
+    color: #e98d0d !important;
+}
+
+
+#tab-panel {
+    /* background: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-height: 220px;
+    overflow-y: scroll;
+    padding: 2px; */
+    background-color: #292e2e;
+}
+
+#tab-toolbar {
+    background-color: #eeeeee;
+}
+
+.ql-editor[data-placeholder]:before {
+    color: #eeeeee;
+}
+
+
+.ql-toolbar.ql-snow+.ql-container.ql-snow,
+.ql-toolbar.ql-snow {
+    border: solid 2px #e98d0d;
+}
+
+.ql-toolbar.ql-snow {
+    border-bottom: none;
+}
+
+.ql-snow .ql-editor img {
+    max-width: 200px;
+}
+
+
+/************************************/
+
+.headerMessage {
+    border-bottom: solid 1px grey;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.quoteMessage button {
+    border: none;
+    border-radius: 2px;
+    background-color: grey;
+    padding: 5px;
+    color: rgb(0, 0, 0);
+    transition: 0.2s;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+}
+
+.quoteMessage button:hover {
+    background-color: var(--orange);
+
+}
+
+.quoteMessage button i {
+    pointer-events: none;
+}
+
+.messageDate {
+    font-size: 14px;
+}
+
+.messageText p {
+    margin: 0;
+}
+
+.messageText {
+    overflow-wrap: break-word;
+}
+
+.messageText img {
+    max-width: 200px;
+    height: auto;
+}
+
+.btnEnvoyer {
+    margin-top: 10px;
+    float: right;
+}
+
+.messageText blockquote {
+    background-color: #464646;
+    margin: 0;
+    padding: 0 8px;
+
+}
+
+.messageText blockquote:first-of-type {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: solid 1px var(--text-primary);
+}
+
+.messageText blockquote:last-of-type {
+    padding-top: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
