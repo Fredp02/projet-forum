@@ -89,12 +89,10 @@ try {
       if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
         $pseudo = htmlspecialchars($_POST['pseudo']);
         $password = htmlspecialchars($_POST['password']);
-        // $pseudo = html_entity_decode($_POST['pseudo']);
-        // $password = html_entity_decode($_POST['password']);
 
-        //s'il y a un second paramètre dans la route (validationLogin/pageLogin) alors la soumission du formulaire de connexion vient de la page login, et pas celle de la aside du template
-        // $pageLogin = (isset($url[2]) && !empty($url[2]) && $url[2] === 'pageLogin') ? true : false;
-        $userController->validationLogin($pseudo, $password);
+        //j'ai placé un input hidden qui contient l'url précédent. obligé car lorsque le script va sur cette route 'case "validationLogin":" le contenu de la variable http_referrer c'est la page de connexion, et pas celle encore d'avant. 
+        $previousURL = htmlspecialchars($_POST['previousURL'] ?? "");
+        $userController->validationLogin($pseudo, $password, $previousURL);
       } else {
         throw new Exception("La page n'existe pas");
       }
@@ -217,7 +215,7 @@ try {
 
     case 'createTopic':
       if (Securite::isConnected()) {
-        $userController->createTopic();
+        $userController->createTopicView();
       } else {
         $visiteurController->connexionView();
       }
@@ -232,13 +230,29 @@ try {
       break;
 
     case "validationResponseSujet":
-      if (!empty($_POST['inputResponse']) && !empty($_POST['topicID'])) {
-        // $inputResponse = htmlspecialchars($_POST['inputResponse']);
-        $escapedResponse = htmlspecialchars($_POST['inputResponse']);
-        $userController->validationResponseSujet($escapedResponse, $_POST['topicID']);
+      if (Securite::isConnected()) {
+        if (!empty($_POST['inputResponse']) && !empty($_POST['topicID'])) {
+          /**
+           * !on fait la même vérif ici que celle de JS pour les réponses vides :
+           * on retire toutes les balises vide par "". Si au final la chaine est completement vide alors c'est que la soumission ne contient rien.
+           */
+          $contenuDeVerification = preg_replace('/<[^>]*>/', '', $_POST['inputResponse']);
+          if ($contenuDeVerification) {
+            $escapedResponse = htmlspecialchars($_POST['inputResponse']);
+            $userController->validationResponseSujet($escapedResponse, $_POST['topicID']);
+          } else {
+            Toolbox::dataJson(false, "Veuillez entrer du contenu avant de poster votre réponse");
+            exit;
+          }
+        } else {
+          throw new Exception("La page n'existe pas");
+        }
       } else {
-        throw new Exception("La page n'existe pas");
+
+        Toolbox::dataJson(false, "noConnected");
+        exit;
       }
+
       break;
     case "compte":
       if (!Securite::isConnected()) {

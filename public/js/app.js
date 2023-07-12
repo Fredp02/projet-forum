@@ -89,7 +89,7 @@ function updateDom(resultat) {
     divFooterLogin.classList.add("footerLogin");
     const lienlogout = document.createElement('a');
     lienlogout.classList.add("logout");
-    lienlogout.setAttribute("href", "deconnexion");
+    lienlogout.setAttribute("href", "/projet-forum/deconnexion");
     lienlogout.textContent = "Déconnexion";
     divFooterLogin.append(lienlogout);
 
@@ -104,7 +104,7 @@ function updateDom(resultat) {
 
     const lienNavlogout = document.createElement('a');
     lienNavlogout.classList.add("logout");
-    lienNavlogout.setAttribute("href", "deconnexion");
+    lienNavlogout.setAttribute("href", "/projet-forum/deconnexion");
     lienNavlogout.textContent = "Déconnexion";
     elHeaderLinks.append(lienNavProfil, lienNavlogout);
 

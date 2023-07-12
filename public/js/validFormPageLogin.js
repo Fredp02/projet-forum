@@ -37,8 +37,8 @@ btnPageLogin.addEventListener('click', async (e) => {
                 throw new Error(resultat.message);
             }
             //Si true, on redirige vers l'url avant la connexion
-
-            window.location = window.location.href;
+            // console.log(resultat.data.previousURL);
+            window.location = resultat.data.previousURL;
         } catch (error) {
             //on affiche un message d'erreur dans le DOM
             messagePagelogin.textContent = error.message;

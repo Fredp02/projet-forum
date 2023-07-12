@@ -36,7 +36,7 @@ class UserController extends MainController
         // $this->user = new User();
     }
 
-    public function validationLogin($pseudo, $password)
+    public function validationLogin($pseudo, $password, $previousURL)
     {
         /**
          * Les données que vous stockez dans la session sont relativement petites, statiques et fréquemment utilisées, ce qui justifie de les stocker dans la session. Cependant, les données sont aussi modifiables par l’utilisateur, ce qui implique de les mettre à jour dans la session et dans la base de données. De plus, les données sont liées à d’autres informations, comme les messages du forum, ce qui peut rendre la requête plus complexe ou coûteuse.
@@ -73,7 +73,8 @@ class UserController extends MainController
                     $data = [
                         'pseudo' => $user->pseudo,
                         'filepathAvatar' => $filepathAvatar,
-                        'id' => $user->userID
+                        'id' => $user->userID,
+                        'previousURL' => $previousURL
                         // 'previousURL' => $_SERVER['HTTP_REFERER']
                     ]
                 );
@@ -768,11 +769,6 @@ class UserController extends MainController
             Toolbox::dataJson(false, "Une erreur s'est produite");
             exit;
         }
-
-        // *code ...
-
-
-
     }
 
 
@@ -781,6 +777,20 @@ class UserController extends MainController
         Toolbox::ajouterMessageAlerte($message, 'rouge');
         header("Location: " . URL . $page);
         exit;
+    }
+
+    public function createTopicView()
+    {
+        $data_page = [
+            "pageDescription" => "Page de réinitialisation de mot de passe",
+            "pageTitle" => "Réinitialiser mot de passe",
+            "view" => "../Views/Utilisateur/viewResetPassword.php",
+            "template" => "../Views/common/template.php",
+            "css" => "public/style/resetPasswordStyle.css",
+            "script" => "public/js/validFormResetPassword.js",
+            // "jwt" => $jwt
+        ];
+        $this->genererPage($data_page);
     }
 }
 

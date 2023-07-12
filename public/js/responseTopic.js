@@ -2,6 +2,7 @@
 const preview = document.querySelector('.preview');
 const formResponse = document.querySelector('.formResponse');
 const inputResponse = document.querySelector('.inputResponse');
+const alertMessageTopic = document.querySelector('.alertMessageTopic');
 
 const allBtnsQuote = document.querySelectorAll('.quoteMessage')
 const editor = document.querySelector('.ql-editor');
@@ -41,82 +42,99 @@ const quill = new Quill('.editor', {
 
 formResponse.addEventListener('submit', async (e) => {
     e.preventDefault();
-    //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
-    inputResponse.value = quill.root.innerHTML;
 
-    // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(inputResponse.value, 'text/html');
-    const images = doc.querySelectorAll('img[src^="data:image/"]');
-    try {
-        //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko
-        for (const image of images) {
-            const imageBase64 = image.src;
-            const blob = await fetch(imageBase64).then(res => res.blob());
-            if (blob.size > 307200) {
-                throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
+    //On va placer le contenu de l'éditeur quill dans une variable qui va nous servir à vérifier si le contenu contient uniquement des balises vide. C'est le cas lorsque le user clique sur "envoyer" sans rien écrire ou clique sur envoyer avec du contenu "blanc" (espace uniquement, touche entrer uniquement...)
+    //On fait cela avec une regex qui remplace les balises par rien du tout
+    const contenuDeVérification = quill.root.innerHTML.replace(/<[^>]*>/g, '');
+
+    //Ensuite, si la chaîne résultante est vide, cela signifie que le contenu de l’éditeur est vide ou ne contient que des balises vides.
+    //si ya du contenu...
+    if (contenuDeVérification) {
+        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
+        inputResponse.value = quill.root.innerHTML;
+        // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(inputResponse.value, 'text/html');
+        const images = doc.querySelectorAll('img[src^="data:image/"]');
+        try {
+            //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko
+            for (const image of images) {
+                const imageBase64 = image.src;
+                const blob = await fetch(imageBase64).then(res => res.blob());
+                if (blob.size > 307200) {
+                    throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
+                }
+            }
+            // si aucunes images n'est supérieur à 300ko le code continue...
+            for (const image of images) {
+                const imageBase64 = image.src;
+                //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.
+                const imageUrl = await uploadImage(imageBase64);
+                // * Une fois l'url récupérer, on remplace la représentation en base64 par l'URL de l'image.
+                //! ainsi le contenu de l'editeur qui sera envoyer en base de données ne va pas contenir le text + image base64 mais bien le text + les urls d'images
+                image.src = imageUrl;
+
+            }
+            inputResponse.value = doc.body.innerHTML;
+            const formData = new FormData(formResponse);
+            const response = await fetch("/projet-forum/validationResponseSujet", {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                //si erreur detecté, on génère un nouveau message d'erreur.
+                // le "catch" va le récupérer.
+                throw new Error(`Une erreur est survenue: ${response.status}`);
+            }
+
+            const resultat = await response.json();
+
+            //si le boolen est à false
+            if (!resultat.boolean) {
+                throw new Error(resultat.message);
+            }
+            //Si true, on met à jour le DOM
+
+            const filePathAvatar = resultat.data.dataUser.filepathAvatar;
+            const pseudo = resultat.data.dataUser.pseudo;
+            const userGuitare = resultat.data.dataUser.userGuitare;
+            const messagesCount = resultat.data.dataUser.messagesCount + 1;
+
+            const templateItem = document.querySelector('.template-item');
+            const messageList = document.querySelector('.messageList');
+            const lastMessage = templateItem.content.cloneNode(true);
+
+            lastMessage.querySelector('.avatar img').setAttribute('src', `projet-forum/public/images/profils/${filePathAvatar}`);
+            lastMessage.querySelector('.pseudo span').textContent = pseudo;
+            lastMessage.querySelector('.guitare span').textContent = 'Ma guitare: ' + userGuitare;
+            lastMessage.querySelector('.totalMessagesUser span').textContent = messagesCount + ' message' + (messagesCount > 1 ? 's' : '');
+
+            let date = new Date();
+            const dateActuelle = formatDate(date);
+
+            lastMessage.querySelector('.messageDate span').textContent = dateActuelle;
+            lastMessage.querySelector('.quoteMessage').setAttribute('data-pseudo', pseudo);
+            lastMessage.querySelector('.quoteMessage').setAttribute('data-date', dateActuelle);
+            lastMessage.querySelector('.messageText span').innerHTML = resultat.data.reponseTopic;
+
+            messageList.append(lastMessage);
+            quill.root.innerHTML = "";
+        } catch (error) {
+
+            if (error.message === 'noConnected') {
+                window.location = "/projet-forum/connexion";
+            } else {
+                alertMessageTopic.textContent = error.message;
+                alertMessageTopic.style.display = "block";
             }
         }
-        // si aucunes images n'est supérieur à 300ko le code continue...
-        for (const image of images) {
-            const imageBase64 = image.src;
-            //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.
-            const imageUrl = await uploadImage(imageBase64);
-            // * Une fois l'url récupérer, on remplace la représentation en base64 par l'URL de l'image.
-            //! ainsi le contenu de l'editeur qui sera envoyer en base de données ne va pas contenir le text + image base64 mais bien le text + les urls d'images
-            image.src = imageUrl;
-
-        }
-        inputResponse.value = doc.body.innerHTML;
-        const formData = new FormData(formResponse);
-        const response = await fetch("/projet-forum/validationResponseSujet", {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            //si erreur detecté, on génère un nouveau message d'erreur.
-            // le "catch" va le récupérer.
-            throw new Error(`Une erreur est survenue: ${response.status}`);
-        }
-
-        const resultat = await response.json();
-
-        //si le boolen est à false
-        if (!resultat.boolean) {
-            throw new Error(resultat.message);
-        }
-        //Si true, on met à jour le DOM
-        const filePathAvatar = resultat.data.dataUser.filepathAvatar;
-        const pseudo = resultat.data.dataUser.pseudo;
-        const userGuitare = resultat.data.dataUser.userGuitare;
-        const messagesCount = resultat.data.dataUser.messagesCount + 1;
-
-        const templateItem = document.querySelector('.template-item');
-        const messageList = document.querySelector('.messageList');
-        const lastMessage = templateItem.content.cloneNode(true);
-
-        lastMessage.querySelector('.avatar img').setAttribute('src', `projet-forum/public/images/profils/${filePathAvatar}`);
-        lastMessage.querySelector('.pseudo span').textContent = pseudo;
-        lastMessage.querySelector('.guitare span').textContent = 'Ma guitare: ' + userGuitare;
-        lastMessage.querySelector('.totalMessagesUser span').textContent = messagesCount + ' message' + (messagesCount > 1 ? 's' : '');
-
-        let date = new Date();
-        const dateActuelle = formatDate(date);
-        console.log(dateActuelle);
-        lastMessage.querySelector('.messageDate span').textContent = dateActuelle;
-        lastMessage.querySelector('.quoteMessage').setAttribute('data-pseudo', pseudo);
-        lastMessage.querySelector('.quoteMessage').setAttribute('data-date', dateActuelle);
-        lastMessage.querySelector('.messageText span').innerHTML = resultat.data.reponseTopic;
-
-        messageList.append(lastMessage);
-        ///projet-forum/public/images/profils/${resultat.data.filePathAvatar}
-        // preview.innerHTML = resultat.data.reponseTopic;
-    } catch (error) {
-
-        console.log(error.message);
-
+    } else {
+        alertMessageTopic.textContent = "Veuillez entrer du contenu avant de poster votre réponse";
+        alertMessageTopic.style.display = "block";
     }
+
+
 
 });
 
@@ -195,5 +213,18 @@ const formatDate = (date) => {
     return dateString;
 }
 
+/**
+ * !écouteur sur quill pour supprimer les éventuels message d'alerte
+ * 
+ * !On ne peux pas utiliser addEventListener directement avec l’éditeur Quill. L’éditeur Quill est une instance d’un objet JavaScript qui fournit sa propre API pour gérer les événements. Pour ajouter un écouteur d’événement à l’éditeur Quill, on doit utiliser la méthode "on" de l’éditeur Quill,
+ */
 
-
+// Ajouter un écouteur d'événement pour l'événement "text-change" de l'éditeur Quill
+quill.on('text-change', () => {
+    // Vérifier si du texte a été entré dans l'éditeur
+    if (quill.getText()) {
+        //supprime les éventuels messages d'alerte
+        alertMessageTopic.textContent = "";
+        alertMessageTopic.style.display = "none";
+    }
+});

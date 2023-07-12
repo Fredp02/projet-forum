@@ -49,7 +49,7 @@ use Controllers\Services\Toolbox; ?>
                 </div>
             <?php endforeach; ?>
         </div>
-        <div class="preview"></div>
+        <div class="alertMessageTopic"></div>
         <div class="divReponse">
             <form class="formResponse">
                 <input name="inputResponse" class="inputResponse" type="hidden">

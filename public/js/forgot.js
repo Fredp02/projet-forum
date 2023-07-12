@@ -47,20 +47,7 @@ elBtnForgot.addEventListener('click', async (e) => {
         }
 
     }
-    // else {
-    //     if (elInputForgot.value === "") {
-    //         $message = 'Le champs "email" ne doit pas être vide';
-    //     } else {
-    //         $message = "Format de l'adresse email incorrecte";
-    //     }
-    //     elLoginMessage.style.display = 'block'
-    //     elLoginMessage.classList.add('rouge');
-    //     elTextMessage.textContent = $message;
-    //     elInputForgot.classList.add('inputError');
-    //     elInputForgot.previousElementSibling.style.color = "#FF4242";
-    //     elInputForgot.value = "";
 
-    // }
 })
 
 

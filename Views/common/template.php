@@ -1,5 +1,6 @@
 <?php
 
+
 use Controllers\Services\Securite; ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -57,7 +58,7 @@ use Controllers\Services\Securite; ?>
                 </div>
                 <div class="headerLinks">
                     <?php if (!Securite::isConnected()) : ?>
-                        <a href="connexion" class="linkLogin">Connexion</a>
+                        <a href="<?= URL; ?>connexion" class="linkLogin">Connexion</a>
                     <?php else : ?>
                         <a href="<?= URL ?>compte/profil" class="linkProfil"><?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
                         <a href="<?= URL . 'deconnexion'; ?>" class="logout">Déconnexion</a>
