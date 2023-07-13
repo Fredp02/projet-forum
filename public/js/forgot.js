@@ -39,11 +39,16 @@ elBtnForgot.addEventListener('click', async (e) => {
 
         } catch (error) {
             //on affiche un message d'erreur dans le DOM
-            console.log(error)
-            elInputForgot.classList.add('inputError');
-            elLabelForgot.style.backgroundColor = "#FF4242";
-            elLabelForgot.textContent = error.message;
-            elInputForgot.value = "";
+            if (error.message === "expired token") {
+                window.location = "accueil";
+            } else {
+                elInputForgot.classList.add('inputError');
+                elLabelForgot.style.backgroundColor = "#FF4242";
+                elLabelForgot.textContent = error.message;
+                elInputForgot.value = "";
+            }
+
+
         }
 
     }

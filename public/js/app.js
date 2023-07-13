@@ -9,7 +9,7 @@ const elHeaderLinks = document.querySelector('.headerLinks');
 const elInputLogin = document.querySelector('.inputLogin');
 const elInputPassword = document.querySelector('.inputPassword');
 const elContentLogin = document.querySelector('.contentLogin');
-
+const inputTokenCSRF = document.querySelector('.tokenCSRF')
 
 
 
@@ -56,12 +56,16 @@ if (elBtnLogin) {
                 updateDom(resultat);
             } catch (error) {
                 //on affiche un message d'erreur dans le DOM
-                console.log(error)
-                elLoginMessage.style.display = 'block'
-                elLoginMessage.classList.add('rouge');
-                elInputLogin.value = "";
-                elInputPassword.value = "";
-                elTextMessage.innerHTML = error.message;
+                if (error.message === "expired token") {
+                    window.location.href = '/projet-forum/accueil';
+                } else {
+                    elLoginMessage.style.display = 'block'
+                    elLoginMessage.classList.add('rouge');
+                    elInputLogin.value = "";
+                    elInputPassword.value = "";
+                    elTextMessage.innerHTML = error.message;
+                }
+
             }
         }
     })
@@ -108,7 +112,16 @@ function updateDom(resultat) {
     lienNavlogout.textContent = "Déconnexion";
     elHeaderLinks.append(lienNavProfil, lienNavlogout);
 
+    if (elBtnLogin.classList.contains("btnLoginAnimate") && window.location.pathname.includes('sujet')) {
+        document.querySelector('.divReponse').scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+
+
+
 }
+
 let i = 0;
 function hideMessage(i) {
 

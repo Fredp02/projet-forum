@@ -416,7 +416,7 @@ inputAvatar.addEventListener('change', async function () {
         }
     } catch (error) {
         if (error.message === "expired token") {
-            window.location.href = "http://localhost/projet-forum/accueil";
+            window.location.href = "/projet-forum/accueil";
         } else {
             ElAlerteAvatarSpan.textContent = error.message
             ElAlerteAvatar.style.backgroundColor = 'red';

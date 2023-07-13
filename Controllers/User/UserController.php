@@ -62,8 +62,8 @@ class UserController extends MainController
                     'userGuitare' => $user->guitare,
                 ];
 
-                $tokenCSRF = $this->createToken($user->userID);
-                $_SESSION['tokenCSRF'] = $tokenCSRF;
+                // $tokenCSRF = $this->createToken($user->userID);
+                // $_SESSION['tokenCSRF'] = $tokenCSRF;
 
 
 
@@ -75,7 +75,6 @@ class UserController extends MainController
                         'filepathAvatar' => $filepathAvatar,
                         'id' => $user->userID,
                         'previousURL' => $previousURL
-                        // 'previousURL' => $_SERVER['HTTP_REFERER']
                     ]
                 );
             } else {
@@ -98,13 +97,15 @@ class UserController extends MainController
      */
     public function forgotView()
     {
+
         $data_page = [
             "pageDescription" => "Page : j'ai oublié mon de mot de passe",
             "pageTitle" => "Page pour réinitialiser le mot de passe",
             "view" => "../Views/Utilisateur/viewForgot.php",
             "template" => "../Views/common/template.php",
             "css" => "public/style/forgotStyle.css",
-            "script" => "public/js/forgot.js"
+            "script" => "public/js/forgot.js",
+            "tokenCSRF" => $_SESSION["tokenCSRF"]
         ];
         $this->genererPage($data_page);
     }
@@ -134,6 +135,9 @@ class UserController extends MainController
             // Toolbox::ajouterMessageAlerte("Adresse email inconnue", "rouge");
         }
     }
+
+
+    //page lorsqu'on clique sur le lien de l'email reçu, avec le token en GET. C'est un formulaire.
     public function reinitialiserPassword($jwt)
     {
         // $jwt = new JWTService();
@@ -148,6 +152,7 @@ class UserController extends MainController
             "template" => "../Views/common/template.php",
             "css" => "public/style/resetPasswordStyle.css",
             "script" => "public/js/validFormResetPassword.js",
+            'tokenCSRF' => $_SESSION['tokenCSRF'],
             "jwt" => $jwt
         ];
         $this->genererPage($data_page);
@@ -400,145 +405,147 @@ class UserController extends MainController
     {
 
         $token = $_SESSION['tokenCSRF'];
-        $jwt = new JWTService();
-        if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
+        // $jwt = new JWTService();
+        // if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
 
-            //je crée un tableau avec les types mime autorisés
-            $typeMime = [
-                "jpg" => "image/jpg",
-                "jpeg" => "image/jpeg",
-                "gif" => "image/gif",
-                "png" => "image/png"
-            ];
+        //je crée un tableau avec les types mime autorisés
+        $typeMime = [
+            "jpg" => "image/jpg",
+            "jpeg" => "image/jpeg",
+            "gif" => "image/gif",
+            "png" => "image/png"
+        ];
 
-            //on récupère les info de la photo
-            $infoFichier = new SplFileInfo($dataPhoto['name']);
-            //récupération de l'extension du fichier (en minuscule).
-            $extension = strtolower($infoFichier->getExtension());
+        //on récupère les info de la photo
+        $infoFichier = new SplFileInfo($dataPhoto['name']);
+        //récupération de l'extension du fichier (en minuscule).
+        $extension = strtolower($infoFichier->getExtension());
 
-            $regexExtention = '/^.*\.(jpeg|jpg|gif|png)$/i'; //le "i" c'est insensible à la casse
+        $regexExtention = '/^.*\.(jpeg|jpg|gif|png)$/i'; //le "i" c'est insensible à la casse
 
-            //on verifie le type mime du fichier
-            if (!in_array($dataPhoto['type'], $typeMime)) {
-                Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
-                header("Location: " . URL . "compte/profil");
-                exit;
-            }
-            //on ajoute une couche de sécurité, peut-être inutile
-            if (!preg_match($regexExtention, $dataPhoto['name'])) {
-                Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
-                header("Location: " . URL . "compte/profil");
-                exit;
-            }
+        //on verifie le type mime du fichier
+        if (!in_array($dataPhoto['type'], $typeMime)) {
+            Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
+            header("Location: " . URL . "compte/profil");
+            exit;
+        }
+        //on ajoute une couche de sécurité, peut-être inutile
+        if (!preg_match($regexExtention, $dataPhoto['name'])) {
+            Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
+            header("Location: " . URL . "compte/profil");
+            exit;
+        }
 
-            //on vérifie sa taille
-            if ($dataPhoto['size'] > 153600) {
-                Toolbox::ajouterMessageAlerte("Le poids de l'image doit être inférieure à 150ko", 'rouge');
-                header("Location: " . URL . "compte/profil");
-                exit;
-            }
-            $infoSize = getimagesize($dataPhoto['tmp_name']);
+        //on vérifie sa taille
+        if ($dataPhoto['size'] > 153600) {
+            Toolbox::ajouterMessageAlerte("Le poids de l'image doit être inférieure à 150ko", 'rouge');
+            header("Location: " . URL . "compte/profil");
+            exit;
+        }
+        $infoSize = getimagesize($dataPhoto['tmp_name']);
 
-            //et on vérifie ses dimensions
-            if ($infoSize[0] > 200 || $infoSize[1] > 200) {
-                Toolbox::ajouterMessageAlerte("Le fichier doit avoir une largeur et une hauteur maximale de 200 pixels", 'rouge');
-                header("Location: " . URL . "compte/profil");
-                exit;
-            }
+        //et on vérifie ses dimensions
+        if ($infoSize[0] > 200 || $infoSize[1] > 200) {
+            Toolbox::ajouterMessageAlerte("Le fichier doit avoir une largeur et une hauteur maximale de 200 pixels", 'rouge');
+            header("Location: " . URL . "compte/profil");
+            exit;
+        }
 
-            //si l'image respecte les conditions ...
-            $userData = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
+        //si l'image respecte les conditions ...
+        $userData = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
 
-            $userId = $userData->userID;
-            $ancienAvatar = $userData->avatar;
-            // On initialise le chemin du dossier dans lequel la photo sera enregistrée
-            $filePath = 'images/profils/' . $userId;
+        $userId = $userData->userID;
+        $ancienAvatar = $userData->avatar;
+        // On initialise le chemin du dossier dans lequel la photo sera enregistrée
+        $filePath = 'images/profils/' . $userId;
 
-            //on va renommer la photo avec un identifiant unique.
-            //2 paramètres avec uniqid : un préfix (ici ce sera $userId), et un booleen à true pour qu'il génère d'autre chiffres après afin de maximiser l'unicité du renommage. et on rajoute l'extension
-            $nouvelAvatar = uniqid($userId, true) . '.' . $extension;
+        //on va renommer la photo avec un identifiant unique.
+        //2 paramètres avec uniqid : un préfix (ici ce sera $userId), et un booleen à true pour qu'il génère d'autre chiffres après afin de maximiser l'unicité du renommage. et on rajoute l'extension
+        $nouvelAvatar = uniqid($userId, true) . '.' . $extension;
 
-            //on instancie l'objet user
-            $user = new User($userData->pseudo, $userData->userDate, $userId);
+        //on instancie l'objet user
+        $user = new User($userData->pseudo, $userData->userDate, $userId);
 
-            //on lui attribue le nom du nouvel avatar
-            $user->setAvatar($nouvelAvatar);
+        //on lui attribue le nom du nouvel avatar
+        $user->setAvatar($nouvelAvatar);
 
-            //on déplace l'image des "temporaire" dans le dossier du user
-            $moveAvatar = move_uploaded_file($dataPhoto['tmp_name'], $filePath . '/' . $nouvelAvatar);
+        //on déplace l'image des "temporaire" dans le dossier du user
+        $moveAvatar = move_uploaded_file($dataPhoto['tmp_name'], $filePath . '/' . $nouvelAvatar);
 
-            //si déplacement du nouvel avatar ok
-            if ($moveAvatar) {
+        //si déplacement du nouvel avatar ok
+        if ($moveAvatar) {
 
-                //si enregistrement en bdd du nouvel avatar ok
-                if ($this->userModel->modifAvatarProfil($user)) {
-                    //on supprime l'ancien avatar
-                    unlink($filePath . DIRECTORY_SEPARATOR . $ancienAvatar);
-                    //on met à jour la session avec le nouvel avatar
-                    $_SESSION['profil']['avatar'] = $nouvelAvatar;
-                } else {
-                    Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
-                    exit;
-                }
-
-                //si déplacement du nouvel avatar fail :
+            //si enregistrement en bdd du nouvel avatar ok
+            if ($this->userModel->modifAvatarProfil($user)) {
+                //on supprime l'ancien avatar
+                unlink($filePath . DIRECTORY_SEPARATOR . $ancienAvatar);
+                //on met à jour la session avec le nouvel avatar
+                $_SESSION['profil']['avatar'] = $nouvelAvatar;
             } else {
                 Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
                 exit;
             }
 
-            // Si aucun "exit" précédent
-
-            //on créer les données que JS va récupérer
-            $data = [
-                'userId' => $userId,
-                'avatar' => $_SESSION['profil']['avatar']
-            ];
-            //et on envoie la réponse en json
-            Toolbox::dataJson(true, "Avatar ok", $data);
-            exit;
+            //si déplacement du nouvel avatar fail :
         } else {
-            Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
-            unset($_SESSION['profil']);
-            unset($_SESSION['tokenCSRF']);
-            // session_destroy();
-            Toolbox::dataJson(false, "expired token");
+            Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
             exit;
         }
+
+        // Si aucun "exit" précédent
+
+        //on créer les données que JS va récupérer
+        $data = [
+            'userId' => $userId,
+            'avatar' => $_SESSION['profil']['avatar']
+        ];
+        //et on envoie la réponse en json
+        Toolbox::dataJson(true, "Avatar ok", $data);
+        exit;
+        // } else {
+        //     Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
+        //     unset($_SESSION['profil']);
+        //     unset($_SESSION['tokenCSRF']);
+        //     // session_destroy();
+        //     Toolbox::dataJson(false, "expired token");
+        //     exit;
+        // }
     }
 
     public function editEmail($nouveauEmail)
     {
-        $token = $_SESSION['tokenCSRF'];
-        $jwt = new JWTService();
-        if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
-            $user = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
-            $userId = $user->userID;
-            $pseudo = $user->pseudo;
+        // $token = $_SESSION['tokenCSRF'];
+        // $jwt = new JWTService();
+        // if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
+        $user = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
+        $userId = $user->userID;
+        $pseudo = $user->pseudo;
 
-            //ici on peut récupérer son email "avant modification". Cela pourrait nous permettre d'envoyer un email à cette adresse en indiquant que si il n'est pas à l'origine de cette modification, il peut contacter l'administrateur du site.
-            $userAncienEmail = $user->email;
+        //ici on peut récupérer son email "avant modification". Cela pourrait nous permettre d'envoyer un email à cette adresse en indiquant que si il n'est pas à l'origine de cette modification, il peut contacter l'administrateur du site.
+        $userAncienEmail = $user->email;
 
-            $token = $this->createToken($userId, $pseudo, $nouveauEmail);
-            $cheminTemplate = '../Views/templateMail/templateEditEmail.html';
-            $route = URL . "validationEditEmail/" . $token;
-            $sujet = 'Validation adresse email sur Guitare Forum';
-            if (Toolbox::sendMail($pseudo, $nouveauEmail, $route, $sujet, $cheminTemplate)) {
-                $message = "Un email de validation a été envoyé sur cette adresse email. Ce mail sera valide pendant 3h";
-                Toolbox::dataJson(true, $message);
-                exit;
-            } else {
-                Toolbox::dataJson(false, 'Une erreur est survenue');
-                exit;
-            }
+        $token = $this->createToken($userId, $pseudo, $nouveauEmail);
+        $cheminTemplate = '../Views/templateMail/templateEditEmail.html';
+        $route = URL . "validationEditEmail/" . $token;
+        $sujet = 'Validation adresse email sur Guitare Forum';
+        if (Toolbox::sendMail($pseudo, $nouveauEmail, $route, $sujet, $cheminTemplate)) {
+            $message = "Un email de validation a été envoyé sur cette adresse email. Ce mail sera valide pendant 3h";
+            Toolbox::dataJson(true, $message);
+            exit;
         } else {
-            Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
-            unset($_SESSION['profil']);
-            unset($_SESSION['tokenCSRF']);
-            Toolbox::dataJson(false, "expired token");
+            Toolbox::dataJson(false, 'Une erreur est survenue');
             exit;
         }
+        // } else {
+        //     Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
+        //     unset($_SESSION['profil']);
+        //     unset($_SESSION['tokenCSRF']);
+        //     Toolbox::dataJson(false, "expired token");
+        //     exit;
+        // }
     }
+
+    //c'est la méthode qui est appélée dans la route qui se trouve dans l'email reçu lors de la demande de changement d'email.
     public function validationEditEmail($tokenToVerify)
     {
         $jwt = new JWTService();
@@ -566,83 +573,83 @@ class UserController extends MainController
     public function changePassword($ancienPassword, $nouveauPassword, $confirmPassword)
     {
 
-        $token = $_SESSION['tokenCSRF'];
-        $jwt = new JWTService();
-        if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
+        // $token = $_SESSION['tokenCSRF'];
+        // $jwt = new JWTService();
+        // if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
 
-            $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
+        $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
-            $pseudo = $_SESSION['profil']['pseudo'];
-            if ($this->userModel->verifLogin($pseudo, $ancienPassword)) {
+        $pseudo = $_SESSION['profil']['pseudo'];
+        if ($this->userModel->verifLogin($pseudo, $ancienPassword)) {
 
-                if (!preg_match($regexpPassword, $nouveauPassword)) {
-                    Toolbox::ajouterMessageAlerte("Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule", 'rouge');
-                    header("Location: " . URL . "profil");
-                    exit;
-                }
-                if ($nouveauPassword !== $confirmPassword) {
-                    Toolbox::ajouterMessageAlerte("Les mots de passe ne correspondent pas", 'rouge');
-                    header("Location: " . URL . "profil");
-                    exit;
-                }
-                $userData = $this->userModel->getUserinfo($pseudo);
-                $user = new User($userData->pseudo, $userData->userDate, $userData->userID);
-                $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
-                $resultat = $this->userModel->updatePassword($user);
-                if ($resultat) {
-                    Toolbox::dataJson(true, "Mot de passe modifié avec succès");
-                    exit;
-                } else {
-                    Toolbox::dataJson(false, "Erreur recontrée");
-                    exit;
-                }
+            if (!preg_match($regexpPassword, $nouveauPassword)) {
+                Toolbox::ajouterMessageAlerte("Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule", 'rouge');
+                header("Location: " . URL . "profil");
+                exit;
+            }
+            if ($nouveauPassword !== $confirmPassword) {
+                Toolbox::ajouterMessageAlerte("Les mots de passe ne correspondent pas", 'rouge');
+                header("Location: " . URL . "profil");
+                exit;
+            }
+            $userData = $this->userModel->getUserinfo($pseudo);
+            $user = new User($userData->pseudo, $userData->userDate, $userData->userID);
+            $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
+            $resultat = $this->userModel->updatePassword($user);
+            if ($resultat) {
+                Toolbox::dataJson(true, "Mot de passe modifié avec succès");
+                exit;
             } else {
-                Toolbox::dataJson(false, "Mot de actuel incorrect");
+                Toolbox::dataJson(false, "Erreur recontrée");
                 exit;
             }
         } else {
-            Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
-            unset($_SESSION['profil']);
-            unset($_SESSION['tokenCSRF']);
-            Toolbox::dataJson(false, "expired token");
+            Toolbox::dataJson(false, "Mot de actuel incorrect");
             exit;
         }
+        // } else {
+        //     Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
+        //     unset($_SESSION['profil']);
+        //     unset($_SESSION['tokenCSRF']);
+        //     Toolbox::dataJson(false, "expired token");
+        //     exit;
+        // }
     }
 
     public function editAbout($guitare, $emploi, $ville)
     {
-        $token = $_SESSION['tokenCSRF'];
-        $jwt = new JWTService();
-        if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
+        // $token = $_SESSION['tokenCSRF'];
+        // $jwt = new JWTService();
+        // if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
 
-            $userData = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
-            $user = new User($userData->pseudo, $userData->userDate, $userData->userID);
-            $user->setGuitare($guitare);
-            $user->setEmploi($emploi);
-            $user->setVille($ville);
+        $userData = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
+        $user = new User($userData->pseudo, $userData->userDate, $userData->userID);
+        $user->setGuitare($guitare);
+        $user->setEmploi($emploi);
+        $user->setVille($ville);
 
-            $resultat = $this->userModel->UpdateAboutUser($user);
-            if ($resultat) {
-                //! voir méthode UpdateAboutUser() pour plus d'info
-                $message = $resultat === 2 ? "Mise à jour des informations réalisées avec succès" : "Aucune modifications effectuées : valeur identique";
-                $data = [
-                    'guitare' => $guitare,
-                    'emploi' => $emploi,
-                    'ville' => $ville
-                ];
-                Toolbox::dataJson(true, $message, $data);
-                exit;
-            } else {
-                Toolbox::dataJson(false, "Problème rencontré lors de la mise à jour des informations");
-                exit;
-            }
+        $resultat = $this->userModel->UpdateAboutUser($user);
+        if ($resultat) {
+            //! voir méthode UpdateAboutUser() pour plus d'info
+            $message = $resultat === 2 ? "Mise à jour des informations réalisées avec succès" : "Aucune modifications effectuées : valeur identique";
+            $data = [
+                'guitare' => $guitare,
+                'emploi' => $emploi,
+                'ville' => $ville
+            ];
+            Toolbox::dataJson(true, $message, $data);
+            exit;
         } else {
-            Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
-            unset($_SESSION['profil']);
-            unset($_SESSION['tokenCSRF']);
-            Toolbox::dataJson(false, "expired token");
+            Toolbox::dataJson(false, "Problème rencontré lors de la mise à jour des informations");
             exit;
         }
+        // } else {
+        //     Toolbox::ajouterMessageAlerte("Session expirée, veuillez vous reconnecter", 'rouge');
+        //     unset($_SESSION['profil']);
+        //     unset($_SESSION['tokenCSRF']);
+        //     Toolbox::dataJson(false, "expired token");
+        //     exit;
+        // }
     }
 
 
@@ -699,13 +706,7 @@ class UserController extends MainController
             Toolbox::dataJson(false, "Le poids de l'image doit être inférieure à 300ko");
             exit;
         }
-        // $infoSize = getimagesize($datasImage['tmp_name']);
 
-        // //et on vérifie ses dimensions
-        // if ($infoSize[0] > 1024 || $infoSize[1] > 720) {
-        //     Toolbox::dataJson(false, "Le fichier doit avoir une largeur et une hauteur maximale de 1024x720 pixels");
-        //     exit;
-        // }
         $filePath = 'images/topics/' . $topicID;
         //Si ce dossier n'existe pas, il faut le créer
         if (!file_exists($filePath)) {

@@ -41,7 +41,12 @@ btnPageLogin.addEventListener('click', async (e) => {
             window.location = resultat.data.previousURL;
         } catch (error) {
             //on affiche un message d'erreur dans le DOM
-            messagePagelogin.textContent = error.message;
+            if (error.message === "expired token") {
+                window.location.href = "/projet-forum/accueil";
+            } else {
+                messagePagelogin.textContent = error.message;
+            }
+
         }
     }
 })

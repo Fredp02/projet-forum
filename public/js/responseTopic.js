@@ -7,6 +7,7 @@ const alertMessageTopic = document.querySelector('.alertMessageTopic');
 const allBtnsQuote = document.querySelectorAll('.quoteMessage')
 const editor = document.querySelector('.ql-editor');
 
+
 const toolbarOptions = {
     container: [
         ['bold', 'italic', 'underline', 'strike'],
@@ -123,6 +124,10 @@ formResponse.addEventListener('submit', async (e) => {
         } catch (error) {
 
             if (error.message === 'noConnected') {
+                //je le redirige en haut de la page pour qu'il se conecte, ensuite il sera redirigé vers la zone d'édition (voir code dans app.js)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
+            } else if (error.message === 'expired token') {
                 window.location = "/projet-forum/connexion";
             } else {
                 alertMessageTopic.textContent = error.message;
@@ -137,7 +142,6 @@ formResponse.addEventListener('submit', async (e) => {
 
 
 });
-
 async function uploadImage(imageBase64) {
     // * imageBase64 correspond à l'image en base64.
     // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
@@ -179,6 +183,25 @@ async function uploadImage(imageBase64) {
 
 }
 
+/**
+ * !écouteur sur quill pour supprimer les éventuels message d'alerte
+ * 
+ * !On ne peux pas utiliser addEventListener directement avec l’éditeur Quill. L’éditeur Quill est une instance d’un objet JavaScript qui fournit sa propre API pour gérer les événements. Pour ajouter un écouteur d’événement à l’éditeur Quill, on doit utiliser la méthode "on" de l’éditeur Quill,
+ */
+
+// Ajouter un écouteur d'événement pour l'événement "text-change" de l'éditeur Quill
+quill.on('text-change', () => {
+    // Vérifier si du texte a été entré dans l'éditeur
+    if (quill.getText()) {
+        //supprime les éventuels messages d'alerte
+        alertMessageTopic.textContent = "";
+        alertMessageTopic.style.display = "none";
+    }
+});
+
+
+
+
 
 
 
@@ -213,18 +236,4 @@ const formatDate = (date) => {
     return dateString;
 }
 
-/**
- * !écouteur sur quill pour supprimer les éventuels message d'alerte
- * 
- * !On ne peux pas utiliser addEventListener directement avec l’éditeur Quill. L’éditeur Quill est une instance d’un objet JavaScript qui fournit sa propre API pour gérer les événements. Pour ajouter un écouteur d’événement à l’éditeur Quill, on doit utiliser la méthode "on" de l’éditeur Quill,
- */
 
-// Ajouter un écouteur d'événement pour l'événement "text-change" de l'éditeur Quill
-quill.on('text-change', () => {
-    // Vérifier si du texte a été entré dans l'éditeur
-    if (quill.getText()) {
-        //supprime les éventuels messages d'alerte
-        alertMessageTopic.textContent = "";
-        alertMessageTopic.style.display = "none";
-    }
-});

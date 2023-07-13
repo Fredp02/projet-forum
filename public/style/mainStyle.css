@@ -307,7 +307,8 @@ nav {
 
 .btnLogin,
 .btnEnvoyer,
-.btnCreateTopic {
+.btnCreateTopic,
+.btnLoginTopic {
     font-weight: 700;
     border: none;
     border-radius: 5px;
@@ -323,6 +324,37 @@ nav {
 .btnEnvoyer:hover,
 .btnCreateTopic:hover {
     background-color: var(--orange2);
+}
+
+@keyframes scaleAnimation {
+    0% {
+        transform: scale(1);
+        background-color: var(--orange2);
+    }
+
+    25% {
+        transform: scale(1.25);
+        background-color: #17b24b;
+    }
+
+    50% {
+        transform: scale(1);
+        background-color: var(--orange2);
+    }
+
+    75% {
+        transform: scale(1.25);
+        background-color: #17b24b;
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: var(--orange2);
+    }
+}
+
+.btnLoginAnimate {
+    animation: scaleAnimation 3s infinite;
 }
 
 .linkForgot {

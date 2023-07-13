@@ -68,7 +68,9 @@ elBtnInscription.addEventListener('click', async () => {
 
         } catch (error) {
             console.log(error);
-            if (dataTypeError === 'pseudo') {
+            if (error.message === "expired token") {
+                window.location.href = "/projet-forum/accueil";
+            } else if (dataTypeError === 'pseudo') {
                 elPseudo.classList.add('inputError');
                 elPseudoLabel.textContent = "Pseudo déjà utilisé";
                 elPseudoLabel.style.color = "#FF4242";

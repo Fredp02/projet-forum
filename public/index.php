@@ -1,12 +1,13 @@
 <?php
 session_start();
 
+
 define("URL", str_replace("public/index.php", "", (isset($_SERVER['HTTPS']) ? "https" : "http") .
   "://" . $_SERVER['HTTP_HOST'] . $_SERVER["PHP_SELF"]));
 
 
 require '../vendor/autoload.php';
-// require_once '../vendor/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
+
 
 //parce que j'utilise ces classes dans ce fichier.
 //quand on fait appel à une classe, même avec un autoload, les "use" doivent être présent.
@@ -20,6 +21,9 @@ use Models\Visiteur\Categorys\CategorysModel;
 $visiteurController = new VisiteurController();
 $userController = new UserController();
 
+if (empty($_SESSION['tokenCSRF'])) {
+  Securite::tokenCSRF();
+}
 
 try {
   if (empty($_GET['page'])) {
@@ -44,6 +48,7 @@ try {
   switch ($page) {
 
     case "accueil":
+
       /**
        * dans le cas ou le $url[2] vaut xxxxxx.4 alors ce sera une liste de topics à afficher en fonction de l'ID de la sous-catégorie. SINON ce sera la page d'accueil à afficher
        * URL[2] se présente sous cette forme : "guitare-classique.4"
@@ -86,20 +91,36 @@ try {
       }
       break;
     case "validationLogin":
-      if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
-        $pseudo = htmlspecialchars($_POST['pseudo']);
-        $password = htmlspecialchars($_POST['password']);
+      if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
 
-        //j'ai placé un input hidden qui contient l'url précédent. obligé car lorsque le script va sur cette route 'case "validationLogin":" le contenu de la variable http_referrer c'est la page de connexion, et pas celle encore d'avant. 
-        $previousURL = htmlspecialchars($_POST['previousURL'] ?? "");
-        $userController->validationLogin($pseudo, $password, $previousURL);
+        if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
+          $pseudo = htmlspecialchars($_POST['pseudo']);
+          $password = htmlspecialchars($_POST['password']);
+
+          //j'ai placé un input hidden qui contient l'url précédent. obligé car lorsque le script va sur cette route 'case "validationLogin":" le contenu de la variable http_referrer c'est la page de connexion, et pas celle encore d'avant. 
+          $previousURL = htmlspecialchars($_POST['previousURL'] ?? "");
+          $userController->validationLogin($pseudo, $password, $previousURL);
+        } else {
+          throw new Exception("La page n'existe pas");
+        }
       } else {
-        throw new Exception("La page n'existe pas");
+        Toolbox::ajouterMessageAlerte("Session expirée pour cause d'inactivité, veuillez recommencer", 'rouge');
+        unset($_SESSION['profil']);
+        unset($_SESSION['tokenCSRF']);
+        Toolbox::dataJson(false, "expired token");
+        exit;
       }
+
       break;
 
       //! les 4 "case" suivant gèrent la réinitialisation du password en cas d'oublie : 
-    case "forgot":
+      /**
+       * * "forgot" c'est la 1ere vue qui permet de saisir son mail
+       * * "sendEmailPassForgot" gère l'envoi du mail de réinitialisation de mot de passe. Vérifie avant si la vue 'forgot avait le bon token'
+       * * "reinitialiserPassword" c'est la 2nd vue qui permet de réinitialiser son mot de pass
+       * * "validationResetPassword" vérifie le tout et valide le changement.
+       */
+    case "forgot": //!VUE
       //On vérifie s'il est connecté pour autoriser l'affichage de la page "forgot"
       if (!Securite::isConnected()) {
         $userController->forgotView();
@@ -110,16 +131,24 @@ try {
       break;
 
     case "sendEmailPassForgot":
-      //une fois le formulaire soumis, on gère l'envoi ou non du mail de réinitialisation de mot de passe
-      if (!empty($_POST['passwordForgot'])) {
-        $email = htmlspecialchars($_POST['passwordForgot']);
-        $userController->sendEmailPassForgot($email);
+      //une fois le formulaire soumis, on gère l'envoi du mail de réinitialisation de mot de passe
+      if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+        if (!empty($_POST['passwordForgot'])) {
+          $email = htmlspecialchars($_POST['passwordForgot']);
+          $userController->sendEmailPassForgot($email);
+        } else {
+          throw new Exception("La page n'existe pas");
+        }
       } else {
-        throw new Exception("La page n'existe pas");
+        unset($_SESSION['tokenCSRF']);
+        Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+        Toolbox::dataJson(false, "expired token");
+        exit;
       }
 
+
       break;
-    case "reinitialiserPassword":
+    case "reinitialiserPassword": //!VUE
       //page lorsqu'on clique sur le lien de l'email reçu, avec le token en GET. C'est un formulaire.
 
       //On considère que le user n'est pas censé être connecté pour accéder au formulaire de réinitialisation
@@ -141,19 +170,32 @@ try {
       break;
     case "validationResetPassword":
 
-      //une fois le formulaire soumis, on gère l'envoi ou non le reset du password en fonction de la validité du token
-      if (isset($url[2]) && !empty($url[2])) {
-        $tokenToVerify = $url[2];
-        if (!empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
-          $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
-          $confirmPassword = htmlspecialchars($_POST['confirmPassword']);
-          $userController->validationResetPassword($tokenToVerify, $nouveauPassword, $confirmPassword);
+      //on vérifie le tokenCSRF du formulaire
+      if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+
+        //Si tokenCSRF ok, on gère le reset du password en fonction de la validité du tokenJWT
+        if (isset($url[2]) && !empty($url[2])) {
+          $tokenToVerify = $url[2];
+
+          if (!empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
+            $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
+            $confirmPassword = htmlspecialchars($_POST['confirmPassword']);
+            $userController->validationResetPassword($tokenToVerify, $nouveauPassword, $confirmPassword);
+          } else {
+            Toolbox::ajouterMessageAlerte("Les deux champs son requis", 'rouge');
+            header("Location: " . URL . "reinitialiserPassword/" . $tokenToVerify);
+            exit;
+          }
+        } else {
+          throw new Exception("La page n'existe pas");
         }
       } else {
-        throw new Exception("La page n'existe pas");
+        Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+        header("Location: " . URL . "accueil");
+        exit;
       }
-      break;
 
+      break;
     case "deconnexion":
       $userController->logout();
       break;
@@ -167,21 +209,30 @@ try {
 
       break;
     case "validationInscription":
-      if (!empty($_POST['pseudo']) && !empty($_POST['emailInscription']) && !empty($_POST['password']) && !empty($_POST['confirmPassword'])) {
+      if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+        if (!empty($_POST['pseudo']) && !empty($_POST['emailInscription']) && !empty($_POST['password']) && !empty($_POST['confirmPassword'])) {
 
-        $pseudo = htmlspecialchars($_POST['pseudo']);
-        $emailInscription = htmlspecialchars($_POST['emailInscription']);
-        $password = htmlspecialchars($_POST['password']);
-        $confirmPassword =  htmlspecialchars($_POST['confirmPassword']);
-        // $pseudo = html_entity_decode($_POST['pseudo']);
-        // $emailInscription = html_entity_decode($_POST['emailInscription']);
-        // $password = html_entity_decode($_POST['password']);
-        // $confirmPassword =  html_entity_decode($_POST['confirmPassword']);
+          $pseudo = htmlspecialchars($_POST['pseudo']);
+          $emailInscription = htmlspecialchars($_POST['emailInscription']);
+          $password = htmlspecialchars($_POST['password']);
+          $confirmPassword =  htmlspecialchars($_POST['confirmPassword']);
+          // $pseudo = html_entity_decode($_POST['pseudo']);
+          // $emailInscription = html_entity_decode($_POST['emailInscription']);
+          // $password = html_entity_decode($_POST['password']);
+          // $confirmPassword =  html_entity_decode($_POST['confirmPassword']);
 
-        $userController->validationInscription(trim($pseudo), trim($emailInscription), trim($password), trim($confirmPassword));
+          $userController->validationInscription(trim($pseudo), trim($emailInscription), trim($password), trim($confirmPassword));
+        } else {
+          throw new Exception("La page n'existe pas");
+        }
       } else {
-        throw new Exception("La page n'existe pas");
+        Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+        unset($_SESSION['profil']);
+        unset($_SESSION['tokenCSRF']);
+        Toolbox::dataJson(false, "expired token");
+        exit;
       }
+
       break;
     case "verifToken":
 
@@ -202,6 +253,8 @@ try {
         throw new Exception("La page n'existe pas");
       }
       break;
+
+      //c'est la route qui se trouve dans l'email reçu lors de la demande de changement d'email.
     case "validationEditEmail":
       if (isset($url[2]) && !empty($url[2])) {
         $tokenToVerify = $url[2];
@@ -230,28 +283,36 @@ try {
       break;
 
     case "validationResponseSujet":
-      if (Securite::isConnected()) {
-        if (!empty($_POST['inputResponse']) && !empty($_POST['topicID'])) {
-          /**
-           * !on fait la même vérif ici que celle de JS pour les réponses vides :
-           * on retire toutes les balises vide par "". Si au final la chaine est completement vide alors c'est que la soumission ne contient rien.
-           */
-          $contenuDeVerification = preg_replace('/<[^>]*>/', '', $_POST['inputResponse']);
-          if ($contenuDeVerification) {
-            $escapedResponse = htmlspecialchars($_POST['inputResponse']);
-            $userController->validationResponseSujet($escapedResponse, $_POST['topicID']);
+      if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+        if (Securite::isConnected()) {
+          if (!empty($_POST['inputResponse']) && !empty($_POST['topicID'])) {
+            /**
+             * !on fait la même vérif ici que celle de JS pour les réponses vides :
+             * on retire toutes les balises vide par "". Si au final la chaine est completement vide alors c'est que la soumission ne contient rien.
+             */
+            $contenuDeVerification = preg_replace('/<[^>]*>/', '', $_POST['inputResponse']);
+            if ($contenuDeVerification) {
+              $escapedResponse = htmlspecialchars($_POST['inputResponse']);
+              $userController->validationResponseSujet($escapedResponse, $_POST['topicID']);
+            } else {
+              Toolbox::dataJson(false, "Veuillez entrer du contenu avant de poster votre réponse");
+              exit;
+            }
           } else {
-            Toolbox::dataJson(false, "Veuillez entrer du contenu avant de poster votre réponse");
-            exit;
+            throw new Exception("La page n'existe pas");
           }
         } else {
-          throw new Exception("La page n'existe pas");
+          Toolbox::dataJson(false, "noConnected");
+          exit;
         }
       } else {
-
-        Toolbox::dataJson(false, "noConnected");
+        Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+        unset($_SESSION['profil']);
+        unset($_SESSION['tokenCSRF']);
+        Toolbox::dataJson(false, "expired token");
         exit;
       }
+
 
       break;
     case "compte":
@@ -271,7 +332,7 @@ try {
             break;
           case 'avatar':
 
-            if (isset($_POST['tokenCSRF']) && $_POST['tokenCSRF'] === $_SESSION['tokenCSRF']) {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
               if (isset($_FILES['avatarPhoto']) && $_FILES['avatarPhoto']['error'] == 0) {
                 $userController->editAvatar($_FILES['avatarPhoto']);
               } else {
@@ -281,7 +342,10 @@ try {
                 exit;
               }
             } else {
-              Toolbox::ajouterMessageAlerte("Une erreur est survenue, veuillez vous reconnecter", 'rouge');
+              Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+              /**
+               * ! Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
+               */
               unset($_SESSION['profil']);
               unset($_SESSION['tokenCSRF']);
               Toolbox::dataJson(false, "expired token");
@@ -290,13 +354,13 @@ try {
             break;
 
           case 'editEmail':
-            if (isset($_POST['tokenCSRF']) && $_POST['tokenCSRF'] === $_SESSION['tokenCSRF']) {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
               // Le jeton anti-CSRF est valide, traiter les données du formulaire
               if (!empty($_POST['email'])) {
                 $userController->editEmail(htmlspecialchars($_POST['email']));
               }
             } else {
-              Toolbox::ajouterMessageAlerte("Une erreur est survenue, veuillez vous reconnecter", 'rouge');
+              Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
               unset($_SESSION['profil']);
               unset($_SESSION['tokenCSRF']);
               Toolbox::dataJson(false, "expired token");
@@ -305,7 +369,7 @@ try {
             break;
 
           case 'password':
-            if (isset($_POST['tokenCSRF']) && $_POST['tokenCSRF'] === $_SESSION['tokenCSRF']) {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
               if (!empty($_POST['ancienPassword']) && !empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
                 $ancienPassword = htmlspecialchars($_POST['ancienPassword']);
                 $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
@@ -313,7 +377,7 @@ try {
                 $userController->changePassword($ancienPassword, $nouveauPassword, $confirmPassword);
               }
             } else {
-              Toolbox::ajouterMessageAlerte("Une erreur est survenue, veuillez vous reconnecter", 'rouge');
+              Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
               unset($_SESSION['profil']);
               unset($_SESSION['tokenCSRF']);
               Toolbox::dataJson(false, "expired token");
@@ -323,7 +387,7 @@ try {
             break;
 
           case 'about':
-            if (isset($_POST['tokenCSRF']) && $_POST['tokenCSRF'] === $_SESSION['tokenCSRF']) {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
               if (!empty($_POST['guitare']) && !empty($_POST['emploi']) && !empty($_POST['ville'])) {
                 $guitare = htmlspecialchars($_POST['guitare']);
                 $emploi = htmlspecialchars($_POST['emploi']);
@@ -333,7 +397,7 @@ try {
                 throw new Exception("La page n'existe pas");
               }
             } else {
-              Toolbox::ajouterMessageAlerte("Une erreur est survenue, veuillez vous reconnecter", 'rouge');
+              Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
               unset($_SESSION['profil']);
               unset($_SESSION['tokenCSRF']);
               Toolbox::dataJson(false, "expired token");

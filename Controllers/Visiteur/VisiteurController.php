@@ -179,9 +179,10 @@ class VisiteurController extends MainController
                     //----------
                     "script" => "public/js/responseTopic.js",
                     "template" => "../Views/common/template.php",
-                    "categoryName" => $infosTopic->categoryName,
-                    "categorySlug" => $infosTopic->categorySlug,
-                    "categoryID" => $infosTopic->categoryID,
+                    "tokenCSRF" => $_SESSION["tokenCSRF"],
+                    // "categoryName" => $infosTopic->categoryName,
+                    // "categorySlug" => $infosTopic->categorySlug,
+                    // "categoryID" => $infosTopic->categoryID,
                     "infosTopic" => $infosTopic,
                     'messagesTopics' => $messagesTopics
                 ];
@@ -204,6 +205,8 @@ class VisiteurController extends MainController
             "template" => "../Views/common/template.php",
             "css" => "public/style/connexionStyle.css",
             "script" => "public/js/validFormPageLogin.js",
+            "tokenCSRF" => $_SESSION['tokenCSRF'],
+            "previousURL" => $_SERVER['HTTP_REFERER'],
         ];
         $this->genererPage($data_page);
     }
@@ -216,7 +219,8 @@ class VisiteurController extends MainController
             "view" => "../Views/Visiteur/viewInscription.php",
             "template" => "../Views/common/template.php",
             "css" => "public/style/inscriptionStyle.css",
-            "script" => "public/js/validFormInscription.js"
+            "script" => "public/js/validFormInscription.js",
+            "tokenCSRF" => $_SESSION['tokenCSRF']
         ];
         $this->genererPage($data_page);
     }
