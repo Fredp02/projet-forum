@@ -5,7 +5,9 @@
     "autoload": {
         "psr-4": {
             "Controllers\\": "Controllers/",
-            "Models\\": "Models/"
+            "Models\\": "Models/",
+            "Core\\": "Core/",
+            "Entities\\": "Entities/"
         }
     },
     "require": {

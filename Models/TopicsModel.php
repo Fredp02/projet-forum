@@ -1,9 +1,9 @@
 <?php
 
-namespace Models\Visiteur\Topics;
+namespace Models;
 
 use Exception;
-use Models\DbConnect;
+use Core\DbConnect;
 
 class TopicsModel extends DbConnect
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Models\Visiteur\Categorys;
+namespace Entities;
 
 class Categorys
 {

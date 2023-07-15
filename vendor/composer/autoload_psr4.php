@@ -10,5 +10,7 @@ return array(
     'Symfony\\Component\\VarDumper\\' => array($vendorDir . '/symfony/var-dumper'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Models\\' => array($baseDir . '/Models'),
+    'Entities\\' => array($baseDir . '/Entities'),
+    'Core\\' => array($baseDir . '/Core'),
     'Controllers\\' => array($baseDir . '/Controllers'),
 );

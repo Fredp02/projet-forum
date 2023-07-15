@@ -1,8 +1,8 @@
 <?php
 
-namespace Models\User;
+namespace Entities;
 
-class User
+class Users
 {
     private $userId;
     private $pseudo;

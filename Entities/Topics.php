@@ -1,8 +1,8 @@
 <?php
 
-namespace Models\User\Topic;
+namespace Entities;
 
-class Topic
+class Topics
 {
     private $topicID;
     private $topicTitle;

@@ -1,12 +1,34 @@
 <?php
 
-namespace Models\Visiteur\Messages;
+namespace Models;
 
 use Exception;
-use Models\DbConnect;
+use Core\DbConnect;
+use Entities\Messages;
 
 class MessagesModel extends DbConnect
 {
+    public function createMessage(Messages $message)
+    {
+        $messageText = $message->getMessageText();
+        $userID = $message->getUserID();
+        $topicID = $message->getTopicID();
+
+        $req = "INSERT INTO messages (messageText, userID, topicID) VALUES (:messageText, :userID, :topicID)";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":messageText", $messageText);
+        $sql->bindValue(":userID", $userID, \PDO::PARAM_INT);
+        $sql->bindValue(":topicID", $topicID, \PDO::PARAM_INT);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+
     public function getMessagesByTopic($topicID)
     {
         // Je souhaite obtenir la liste de tout les messages en fonction de topicID, ainsi que les informations relative à l'utilisateur à l'origine de chaque message (id, pseudo, avatar, ville)

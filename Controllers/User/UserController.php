@@ -3,18 +3,15 @@
 namespace Controllers\User;
 
 
-use LDAP\Result;
+
 use SplFileInfo;
-// use HTMLPurifier;
-use Models\User\User;
-use Models\User\UserModel;
-use Models\User\Message\MessageModel;
+use Entities\Users;
+use Models\UsersModel;
+use Models\MessagesModel;
 use Controllers\MainController;
-use Models\User\Message\Message;
 use Controllers\Services\Toolbox;
-use Controllers\Services\Securite;
-use Controllers\Visiteur\VisiteurController;
 use Controllers\Services\JWTService\JWTService;
+use Entities\Messages;
 
 include '../Controllers\Services\JWTService\configJWT.php';
 
@@ -23,16 +20,16 @@ class UserController extends MainController
 {
 
 
-    private $userModel;
+    private $usersModel;
     private $message; //getter-setter de l'entité messages
     private $messageModel;
     // private $user; //getter-setter de l'entité user
 
     public function __construct()
     {
-        $this->userModel = new UserModel();
-        $this->messageModel = new MessageModel();
-        $this->message = new Message();
+        $this->usersModel = new UsersModel();
+        $this->messageModel = new MessagesModel();
+        $this->message = new Messages();
         // $this->user = new User();
     }
 
@@ -46,9 +43,9 @@ class UserController extends MainController
 
          */
 
-        if ($this->userModel->verifLogin($pseudo, $password)) {
+        if ($this->usersModel->verifLogin($pseudo, $password)) {
 
-            $user = $this->userModel->getUserinfo($pseudo);
+            $user = $this->usersModel->getUserinfo($pseudo);
 
             if ($user->is_valid) {
 
@@ -112,7 +109,7 @@ class UserController extends MainController
 
     public function sendEmailPassForgot($email)
     {
-        $userInfos = $this->userModel->getUserBy('email', $email);
+        $userInfos = $this->usersModel->getUserBy('email', $email);
 
         if ($userInfos) {
             $userId = $userInfos->userID;
@@ -174,14 +171,15 @@ class UserController extends MainController
                 $payload = $jwt->getPayload($tokenToVerify);
                 $payload['userID'];
                 //ici on pourrait ajouter une couche de sécurité pour re-vérifier les champs nouveauPassword et confirmPassword
-                $infosUser = $this->userModel->getUserBy('userID', $payload['userID']);
+                $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
                 $pseudo = $infosUser->pseudo;
                 $userId = $infosUser->userID;
                 $created_at = $infosUser->userDate;
 
-                $user = new User($pseudo, $created_at, $userId);
+                // $user = new Users($pseudo, $created_at, $userId);
+                $user = new Users($pseudo, $created_at, $userId);
                 $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
-                $resultat = $this->userModel->updatePassword($user);
+                $resultat = $this->usersModel->updatePassword($user);
                 if ($resultat) {
                     Toolbox::ajouterMessageAlerte("Mot de passe réinitialisé avec succès", "vert");
                     header("Location: " . URL . "accueil");
@@ -215,9 +213,9 @@ class UserController extends MainController
         $regexpEmail = "/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/";
         $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
-        if ($this->userModel->getUserBy('pseudo', $pseudo)) {
+        if ($this->usersModel->getUserBy('pseudo', $pseudo)) {
             Toolbox::dataJson(false, "Pseudo déjà utilisé", 'pseudo');
-        } else if ($this->userModel->getUserBy('email', $email)) {
+        } else if ($this->usersModel->getUserBy('email', $email)) {
             Toolbox::dataJson(false, "Adresse email déjà utilisée", 'email');
 
             //ensuite j'effectue les mêmes vérifications javascript mais ici côté serveur pour ajouter une couche suplémentaire de sécurité, dans le cas où un utilisateur malveillant perce la sécurité javascript.
@@ -250,8 +248,7 @@ class UserController extends MainController
              * 
              * * dernière remarque, je passe l'id à null par défaut car j'instancie la classe User avant l'enregistrement en BDD, donc je ne connais pas à l'avance l'id. le construct prend par defaut "null". Par contre à une prochaine instanciation, lorsque le user sera déjà enregistré, on pourra passer en 3ème paramètre son identifiant, qui ne prend plus la valeur "null", mais celle passé en paramètre. 
              */
-            $user = new User($pseudo, Toolbox::creerDateActuelle());
-            // $user->setPseudo($pseudo);
+            $user = new Users($pseudo, Toolbox::creerDateActuelle());
             $user->setEmail($email);
             $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
             $user->setGuitare('Non renseigné');
@@ -259,9 +256,9 @@ class UserController extends MainController
             $user->setEmploi('Non renseigné');
             $user->setAvatar('avatarDefault.jpg');
 
-            $resultat = $this->userModel->inscription($user);
+            $resultat = $this->usersModel->inscription($user);
             if ($resultat) {
-                $userId = $this->userModel->lastInsertId();
+                $userId = $this->usersModel->lastInsertId();
                 $filePath = 'images/profils/' . $userId;
                 //Si ce dossier n'existe pas, il faut le créer
                 if (!file_exists($filePath)) {
@@ -302,7 +299,7 @@ class UserController extends MainController
              * * passer par une méthode du model pour récpérer les info du user en fonction de son ID, OU lors de la création du token, de passer dans le payload d'autres infomations : le pseudo et la date de création du compte. dans le cas, pas besoin de faire une requête sql.
              * *Donc au final je décide de faire au plus simple, je passe en paramètre l'id via la variable $payload['userID']
              */
-            if ($this->userModel->activatingUser($payload['userID'])) {
+            if ($this->usersModel->activatingUser($payload['userID'])) {
                 Toolbox::ajouterMessageAlerte("Votre compte a été validé avec succès, vous pouvez maintenant vous connecter", "vert");
             }
         } else {
@@ -329,7 +326,7 @@ class UserController extends MainController
     }
     public function returnToken($userId)
     {
-        $user = $this->userModel->getUserBy('userID', $userId);
+        $user = $this->usersModel->getUserBy('userID', $userId);
         //si le user existe et qu'il n'est pas encore valide
         if ($user && !$user->isValid) {
 
@@ -357,7 +354,7 @@ class UserController extends MainController
     {
         $tokenCSRF = $_SESSION["tokenCSRF"];
         $pseudo = $_SESSION['profil']['pseudo'];
-        $user = $this->userModel->getUserinfo($pseudo);
+        $user = $this->usersModel->getUserinfo($pseudo);
 
         $userDatas = [
             'userID' => $user->userID,
@@ -389,7 +386,7 @@ class UserController extends MainController
     public function datasFormProfil()
     {
         $pseudo = $_SESSION["profil"]["pseudo"];
-        $user = $this->userModel->getUserinfo($pseudo);
+        $user = $this->usersModel->getUserinfo($pseudo);
 
         $userDatasForm = [
             'email' => $user->email,
@@ -452,7 +449,7 @@ class UserController extends MainController
         }
 
         //si l'image respecte les conditions ...
-        $userData = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
+        $userData = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
 
         $userId = $userData->userID;
         $ancienAvatar = $userData->avatar;
@@ -464,7 +461,7 @@ class UserController extends MainController
         $nouvelAvatar = uniqid($userId, true) . '.' . $extension;
 
         //on instancie l'objet user
-        $user = new User($userData->pseudo, $userData->userDate, $userId);
+        $user = new Users($userData->pseudo, $userData->userDate, $userId);
 
         //on lui attribue le nom du nouvel avatar
         $user->setAvatar($nouvelAvatar);
@@ -476,7 +473,7 @@ class UserController extends MainController
         if ($moveAvatar) {
 
             //si enregistrement en bdd du nouvel avatar ok
-            if ($this->userModel->modifAvatarProfil($user)) {
+            if ($this->usersModel->modifAvatarProfil($user)) {
                 //on supprime l'ancien avatar
                 unlink($filePath . DIRECTORY_SEPARATOR . $ancienAvatar);
                 //on met à jour la session avec le nouvel avatar
@@ -517,7 +514,7 @@ class UserController extends MainController
         // $token = $_SESSION['tokenCSRF'];
         // $jwt = new JWTService();
         // if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
-        $user = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
+        $user = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
         $userId = $user->userID;
         $pseudo = $user->pseudo;
 
@@ -555,14 +552,14 @@ class UserController extends MainController
              * *je pourrais passer par la class User et faire en sorte que la méthode "editEmailUser()" utilise un getter pour récupérer l'id.
              * *Pour la vérification du token, j'ai proceder autrement, ici, je vais passer par la classe User afin d'exploiter toutes les possibilités.
              */
-            $infosUser = $this->userModel->getUserBy('userID', $payload['userID']);
+            $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
             $pseudo = $infosUser->pseudo;
             $created_at = $infosUser->userDate;
             $userId = $infosUser->userID;
 
-            $user = new User($pseudo, $created_at, $userId);
+            $user = new Users($pseudo, $created_at, $userId);
             $user->setEmail($payload['email']);
-            if ($this->userModel->editEmailUser($user)) {
+            if ($this->usersModel->editEmailUser($user)) {
                 Toolbox::ajouterMessageAlerte("Adresse email modifiée avec succès", "vert");
             }
         } else {
@@ -580,7 +577,7 @@ class UserController extends MainController
         $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
         $pseudo = $_SESSION['profil']['pseudo'];
-        if ($this->userModel->verifLogin($pseudo, $ancienPassword)) {
+        if ($this->usersModel->verifLogin($pseudo, $ancienPassword)) {
 
             if (!preg_match($regexpPassword, $nouveauPassword)) {
                 Toolbox::ajouterMessageAlerte("Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule", 'rouge');
@@ -592,10 +589,10 @@ class UserController extends MainController
                 header("Location: " . URL . "profil");
                 exit;
             }
-            $userData = $this->userModel->getUserinfo($pseudo);
-            $user = new User($userData->pseudo, $userData->userDate, $userData->userID);
+            $userData = $this->usersModel->getUserinfo($pseudo);
+            $user = new Users($userData->pseudo, $userData->userDate, $userData->userID);
             $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
-            $resultat = $this->userModel->updatePassword($user);
+            $resultat = $this->usersModel->updatePassword($user);
             if ($resultat) {
                 Toolbox::dataJson(true, "Mot de passe modifié avec succès");
                 exit;
@@ -622,13 +619,13 @@ class UserController extends MainController
         // $jwt = new JWTService();
         // if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
 
-        $userData = $this->userModel->getUserinfo($_SESSION['profil']['pseudo']);
-        $user = new User($userData->pseudo, $userData->userDate, $userData->userID);
+        $userData = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
+        $user = new Users($userData->pseudo, $userData->userDate, $userData->userID);
         $user->setGuitare($guitare);
         $user->setEmploi($emploi);
         $user->setVille($ville);
 
-        $resultat = $this->userModel->UpdateAboutUser($user);
+        $resultat = $this->usersModel->UpdateAboutUser($user);
         if ($resultat) {
             //! voir méthode UpdateAboutUser() pour plus d'info
             $message = $resultat === 2 ? "Mise à jour des informations réalisées avec succès" : "Aucune modifications effectuées : valeur identique";
@@ -672,11 +669,11 @@ class UserController extends MainController
     public function validerSupprimerCompte()
     {
         $userId = $_SESSION['profil']['userID'];
-        $user = $this->userModel->getUserBy('userID', $userId);
+        $user = $this->usersModel->getUserBy('userID', $userId);
         $imageAvatar = 'images/profils/' . $userId . '/' . $user->avatar;
         unlink($imageAvatar);
         rmdir('images/profils/' . $userId);
-        if ($this->userModel->supprimerUser($userId)) {
+        if ($this->usersModel->supprimerUser($userId)) {
             Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
             unset($_SESSION['profil']);
         } else {

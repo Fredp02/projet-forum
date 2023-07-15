@@ -1,8 +1,8 @@
 <?php
 
-namespace Models\User\Message;
+namespace Entities;
 
-class Message
+class Messages
 {
     private $messageID;
     private $messageText;

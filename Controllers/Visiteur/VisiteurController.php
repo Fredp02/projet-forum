@@ -4,9 +4,9 @@ namespace Controllers\Visiteur;
 
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
-use Models\Visiteur\Topics\TopicsModel;
-use Models\Visiteur\Messages\MessagesModel;
-use Models\Visiteur\Categorys\CategorysModel;
+use Models\MessagesModel;
+use Models\TopicsModel;
+use Models\CategorysModel;
 
 class VisiteurController extends MainController
 {
@@ -224,21 +224,6 @@ class VisiteurController extends MainController
         ];
         $this->genererPage($data_page);
     }
-    public function profil()
-    {
-        $data_page = [
-            "pageDescription" => "Cette page affiche le détail de votre profil sur Guitare Forum",
-            "pageTitle" => "Mon profil",
-            "view" => "../Views/Visiteur/viewProfil.php",
-            "template" => "Views/common/template.php",
-            "css" => "public/style/profilStyle.css",
-            // "script" => "public/js/validFormInscription.js"
-        ];
-        $this->genererPage($data_page);
-    }
-
-
-
 
     public function pageErreur($msg)
     {

@@ -1,16 +1,18 @@
 <?php
 
-namespace Models\User;
+namespace Models;
 
+use Entities\Users;
 use PDO;
 use Exception;
-use Models\DbConnect;
+
+use Core\DbConnect;
 
 
 // require 'vendor/autoload.php';
 // require_once 'Models/DbConnect.php';
 
-class UserModel extends DbConnect
+class UsersModel extends DbConnect
 {
     // private $user;
 
@@ -101,7 +103,7 @@ class UserModel extends DbConnect
         // Récupération du résultat sous forme d'un tableau associatif
         // $result = $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function inscription(User $user)
+    public function inscription(Users $user)
     {
         $pseudo = $user->getPseudo();
         $email = $user->getEmail();
@@ -160,7 +162,7 @@ class UserModel extends DbConnect
     //         die('Erreur : ' . $e->getMessage());
     //     }
     // }
-    public function modifAvatarProfil(User $user)
+    public function modifAvatarProfil(Users $user)
     {
         $userId = $user->getUserId();
         $avatar = $user->getAvatar();
@@ -177,7 +179,7 @@ class UserModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
-    public function UpdateAboutUser(User $user)
+    public function UpdateAboutUser(Users $user)
     {
         $userId = $user->getUserId();
         $userGuitare = $user->getGuitare();
@@ -206,7 +208,7 @@ class UserModel extends DbConnect
         }
     }
 
-    public function updatePassword(User $user)
+    public function updatePassword(Users $user)
     {
         $userId = $user->getUserId();
         $userPassword = $user->getPassword();
@@ -223,7 +225,7 @@ class UserModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
-    public function editEmailUser(User $user)
+    public function editEmailUser(Users $user)
     {
         $userId = $user->getUserId();
         $nouveauEmail = $user->getEmail();

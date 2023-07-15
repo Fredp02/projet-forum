@@ -26,8 +26,13 @@ class ComposerStaticInit11f621ce1c12c1b0501fdbb956224972
         array (
             'Models\\' => 7,
         ),
+        'E' => 
+        array (
+            'Entities\\' => 9,
+        ),
         'C' => 
         array (
+            'Core\\' => 5,
             'Controllers\\' => 12,
         ),
     );
@@ -48,6 +53,14 @@ class ComposerStaticInit11f621ce1c12c1b0501fdbb956224972
         'Models\\' => 
         array (
             0 => __DIR__ . '/../..' . '/Models',
+        ),
+        'Entities\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/Entities',
+        ),
+        'Core\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/Core',
         ),
         'Controllers\\' => 
         array (

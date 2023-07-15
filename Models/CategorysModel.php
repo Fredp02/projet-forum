@@ -1,14 +1,15 @@
 <?php
 
-namespace Models\Visiteur\Categorys;
+namespace Models;
 
 use PDO;
 use Exception;
-use Models\DbConnect;
+use Core\DbConnect;
+
 
 class CategorysModel extends DbConnect
 {
-    // //!1
+
     public function getCategorysList()
     {
 
