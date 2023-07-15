@@ -10,7 +10,7 @@ const elAlertAccept = document.querySelector(".alertAccept");
 const elBtnInscription = document.querySelector(".btnInscription");
 const elForm = document.querySelector(".formInscription");
 const elMessageInscription = document.querySelector(".messageInscription");
-// const regexMail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+const regexMail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
 const regexPseudo = /^[a-zA-Z0-9éèêëàâäôöûüçî ]+$/;
 const regexPassword = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/;
 

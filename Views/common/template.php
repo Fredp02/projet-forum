@@ -100,12 +100,13 @@ use Controllers\Services\Securite; ?>
                             required />
                     </div>
                     <div>
-                        <input type="hidden" class="tokenCSRF" name="tokenCSRF" value="<?=$_SESSION['tokenCSRF'];?>" />
+                        <input type="hidden" class="tokenCSRF" name="tokenCSRF"
+                            value="<?= $_SESSION['tokenCSRF']; ?>" />
                     </div>
 
                     <button class="btnLogin">Connexion</button>
                 </form>
-                <a href="forgot" class="linkForgot">Mot de passe oublié ?</a>
+                <a href="<?= URL; ?>forgot" class="linkForgot">Mot de passe oublié ?</a>
 
                 <div class="footerLogin">
 

@@ -113,11 +113,11 @@ class UsersModel extends DbConnect
         $emploi = $user->getEmploi();
         $avatar = $user->getAvatar();
         $date = $user->getUserDate();
-        $req = "INSERT INTO users (pseudo, email, created_at_user, password, guitare, ville, emploi, avatar) VALUES (:pseudo, :email, :date, :password, :guitare, :ville, :emploi, :avatar)";
+        $req = "INSERT INTO users (pseudo, email, userDate, password, guitare, ville, emploi, avatar) VALUES (:pseudo, :email, :userDate, :password, :guitare, :ville, :emploi, :avatar)";
         $sql = $this->getBdd()->prepare($req);
         $sql->bindValue(":pseudo", $pseudo);
         $sql->bindValue(":email", $email);
-        $sql->bindValue(":date", $date);
+        $sql->bindValue(":userDate", $date);
         $sql->bindValue(":password", $passwordhash);
         $sql->bindValue(":guitare", $guitare);
         $sql->bindValue(":ville", $ville);

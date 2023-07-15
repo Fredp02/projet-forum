@@ -40,7 +40,7 @@ class Router
                 $page = $url[1];
                 // dump($page);
             }
-        
+
             switch ($page) {
 
                 case "accueil":
@@ -59,17 +59,6 @@ class Router
                         $this->visiteurController->accueil();
                     }
                     break;
-
-
-                    // case "connexion":
-                    //   if (!Securite::isConnected()) {
-                    //     $this->visiteurController->connexionView();
-                    //   } else {
-                    //     header("Location: " . URL);
-                    //     exit;
-                    //   }
-
-                    //   break;
                 case "sujet":
                     if (isset($url[2]) && !empty($url[2])) {
                         $topicUrl = htmlspecialchars($url[2]);

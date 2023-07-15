@@ -17,7 +17,7 @@ const elBtnEditEmail = document.querySelector('.btnEditEmail');
 const elCancelEditEmail = document.querySelector('.cancelEditEmail');
 const elInputEmail = document.querySelector('.inputEmail');
 const elFormEmail = document.querySelector('.formEmail');
-// const regexMail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+const regexMail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
 
 //password
 const elDivPassword = document.querySelector('.divPassword');
