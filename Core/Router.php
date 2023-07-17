@@ -8,6 +8,7 @@ use Controllers\LoginController;
 use Controllers\TopicController;
 use Controllers\LogoutController;
 use Controllers\Services\Toolbox;
+use Controllers\AccountController;
 use Controllers\Services\Securite;
 use Controllers\SousCatController;
 use Controllers\RegisterController;
@@ -26,6 +27,7 @@ class Router
     private object $logoutController;
     private object $forgotPassController;
     private object $registerController;
+    private object $accountController;
 
     public function __construct()
     {
@@ -38,6 +40,7 @@ class Router
         $this->logoutController = new LogoutController();
         $this->forgotPassController = new ForgotPassController();
         $this->registerController = new RegisterController();
+        $this->accountController = new AccountController();
     }
     public function routes()
     {
@@ -160,7 +163,24 @@ class Router
 
 
                 case  "account":
+                    if (isset($url[2]) && !empty($url[2])) {
+                        $this->accountController->account($url[2]);
+                    } else {
+                        throw new Exception("La page n'existe pas");
+                    }
                     break;
+                    /**
+                     * en second paramètre de account j'aurais $url2 qui contiendra un chaine de caractère
+                     * 
+                     * account/profil -> affiche le profil
+                     * account/datasFormProfil (données envoyées à la page profil)
+                     * account/editAvatar
+                     * account/editEmail
+                     * account/editPassword
+                     * account/editAbout
+                     * account/viewDelete
+                     * account/validationDelete
+                     */
 
                 case "compte":
                     if (!Securite::isConnected()) {
