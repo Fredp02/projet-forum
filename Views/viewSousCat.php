@@ -42,7 +42,7 @@ use Controllers\Services\Toolbox;
                         </div>
                         <div class="infosTopic">
                             <!-- Je profite du foreach de cette page pour construire les urls de chaque topics -->
-                            <?php $topicUrl =  URL . 'sujet/' . $topic->topicSlug . '.' . $topic->topicID; ?>
+                            <?php $topicUrl =  URL . 'topic/' . $topic->topicSlug . '.' . $topic->topicID; ?>
                             <div class="topicName"><a href="<?= $topicUrl; ?>"><?= $topic->topicTitle; ?></a>
                             </div>
                             <div class="topicAuthor"><?= $topic->topicCreator; ?> -

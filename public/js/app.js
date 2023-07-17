@@ -32,7 +32,7 @@ if (elBtnLogin) {
             const formData = new FormData(elFormLogin);
             try {
                 // envoi des données au serveur avec la méthode POST
-                const response = await fetch("/projet-forum/validationLogin", {
+                const response = await fetch("/projet-forum/login", {
                     method: "POST",
                     body: formData,
                 });
@@ -93,7 +93,7 @@ function updateDom(resultat) {
     divFooterLogin.classList.add("footerLogin");
     const lienlogout = document.createElement('a');
     lienlogout.classList.add("logout");
-    lienlogout.setAttribute("href", "/projet-forum/deconnexion");
+    lienlogout.setAttribute("href", "/projet-forum/logout");
     lienlogout.textContent = "Déconnexion";
     divFooterLogin.append(lienlogout);
 
@@ -108,7 +108,7 @@ function updateDom(resultat) {
 
     const lienNavlogout = document.createElement('a');
     lienNavlogout.classList.add("logout");
-    lienNavlogout.setAttribute("href", "/projet-forum/deconnexion");
+    lienNavlogout.setAttribute("href", "/projet-forum/logout");
     lienNavlogout.textContent = "Déconnexion";
     elHeaderLinks.append(lienNavProfil, lienNavlogout);
 

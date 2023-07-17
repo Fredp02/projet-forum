@@ -33,180 +33,127 @@ class UserController extends MainController
         // $this->user = new User();
     }
 
-    public function validationLogin($pseudo, $password, $previousURL)
-    {
-        /**
-         * Les données que vous stockez dans la session sont relativement petites, statiques et fréquemment utilisées, ce qui justifie de les stocker dans la session. Cependant, les données sont aussi modifiables par l’utilisateur, ce qui implique de les mettre à jour dans la session et dans la base de données. De plus, les données sont liées à d’autres informations, comme les messages du forum, ce qui peut rendre la requête plus complexe ou coûteuse.
-         * 
-         * Dans ce cas, vous pouvez utiliser une combinaison de la session, de la base de données et du cache pour optimiser les performances de votre application. Par exemple, vous pouvez stocker dans la session les données qui ne changent pas souvent ou qui sont essentielles pour l’authentification, comme l’id ou le pseudo de l’utilisateur. Vous pouvez stocker dans la base de données les données qui changent souvent ou qui sont sensibles, comme l’email ou le mot de passe de l’utilisateur. Vous pouvez utiliser un cache pour stocker temporairement les données qui sont complexes ou coûteuses à récupérer depuis la base de données, comme les messages du forum liés à l’utilisateur.
 
-
-         */
-
-        if ($this->usersModel->verifLogin($pseudo, $password)) {
-
-            $user = $this->usersModel->getUserinfo($pseudo);
-
-            if ($user->is_valid) {
-
-                //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur, avec des sessions qui pourrait contenir trop d'info. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
-                $filepathAvatar = $user->userID . '/' . $user->avatar;
-                $_SESSION['profil'] = [
-                    'userID' => $user->userID,
-                    'pseudo' => $user->pseudo,
-                    'filepathAvatar' => $filepathAvatar,
-                    'messagesCount' => $user->messagesCount,
-                    'userGuitare' => $user->guitare,
-                ];
-
-                // $tokenCSRF = $this->createToken($user->userID);
-                // $_SESSION['tokenCSRF'] = $tokenCSRF;
-
-
-
-                Toolbox::dataJson(
-                    true,
-                    "Connexion OK",
-                    $data = [
-                        'pseudo' => $user->pseudo,
-                        'filepathAvatar' => $filepathAvatar,
-                        'id' => $user->userID,
-                        'previousURL' => $previousURL
-                    ]
-                );
-            } else {
-                $userId =  $user->userID;
-                $message = "Compte non validé ! Cliquez sur <a href='" . URL . "returnToken/" . $userId . "'>ce lien</a> pour renvoyer un mail de validation.";
-                Toolbox::dataJson(false, $message);
-            }
-        } else {
-            $data = [
-                'pseudo' => $pseudo,
-                'password' => $password
-            ];
-            Toolbox::dataJson(false, "Identifiants incorrects", $data);
-        }
-    }
 
     /**
      * le user clic sur le bouton envoyer.
      * j'appel la route sendEmailPassForgot, et je lui envoie un email avec un nouveau template email, et un liens vers une page pour réinitilisiez son mot de passe. dans ce lien, il y aura un token jwt pour stocker son id et pseudo
      */
-    public function forgotView()
-    {
+    // public function forgotView()
+    // {
 
-        $data_page = [
-            "pageDescription" => "Page : j'ai oublié mon de mot de passe",
-            "pageTitle" => "Page pour réinitialiser le mot de passe",
-            "view" => "../Views/Utilisateur/viewForgot.php",
-            "template" => "../Views/common/template.php",
-            "css" => "public/style/forgotStyle.css",
-            "script" => "public/js/forgot.js",
-            "tokenCSRF" => $_SESSION["tokenCSRF"]
-        ];
-        $this->genererPage($data_page);
-    }
+    //     $data_page = [
+    //         "pageDescription" => "Page : j'ai oublié mon de mot de passe",
+    //         "pageTitle" => "Page pour réinitialiser le mot de passe",
+    //         "view" => "../Views/Utilisateur/viewForgot.php",
+    //         "template" => "../Views/common/template.php",
+    //         "css" => "public/style/forgotStyle.css",
+    //         "script" => "public/js/forgot.js",
+    //         "tokenCSRF" => $_SESSION["tokenCSRF"]
+    //     ];
+    //     $this->render($data_page);
+    // }
 
-    public function sendEmailPassForgot($email)
-    {
-        $userInfos = $this->usersModel->getUserBy('email', $email);
+    // public function sendEmailPassForgot($email)
+    // {
+    //     $userInfos = $this->usersModel->getUserBy('email', $email);
 
-        if ($userInfos) {
-            $userId = $userInfos->userID;
-            $pseudo = $userInfos->pseudo;
-            $cheminTemplate = '../Views/templateMail/templateForgotPassword.html';
-            $token = $this->createToken($userId, $pseudo, $email);
-            $route = URL . "reinitialiserPassword/" . $token;
-            $sujet = 'Réinitialisation du mot de passe sur Guitare Forum';
+    //     if ($userInfos) {
+    //         $userId = $userInfos->userID;
+    //         $pseudo = $userInfos->pseudo;
+    //         $cheminTemplate = '../Views/templateMail/templateForgotPassword.html';
+    //         $token = $this->createToken($userId, $pseudo, $email);
+    //         $route = URL . "reinitialiserPassword/" . $token;
+    //         $sujet = 'Réinitialisation du mot de passe sur Guitare Forum';
 
-            if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
-                $message = "Un mail a été envoyé sur votre boite mail afin de réinitialiser votre mot de passe !";
-                Toolbox::ajouterMessageAlerte($message, 'vert');
-                Toolbox::dataJson(true, "email envoyé");
-            } else {
-                $message = "Une erreur est survenue, veuillez contacter l'administrateur";
-                Toolbox::dataJson(false, $message);
-            }
-        } else {
-            Toolbox::dataJson(false, "Adresse email inconnue");
-            // Toolbox::ajouterMessageAlerte("Adresse email inconnue", "rouge");
-        }
-    }
+    //         if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
+    //             $message = "Un mail a été envoyé sur votre boite mail afin de réinitialiser votre mot de passe !";
+    //             Toolbox::ajouterMessageAlerte($message, 'vert');
+    //             Toolbox::dataJson(true, "email envoyé");
+    //         } else {
+    //             $message = "Une erreur est survenue, veuillez contacter l'administrateur";
+    //             Toolbox::dataJson(false, $message);
+    //         }
+    //     } else {
+    //         Toolbox::dataJson(false, "Adresse email inconnue");
+    //         // Toolbox::ajouterMessageAlerte("Adresse email inconnue", "rouge");
+    //     }
+    // }
 
 
     //page lorsqu'on clique sur le lien de l'email reçu, avec le token en GET. C'est un formulaire.
-    public function reinitialiserPassword($jwt)
-    {
-        // $jwt = new JWTService();
-        // if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
-        //     $payload = $jwt->getPayload($tokenToVerify);
-        //     $userId = $payload['userID'];
-        // }
-        $data_page = [
-            "pageDescription" => "Page de réinitialisation de mot de passe",
-            "pageTitle" => "Réinitialiser mot de passe",
-            "view" => "../Views/Utilisateur/viewResetPassword.php",
-            "template" => "../Views/common/template.php",
-            "css" => "public/style/resetPasswordStyle.css",
-            "script" => "public/js/validFormResetPassword.js",
-            'tokenCSRF' => $_SESSION['tokenCSRF'],
-            "jwt" => $jwt
-        ];
-        $this->genererPage($data_page);
-    }
-    public function validationResetPassword($tokenToVerify, $nouveauPassword, $confirmPassword)
-    {
-        $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
+    // public function reinitialiserPassword($jwt)
+    // {
+    //     // $jwt = new JWTService();
+    //     // if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
+    //     //     $payload = $jwt->getPayload($tokenToVerify);
+    //     //     $userId = $payload['userID'];
+    //     // }
+    //     $data_page = [
+    //         "pageDescription" => "Page de réinitialisation de mot de passe",
+    //         "pageTitle" => "Réinitialiser mot de passe",
+    //         "view" => "../Views/Utilisateur/viewResetPassword.php",
+    //         "template" => "../Views/common/template.php",
+    //         "css" => "public/style/resetPasswordStyle.css",
+    //         "script" => "public/js/validFormResetPassword.js",
+    //         'tokenCSRF' => $_SESSION['tokenCSRF'],
+    //         "jwt" => $jwt
+    //     ];
+    //     $this->render($data_page);
+    // }
+    // public function validationResetPassword($tokenToVerify, $nouveauPassword, $confirmPassword)
+    // {
+    //     $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
 
 
-        $jwt = new JWTService();
-        if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
-            $page = 'reinitialiserPassword/' . $tokenToVerify;
-            if (!preg_match($regexpPassword, $nouveauPassword)) {
-                $this->messageAlert("Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule", $page);
-            } else if ($nouveauPassword !== $confirmPassword) {
-                $this->messageAlert("Les mots de passe ne sont pas identiques", $page);
-            } else {
-                $payload = $jwt->getPayload($tokenToVerify);
-                $payload['userID'];
-                //ici on pourrait ajouter une couche de sécurité pour re-vérifier les champs nouveauPassword et confirmPassword
-                $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
-                $pseudo = $infosUser->pseudo;
-                $userId = $infosUser->userID;
-                $created_at = $infosUser->userDate;
+    //     $jwt = new JWTService();
+    //     if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
+    //         $page = 'reinitialiserPassword/' . $tokenToVerify;
+    //         if (!preg_match($regexpPassword, $nouveauPassword)) {
+    //             $this->messageAlert("Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule", $page);
+    //         } else if ($nouveauPassword !== $confirmPassword) {
+    //             $this->messageAlert("Les mots de passe ne sont pas identiques", $page);
+    //         } else {
+    //             $payload = $jwt->getPayload($tokenToVerify);
+    //             $payload['userID'];
+    //             //ici on pourrait ajouter une couche de sécurité pour re-vérifier les champs nouveauPassword et confirmPassword
+    //             $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
+    //             $pseudo = $infosUser->pseudo;
+    //             $userId = $infosUser->userID;
+    //             $created_at = $infosUser->userDate;
 
-                // $user = new Users($pseudo, $created_at, $userId);
-                $user = new Users($pseudo, $created_at, $userId);
-                $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
-                $resultat = $this->usersModel->updatePassword($user);
-                if ($resultat) {
-                    Toolbox::ajouterMessageAlerte("Mot de passe réinitialisé avec succès", "vert");
-                    header("Location: " . URL . "accueil");
-                    exit;
-                } else {
-                    Toolbox::ajouterMessageAlerte("Une erreur est survenue", "rouge");
-                    header("Location: " . URL . "accueil");
-                    exit;
-                }
-            }
-        } else {
-            Toolbox::ajouterMessageAlerte("Token invalide ou expiré", "rouge");
-            header("Location: " . URL . "accueil");
-            exit;
-        }
-    }
+    //             // $user = new Users($pseudo, $created_at, $userId);
+    //             $user = new Users($pseudo, $created_at, $userId);
+    //             $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
+    //             $resultat = $this->usersModel->updatePassword($user);
+    //             if ($resultat) {
+    //                 Toolbox::ajouterMessageAlerte("Mot de passe réinitialisé avec succès", "vert");
+    //                 header("Location: " . URL . "accueil");
+    //                 exit;
+    //             } else {
+    //                 Toolbox::ajouterMessageAlerte("Une erreur est survenue", "rouge");
+    //                 header("Location: " . URL . "accueil");
+    //                 exit;
+    //             }
+    //         }
+    //     } else {
+    //         Toolbox::ajouterMessageAlerte("Token invalide ou expiré", "rouge");
+    //         header("Location: " . URL . "accueil");
+    //         exit;
+    //     }
+    // }
 
-    public function logout()
-    {
+    // public function logout()
+    // {
 
-        unset($_SESSION['profil']);
-        unset($_SESSION['tokenCSRF']);
-        session_destroy();
-        // setcookie(Securite::COOKIE_NAME, "", time() - 3600);
-        header("Location: " . URL . "accueil");
-        exit;
-    }
+    //     unset($_SESSION['profil']);
+    //     unset($_SESSION['tokenCSRF']);
+    //     session_destroy();
+    //     // setcookie(Securite::COOKIE_NAME, "", time() - 3600);
+    //     header("Location: " . URL . "accueil");
+    //     exit;
+    // }
     public function validationInscription($pseudo, $email, $password, $confirmPassword)
     {
         $regexpPseudo = "/^[a-zA-Z0-9éèêëàâäôöûüçî ]+$/";
@@ -307,6 +254,8 @@ class UserController extends MainController
         }
     }
 
+    //! ATTENTION méthode utilisées forgotPassController : 
+    //! serait judicieux de la mettre dans la toolbox
     private function createToken($userId, $pseudo = null, $email = null)
     {
         $header = [
@@ -380,7 +329,7 @@ class UserController extends MainController
             'tokenCSRF' => $tokenCSRF,
             "userDatas" => $userDatas
         ];
-        $this->genererPage($data_page);
+        $this->render($data_page);
     }
 
     public function datasFormProfil()
@@ -664,7 +613,7 @@ class UserController extends MainController
             // "script" => "public/js/profil.js",
 
         ];
-        $this->genererPage($data_page);
+        $this->render($data_page);
     }
     public function validerSupprimerCompte()
     {
@@ -788,8 +737,64 @@ class UserController extends MainController
             "script" => "public/js/validFormResetPassword.js",
             // "jwt" => $jwt
         ];
-        $this->genererPage($data_page);
+        $this->render($data_page);
     }
+
+
+    // public function validationLogin($pseudo, $password, $previousURL)
+    // {
+    //     /**
+    //      * Les données que vous stockez dans la session sont relativement petites, statiques et fréquemment utilisées, ce qui justifie de les stocker dans la session. Cependant, les données sont aussi modifiables par l’utilisateur, ce qui implique de les mettre à jour dans la session et dans la base de données. De plus, les données sont liées à d’autres informations, comme les messages du forum, ce qui peut rendre la requête plus complexe ou coûteuse.
+    //      * 
+    //      * Dans ce cas, vous pouvez utiliser une combinaison de la session, de la base de données et du cache pour optimiser les performances de votre application. Par exemple, vous pouvez stocker dans la session les données qui ne changent pas souvent ou qui sont essentielles pour l’authentification, comme l’id ou le pseudo de l’utilisateur. Vous pouvez stocker dans la base de données les données qui changent souvent ou qui sont sensibles, comme l’email ou le mot de passe de l’utilisateur. Vous pouvez utiliser un cache pour stocker temporairement les données qui sont complexes ou coûteuses à récupérer depuis la base de données, comme les messages du forum liés à l’utilisateur.
+
+
+    //      */
+
+    //     if ($this->usersModel->verifLogin($pseudo, $password)) {
+
+    //         $user = $this->usersModel->getUserinfo($pseudo);
+
+    //         if ($user->is_valid) {
+
+    //             //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur, avec des sessions qui pourrait contenir trop d'info. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
+    //             $filepathAvatar = $user->userID . '/' . $user->avatar;
+    //             $_SESSION['profil'] = [
+    //                 'userID' => $user->userID,
+    //                 'pseudo' => $user->pseudo,
+    //                 'filepathAvatar' => $filepathAvatar,
+    //                 'messagesCount' => $user->messagesCount,
+    //                 'userGuitare' => $user->guitare,
+    //             ];
+
+    //             // $tokenCSRF = $this->createToken($user->userID);
+    //             // $_SESSION['tokenCSRF'] = $tokenCSRF;
+
+
+
+    //             Toolbox::dataJson(
+    //                 true,
+    //                 "Connexion OK",
+    //                 $data = [
+    //                     'pseudo' => $user->pseudo,
+    //                     'filepathAvatar' => $filepathAvatar,
+    //                     'id' => $user->userID,
+    //                     'previousURL' => $previousURL
+    //                 ]
+    //             );
+    //         } else {
+    //             $userId =  $user->userID;
+    //             $message = "Compte non validé ! Cliquez sur <a href='" . URL . "returnToken/" . $userId . "'>ce lien</a> pour renvoyer un mail de validation.";
+    //             Toolbox::dataJson(false, $message);
+    //         }
+    //     } else {
+    //         $data = [
+    //             'pseudo' => $pseudo,
+    //             'password' => $password
+    //         ];
+    //         Toolbox::dataJson(false, "Identifiants incorrects", $data);
+    //     }
+    // }
 }
 
 

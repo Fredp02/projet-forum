@@ -3,8 +3,14 @@
 namespace Core;
 
 use Exception;
+use Controllers\HomeController;
+use Controllers\LoginController;
+use Controllers\TopicController;
+use Controllers\LogoutController;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
+use Controllers\SousCatController;
+use Controller\ForgotPassController;
 use Controllers\User\UserController;
 use Controllers\Visiteur\VisiteurController;
 
@@ -12,18 +18,30 @@ class Router
 {
     private object $visiteurController;
     private object $userController;
+    private object $homeController;
+    private object $sousCatController;
+    private object $topicController;
+    private object $loginController;
+    private object $logoutController;
+    private object $forgotPassController;
 
     public function __construct()
     {
         $this->visiteurController = new VisiteurController();
         $this->userController = new UserController();
+        $this->homeController = new HomeController();
+        $this->sousCatController = new SousCatController();
+        $this->topicController = new TopicController();
+        $this->loginController = new LoginController();
+        $this->logoutController = new LogoutController();
+        $this->forgotPassController = new ForgotPassController();
     }
     public function routes()
     {
         try {
             if (empty($_GET['page'])) {
                 // dump('le get est vide');
-                $page = "accueil";
+                $page = "home";
             } else {
 
                 /**
@@ -32,7 +50,7 @@ class Router
                  * On fait donc un "explode" pour avoir ce tableau : 
                  * ['public''materiel', 'guitare-classique"]
                  * [   0    ,     1    ,       2   ]
-                 * ['public''accueil']
+                 * ['public''home']
                  * [   0    ,    1  ]
                  */
                 $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
@@ -43,147 +61,155 @@ class Router
 
             switch ($page) {
 
-                case "accueil":
-
-                    /**
-                     * dans le cas ou le $url[2] vaut xxxxxx.4 alors ce sera une liste de topics à afficher en fonction de l'ID de la sous-catégorie. SINON ce sera la page d'accueil à afficher
-                     * URL[2] se présente sous cette forme : "guitare-classique.4"
-                     * "4" correspond à l'id de la sous catégorie.
-                     */
-
-                    if (isset($url[2]) && !empty($url[2])) {
-                        $sousCategoryURL = htmlspecialchars($url[2]);
-                        $this->visiteurController->displayTopicsList($sousCategoryURL);
-                    } else {
-                        //sinon par defaut c'est la page d'accueil avec la liste des catégories et sous catégories associées.
-                        $this->visiteurController->accueil();
-                    }
+                case "home":
+                    $this->homeController->home();
                     break;
-                case "sujet":
+                case "sousCat":
                     if (isset($url[2]) && !empty($url[2])) {
-                        $topicUrl = htmlspecialchars($url[2]);
-                        $this->visiteurController->displayTopic($topicUrl);
+                        $this->sousCatController->sousCat($url[2]);
                     } else {
                         throw new Exception("La page n'existe pas");
                     }
                     break;
-                case  "connexion":
-                    if (!Securite::isConnected()) {
-                        $this->visiteurController->connexionView();
+                case "topic":
+                    if (isset($url[2]) && !empty($url[2])) {
+                        $this->topicController->topic($url[2]);
                     } else {
-                        header("Location: " . URL);
-                        exit;
+                        throw new Exception("La page n'existe pas");
                     }
                     break;
-                case "validationLogin":
-                    if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-
-                        if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
-                            $pseudo = htmlspecialchars($_POST['pseudo']);
-                            $password = htmlspecialchars($_POST['password']);
-
-                            //j'ai placé un input hidden qui contient l'url précédent. obligé car lorsque le script va sur cette route 'case "validationLogin":" le contenu de la variable http_referrer c'est la page de connexion, et pas celle encore d'avant. 
-                            $previousURL = htmlspecialchars($_POST['previousURL'] ?? "");
-                            $this->userController->validationLogin($pseudo, $password, $previousURL);
-                        } else {
-                            throw new Exception("La page n'existe pas");
-                        }
-                    } else {
-                        Toolbox::ajouterMessageAlerte("Session expirée pour cause d'inactivité, veuillez recommencer", 'rouge');
-                        unset($_SESSION['profil']);
-                        unset($_SESSION['tokenCSRF']);
-                        Toolbox::dataJson(false, "expired token");
-                        exit;
-                    }
-
+                case  "login":
+                    $this->loginController->login();
+                    break;
+                case "logout":
+                    $this->logoutController->logout();
+                    break;
+                case "forgotPass":
+                    $this->forgotPassController->forgotPass();
                     break;
 
-                    //! les 4 "case" suivant gèrent la réinitialisation du password en cas d'oublie : 
-                    /**
-                     * * "forgot" c'est la 1ere vue qui permet de saisir son mail
-                     * * "sendEmailPassForgot" gère l'envoi du mail de réinitialisation de mot de passe. Vérifie avant si la vue 'forgot avait le bon token'
-                     * * "reinitialiserPassword" c'est la 2nd vue qui permet de réinitialiser son mot de pass
-                     * * "validationResetPassword" vérifie le tout et valide le changement.
-                     */
-                case "forgot": //!VUE
-                    //On vérifie s'il est connecté pour autoriser l'affichage de la page "forgot"
-                    if (!Securite::isConnected()) {
-                        $this->userController->forgotView();
-                    } else {
-                        header("Location: " . URL);
-                        exit;
-                    }
-                    break;
-
-                case "sendEmailPassForgot":
-                    //une fois le formulaire soumis, on gère l'envoi du mail de réinitialisation de mot de passe
-                    if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                        if (!empty($_POST['passwordForgot'])) {
-                            $email = htmlspecialchars($_POST['passwordForgot']);
-                            $this->userController->sendEmailPassForgot($email);
-                        } else {
-                            throw new Exception("La page n'existe pas");
-                        }
-                    } else {
-                        unset($_SESSION['tokenCSRF']);
-                        Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                        Toolbox::dataJson(false, "expired token");
-                        exit;
-                    }
 
 
-                    break;
-                case "reinitialiserPassword": //!VUE
-                    //page lorsqu'on clique sur le lien de l'email reçu, avec le token en GET. C'est un formulaire.
 
-                    //On considère que le user n'est pas censé être connecté pour accéder au formulaire de réinitialisation
-                    if (!Securite::isConnected()) {
-                        //si l'url est sous ce format : monsite/reinitialiserPassword/xxxx
-                        //"xxxx" correspond au token. 
-                        //la vérification du token se fera plus tard dans le case "validationResetPassword".
-                        if ((isset($url[2]) && !empty($url[2]))) {
-                            $jwt = $url[2];
-                            $this->userController->reinitialiserPassword($jwt);
-                        } else {
-                            throw new Exception("La page n'existe pas");
-                        }
-                    } else {
-                        header("Location: " . URL);
-                        exit;
-                    }
 
-                    break;
-                case "validationResetPassword":
 
-                    //on vérifie le tokenCSRF du formulaire
-                    if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
 
-                        //Si tokenCSRF ok, on gère le reset du password en fonction de la validité du tokenJWT
-                        if (isset($url[2]) && !empty($url[2])) {
-                            $tokenToVerify = $url[2];
 
-                            if (!empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
-                                $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
-                                $confirmPassword = htmlspecialchars($_POST['confirmPassword']);
-                                $this->userController->validationResetPassword($tokenToVerify, $nouveauPassword, $confirmPassword);
-                            } else {
-                                Toolbox::ajouterMessageAlerte("Les deux champs son requis", 'rouge');
-                                header("Location: " . URL . "reinitialiserPassword/" . $tokenToVerify);
-                                exit;
-                            }
-                        } else {
-                            throw new Exception("La page n'existe pas");
-                        }
-                    } else {
-                        Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                        header("Location: " . URL . "accueil");
-                        exit;
-                    }
 
-                    break;
-                case "deconnexion":
-                    $this->userController->logout();
-                    break;
+
+
+
+
+
+
+
+
+
+
+
+
+                    //     //********************************** */
+
+                    //     //! les 4 "case" suivant gèrent la réinitialisation du password en cas d'oublie : 
+                    //     /**
+                    //      * * "forgot" c'est la 1ere vue qui permet de saisir son mail
+                    //      * * "sendEmailPassForgot" gère l'envoi du mail de réinitialisation de mot de passe. Vérifie avant si la vue 'forgot avait le bon token'
+                    //      * * "reinitialiserPassword" c'est la 2nd vue qui permet de réinitialiser son mot de pass
+                    //      * * "validationResetPassword" vérifie le tout et valide le changement.
+                    //      */
+                    // case "forgot": //!VUE
+                    //     //On vérifie s'il est connecté pour autoriser l'affichage de la page "forgot"
+                    //     if (!Securite::isConnected()) {
+                    //         $this->userController->forgotView();
+                    //     } else {
+                    //         header("Location: " . URL);
+                    //         exit;
+                    //     }
+                    //     break;
+
+                    // case "sendEmailPassForgot":
+                    //     //une fois le formulaire soumis, on gère l'envoi du mail de réinitialisation de mot de passe
+                    //     if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+                    //         if (!empty($_POST['passwordForgot'])) {
+                    //             $email = htmlspecialchars($_POST['passwordForgot']);
+                    //             $this->userController->sendEmailPassForgot($email);
+                    //         } else {
+                    //             throw new Exception("La page n'existe pas");
+                    //         }
+                    //     } else {
+                    //         unset($_SESSION['tokenCSRF']);
+                    //         Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+                    //         Toolbox::dataJson(false, "expired token");
+                    //         exit;
+                    //     }
+
+
+                    //     break;
+                    // case "reinitialiserPassword": //!VUE
+                    //     //page lorsqu'on clique sur le lien de l'email reçu, avec le token en GET. C'est un formulaire.
+
+                    //     //On considère que le user n'est pas censé être connecté pour accéder au formulaire de réinitialisation
+                    //     if (!Securite::isConnected()) {
+                    //         //si l'url est sous ce format : monsite/reinitialiserPassword/xxxx
+                    //         //"xxxx" correspond au token. 
+                    //         //la vérification du token se fera plus tard dans le case "validationResetPassword".
+                    //         if ((isset($url[2]) && !empty($url[2]))) {
+                    //             $jwt = $url[2];
+                    //             $this->userController->reinitialiserPassword($jwt);
+                    //         } else {
+                    //             throw new Exception("La page n'existe pas");
+                    //         }
+                    //     } else {
+                    //         header("Location: " . URL);
+                    //         exit;
+                    //     }
+
+                    //     break;
+                    // case "validationResetPassword":
+
+                    //     //on vérifie le tokenCSRF du formulaire
+                    //     if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+
+                    //         //Si tokenCSRF ok, on gère le reset du password en fonction de la validité du tokenJWT
+                    //         if (isset($url[2]) && !empty($url[2])) {
+                    //             $tokenToVerify = $url[2];
+
+                    //             if (!empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
+                    //                 $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
+                    //                 $confirmPassword = htmlspecialchars($_POST['confirmPassword']);
+                    //                 $this->userController->validationResetPassword($tokenToVerify, $nouveauPassword, $confirmPassword);
+                    //             } else {
+                    //                 Toolbox::ajouterMessageAlerte("Les deux champs son requis", 'rouge');
+                    //                 header("Location: " . URL . "reinitialiserPassword/" . $tokenToVerify);
+                    //                 exit;
+                    //             }
+                    //         } else {
+                    //             throw new Exception("La page n'existe pas");
+                    //         }
+                    //     } else {
+                    //         Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+                    //         header("Location: " . URL . "accueil");
+                    //         exit;
+                    //     }
+
+                    //     break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    //********************************** */
+
                 case "inscription":
                     if (!Securite::isConnected()) {
                         $this->visiteurController->inscription();

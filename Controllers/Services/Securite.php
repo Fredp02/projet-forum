@@ -48,4 +48,12 @@ class Securite
     // {
     //     return $_COOKIE[self::COOKIE_NAME] === $_SESSION['profil'][self::COOKIE_NAME];
     // }
+
+    public static function verifCSRF()
+    {
+        return ($_SERVER['REQUEST_METHOD'] === 'POST'
+            && !empty($_POST['tokenCSRF'])
+            && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])
+        );
+    }
 }

@@ -18,7 +18,7 @@ btnPageLogin.addEventListener('click', async (e) => {
         try {
 
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("/projet-forum/validationLogin", {
+            const response = await fetch("login", {
                 method: "POST",
                 body: formDataPageLogin,
             });
@@ -42,7 +42,7 @@ btnPageLogin.addEventListener('click', async (e) => {
         } catch (error) {
             //on affiche un message d'erreur dans le DOM
             if (error.message === "expired token") {
-                window.location.href = "/projet-forum/accueil";
+                window.location.href = "home";
             } else {
                 messagePagelogin.textContent = error.message;
             }

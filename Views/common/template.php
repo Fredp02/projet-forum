@@ -51,7 +51,7 @@ use Controllers\Services\Securite; ?>
             unset($_SESSION['alert']);
             ?>
             <div class="conteneurNav">
-                <a href="<?= URL ?>accueil" class="headerTitle">
+                <a href="<?= URL ?>home" class="headerTitle">
                     <div class="textHeaderTitle">
                         <span>Guitare</span><span>forum</span>
                     </div>
@@ -61,11 +61,11 @@ use Controllers\Services\Securite; ?>
                 </div>
                 <div class="headerLinks">
                     <?php if (!Securite::isConnected()) : ?>
-                    <a href="<?= URL; ?>connexion" class="linkLogin">Connexion</a>
+                    <a href="<?= URL; ?>login" class="linkLogin">Connexion</a>
                     <?php else : ?>
                     <a href="<?= URL ?>compte/profil"
                         class="linkProfil"><?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
-                    <a href="<?= URL . 'deconnexion'; ?>" class="logout">Déconnexion</a>
+                    <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
                     <?php endif; ?>
 
                 </div>
@@ -125,7 +125,7 @@ use Controllers\Services\Securite; ?>
 
                 <div class="footerLogin">
 
-                    <a href="<?= URL . 'deconnexion'; ?>" class="logout">Déconnexion</a>
+                    <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
                 </div>
                 <?php endif; ?>
 

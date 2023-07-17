@@ -12,7 +12,7 @@ abstract class MainController
     //         $this->mainManager = new MainManager();
     //     }
 
-    protected function genererPage($data)
+    protected function render($data)
     {
         /**
          * extract($data) : 
@@ -45,6 +45,6 @@ abstract class MainController
             "template" => "../Views/common/template.php",
             "css" => "public/style/errorStyle.css"
         ];
-        $this->genererPage($data_page);
+        $this->render($data_page);
     }
 }
