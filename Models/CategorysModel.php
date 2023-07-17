@@ -78,9 +78,9 @@ class CategorysModel extends DbConnect
         MAX(m.messageDate) AS lastMessageDate,
         (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.topicID = t.topicID ORDER BY m2.messageDate DESC LIMIT 1) AS lastMessageUser
     FROM categorys p
-    LEFT JOIN categorys c ON p.categoryID = c.CategoryParentID
-    LEFT JOIN topics t ON c.categoryID = t.categoryID
-    LEFT JOIN messages m ON t.topicID = m.topicID
+    JOIN categorys c ON p.categoryID = c.CategoryParentID
+    JOIN topics t ON c.categoryID = t.categoryID
+    JOIN messages m ON t.topicID = m.topicID
     WHERE p.CategoryParentID IS NULL
     GROUP BY p.categoryID, c.categoryID;
     ";

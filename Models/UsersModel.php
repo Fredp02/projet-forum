@@ -50,20 +50,7 @@ class UsersModel extends DbConnect
         }
     }
 
-    // public function isValidAccount($pseudo): bool
-    // {
-    //     $req = "SELECT isValid FROM users WHERE pseudo = :pseudo";
-    //     $sql = $this->getBdd()->prepare($req);
-    //     $sql->bindValue(":pseudo", $pseudo);
-    //     try {
-    //         $sql->execute();
-    //         $resultat = $sql->fetch();
-    //         $sql->closeCursor();
-    //         return ($resultat->isValid);
-    //     } catch (Exception $e) {
-    //         die('Erreur : ' . $e->getMessage());
-    //     }
-    // }
+
     public function getUserBy($colonne, $valeur)
     {
         $req = "SELECT * FROM users WHERE $colonne = :valeur";
@@ -135,7 +122,7 @@ class UsersModel extends DbConnect
     public function activatingUser($userId)
     {
 
-        $req = "UPDATE users SET is_valid = 1 WHERE userID = :userId";
+        $req = "UPDATE users SET isValid = 1 WHERE userID = :userId";
         $sql = $this->getBdd()->prepare($req);
         $sql->bindValue(":userId", $userId);
         try {
@@ -147,21 +134,7 @@ class UsersModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
-    // public function activatingUser(User $user)
-    // {
-    //     $userId = $user->getUserId();
-    //     $req = "UPDATE users SET is_valid = 1 WHERE user_id = :userId";
-    //     $sql = $this->getBdd()->prepare($req);
-    //     $sql->bindValue(":userId", $userId);
-    //     try {
-    //         $sql->execute();
-    //         $resultat = ($sql->rowCount() > 0);
-    //         $sql->closeCursor();
-    //         return $resultat;
-    //     } catch (Exception $e) {
-    //         die('Erreur : ' . $e->getMessage());
-    //     }
-    // }
+
     public function modifAvatarProfil(Users $user)
     {
         $userId = $user->getUserId();

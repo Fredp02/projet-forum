@@ -106,11 +106,11 @@ use Controllers\Services\Securite; ?>
 
                     <button class="btnLogin">Connexion</button>
                 </form>
-                <a href="<?= URL; ?>forgot" class="linkForgot">Mot de passe oublié ?</a>
+                <a href="<?= URL; ?>forgotPass" class="linkForgot">Mot de passe oublié ?</a>
 
                 <div class="footerLogin">
 
-                    <a href="<?= URL . 'inscription'; ?>">Créer un compte</a>
+                    <a href="<?= URL . 'register'; ?>">Créer un compte</a>
                 </div>
                 <?php else : ?>
                 <div class="headerLogin">

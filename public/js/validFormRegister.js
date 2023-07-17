@@ -45,7 +45,7 @@ elBtnInscription.addEventListener('click', async () => {
 
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("validationInscription", {
+            const response = await fetch("register", {
                 method: "POST",
                 body: formData,
             });
@@ -64,22 +64,26 @@ elBtnInscription.addEventListener('click', async () => {
                 throw new Error(resultat.message);
 
             }
-            window.location.href = "accueil";
+            window.location.href = "home";
 
         } catch (error) {
             console.log(error);
             if (error.message === "expired token") {
-                window.location.href = "/projet-forum/accueil";
+                window.location.href = "/projet-forum/home";
             } else if (dataTypeError === 'pseudo') {
                 elPseudo.classList.add('inputError');
-                elPseudoLabel.textContent = "Pseudo déjà utilisé";
+                elPseudoLabel.textContent = error.message;
                 elPseudoLabel.style.color = "#FF4242";
+            } else if (dataTypeError === 'password') {
+                elPassword.classList.add('inputError');
+                elPasswordLabel.textContent = error.message;
+                elPasswordLabel.style.color = "#FF4242";
             } else if (dataTypeError === 'email') {
                 elEmail.classList.add('inputError');
-                elEmailLabel.textContent = "Adresse email déjà utilisée";
+                elEmailLabel.textContent = error.message;
                 elEmailLabel.style.color = "#FF4242";
             } else {
-                // window.location.href = "accueil";
+                // faire un redirection ? ajouter un message ?
                 console.log(error.message);
             }
 

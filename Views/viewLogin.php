@@ -27,11 +27,11 @@
                 <button class="btnPageLogin">Connexion</button>
             </div>
         </form>
-        <a href="forgot" class="linkForgotPageLogin">Mot de passe oublié ?</a>
+        <a href="forgotPass" class="linkForgotPageLogin">Mot de passe oublié ?</a>
 
         <div class="footerPageLogin">
 
-            <a href="<?= URL . 'inscription'; ?>">Créer un compte</a>
+            <a href="<?= URL . 'register'; ?>">Créer un compte</a>
         </div>
 
     </div>

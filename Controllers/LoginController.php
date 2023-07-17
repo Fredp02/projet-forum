@@ -77,7 +77,7 @@ class LoginController extends MainController
 
             $user = $this->usersModel->getUserinfo($pseudo);
 
-            if ($user->is_valid) {
+            if ($user->isValid) {
 
                 //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur, avec des sessions qui pourrait contenir trop d'info. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
                 $filepathAvatar = $user->userID . '/' . $user->avatar;
@@ -101,7 +101,7 @@ class LoginController extends MainController
                 );
             } else {
                 $userId =  $user->userID;
-                $message = "Compte non validé ! Cliquez sur <a href='" . URL . "returnToken/" . $userId . "'>ce lien</a> pour renvoyer un mail de validation.";
+                $message = "Compte non validé ! Cliquez sur <a href='" . URL . "register/returnToken/" . $userId . "'>ce lien</a> pour renvoyer un mail de validation.";
                 Toolbox::dataJson(false, $message);
                 exit;
             }

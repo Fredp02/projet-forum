@@ -57,7 +57,7 @@ if (elBtnLogin) {
             } catch (error) {
                 //on affiche un message d'erreur dans le DOM
                 if (error.message === "expired token") {
-                    window.location.href = '/projet-forum/accueil';
+                    window.location.href = '/projet-forum/home';
                 } else {
                     elLoginMessage.style.display = 'block'
                     elLoginMessage.classList.add('rouge');

@@ -98,4 +98,10 @@ class HomeController extends MainController
         ];
         $this->render($data_page);
     }
+
+    public function pageErreur($msg)
+    {
+        //on utilise la méthode dans mainController
+        parent::pageErreur($msg);
+    }
 }
