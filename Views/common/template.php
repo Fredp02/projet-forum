@@ -10,8 +10,11 @@ use Controllers\Services\Securite; ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Forum de discussion autour de la guitare" />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="<?= $quillSnowCSS ?? ''; ?>" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="<?= $quillImageCSS ?? ''; ?>">
     <link rel="stylesheet" type="text/css" href="<?= $quillEmojiCSS ?? ''; ?>">
@@ -32,18 +35,18 @@ use Controllers\Services\Securite; ?>
 
         <nav class="navPosition">
             <?php if (!empty($_SESSION['alert'])) : ?>
-                <?php $i = 0; // variable pour compter les messages 
+            <?php $i = 0; // variable pour compter les messages 
                 ?>
-                <?php foreach ($_SESSION['alert'] as $alert) : ?>
-                    <div class="blocMessage <?= htmlspecialchars($alert['couleur']) ?>" id="message<?= htmlspecialchars($i) ?>">
-                        <div class="textMessage">
-                            <p><?= htmlspecialchars($alert['message']) ?></p>
-                        </div>
-                    </div>
+            <?php foreach ($_SESSION['alert'] as $alert) : ?>
+            <div class="blocMessage <?= htmlspecialchars($alert['couleur']) ?>" id="message<?= htmlspecialchars($i) ?>">
+                <div class="textMessage">
+                    <p><?= htmlspecialchars($alert['message']) ?></p>
+                </div>
+            </div>
 
-                    <?php $i++; // on incrémente le compteur 
+            <?php $i++; // on incrémente le compteur 
                     ?>
-                <?php endforeach; ?>
+            <?php endforeach; ?>
             <?php endif;
             unset($_SESSION['alert']);
             ?>
@@ -58,10 +61,11 @@ use Controllers\Services\Securite; ?>
                 </div>
                 <div class="headerLinks">
                     <?php if (!Securite::isConnected()) : ?>
-                        <a href="<?= URL; ?>login" class="linkLogin">Connexion</a>
+                    <a href="<?= URL; ?>login" class="linkLogin">Connexion</a>
                     <?php else : ?>
-                        <a href="<?= URL ?>account/profil" class="linkProfil"><?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
-                        <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
+                    <a href="<?= URL ?>account/profil"
+                        class="linkProfil"><?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
+                    <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
                     <?php endif; ?>
 
                 </div>
@@ -80,46 +84,49 @@ use Controllers\Services\Securite; ?>
         <aside class="aside">
             <div class="loginAside">
                 <?php if (!Securite::isConnected()) : ?>
-                    <div class="headerLogin">
-                        <h2>Se connecter</h2>
-                        <div class="loginMessage">
-                            <p class="textMessage"></p>
-                        </div>
+                <div class="headerLogin">
+                    <h2>Se connecter</h2>
+                    <div class="loginMessage">
+                        <p class="textMessage"></p>
+                    </div>
+                </div>
+
+                <form method="POST" class="formLogin">
+                    <div class="">
+                        <input type="text" class="inputLogin" name="pseudo" placeholder="Pseudo" required />
+                    </div>
+                    <div class="">
+                        <input type="password" class="inputPassword" name="password" placeholder="Mot de passe"
+                            required />
+                    </div>
+                    <div>
+                        <input type="hidden" class="tokenCSRF" name="tokenCSRF"
+                            value="<?= $_SESSION['tokenCSRF']; ?>" />
                     </div>
 
-                    <form method="POST" class="formLogin">
-                        <div class="">
-                            <input type="text" class="inputLogin" name="pseudo" placeholder="Pseudo" required />
-                        </div>
-                        <div class="">
-                            <input type="password" class="inputPassword" name="password" placeholder="Mot de passe" required />
-                        </div>
-                        <div>
-                            <input type="hidden" class="tokenCSRF" name="tokenCSRF" value="<?= $_SESSION['tokenCSRF']; ?>" />
-                        </div>
+                    <button class="btnLogin">Connexion</button>
+                </form>
+                <a href="<?= URL; ?>forgotPass" class="linkForgot">Mot de passe oublié ?</a>
 
-                        <button class="btnLogin">Connexion</button>
-                    </form>
-                    <a href="<?= URL; ?>forgotPass" class="linkForgot">Mot de passe oublié ?</a>
+                <div class="footerLogin">
 
-                    <div class="footerLogin">
-
-                        <a href="<?= URL . 'register/viewRegister'; ?>">Créer un compte</a>
-                    </div>
+                    <a href="<?= URL . 'register/viewRegister'; ?>">Créer un compte</a>
+                </div>
                 <?php else : ?>
-                    <div class="headerLogin">
-                        <h2><?= $_SESSION['profil']['pseudo']; ?></h2>
-                    </div>
+                <div class="headerLogin">
+                    <h2><?= $_SESSION['profil']['pseudo']; ?></h2>
+                </div>
 
-                    <div class="divAvatar">
-                        <img src="<?= URL ?>public/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>" alt="photo de profil de l'utilisateur">
-                    </div>
-                    <a href="<?= URL ?>account/profil" class="linkProfil">Mon profil</a>
+                <div class="divAvatar">
+                    <img src="<?= URL ?>public/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
+                        alt="photo de profil de l'utilisateur">
+                </div>
+                <a href="<?= URL ?>account/profil" class="linkProfil">Mon profil</a>
 
-                    <div class="footerLogin">
+                <div class="footerLogin">
 
-                        <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
-                    </div>
+                    <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
+                </div>
                 <?php endif; ?>
 
                 <!-- </div> -->

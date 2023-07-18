@@ -82,7 +82,7 @@ class CategorysModel extends DbConnect
     JOIN topics t ON c.categoryID = t.categoryID
     JOIN messages m ON t.topicID = m.topicID
     WHERE p.CategoryParentID IS NULL
-    GROUP BY p.categoryID, c.categoryID;
+    GROUP BY p.categoryID, c.categoryID, t.topicID;
     ";
         $sql = $this->getBdd()->prepare($req);
         try {
