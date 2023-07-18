@@ -10,8 +10,7 @@ const elInputLogin = document.querySelector('.inputLogin');
 const elInputPassword = document.querySelector('.inputPassword');
 const elContentLogin = document.querySelector('.contentLogin');
 const inputTokenCSRF = document.querySelector('.tokenCSRF')
-
-
+const URL_WEBSITE = 'http://localhost/projet-forum/';
 
 window.addEventListener("scroll", () => {
     //hauteur des deux éléments
@@ -86,7 +85,7 @@ function updateDom(resultat) {
 
     const lienProfil = document.createElement('a');
     lienProfil.classList.add("linkProfil");
-    lienProfil.setAttribute("href", "/projet-forum/compte/profil");
+    lienProfil.setAttribute("href", "/projet-forum/account/profil");
     lienProfil.textContent = "Mon profil";
 
     const divFooterLogin = document.createElement('div');
@@ -103,7 +102,7 @@ function updateDom(resultat) {
     elHeaderLinks.innerHTML = "";
     const lienNavProfil = document.createElement('a');
     lienNavProfil.classList.add("linkProfil");
-    lienNavProfil.setAttribute("href", "/projet-forum/compte/profil");
+    lienNavProfil.setAttribute("href", "/projet-forum/account/profil");
     lienNavProfil.textContent = resultat.data.pseudo;
 
     const lienNavlogout = document.createElement('a');

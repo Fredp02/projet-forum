@@ -60,15 +60,22 @@ let ville;
 [elAncienPassword, elNouveauPassword, elConfirmPassword, elInputEmail].forEach(elInput => {
     elInput.addEventListener("input", inputDefault);
 });
-
+console.log(URL_WEBSITE + 'account/datasFormProfil');
 
 async function getData() {
-    const response = await fetch('datasFormProfil');
-    const resultat = await response.json();
-    email = resultat.data.email;
-    emploi = resultat.data.emploi;
-    guitare = resultat.data.guitare;
-    ville = resultat.data.ville;
+    try {
+        const response = await fetch(URL_WEBSITE + 'account/datasFormProfil');
+        const resultat = await response.json();
+        email = resultat.data.email;
+        emploi = resultat.data.emploi;
+        guitare = resultat.data.guitare;
+        ville = resultat.data.ville;
+    } catch (error) {
+        window.scrollTo(0, 0);
+        document.querySelector('.divMessageProfil').textContent = "Problème serveur";
+
+    }
+
 }
 
 //Ecouteurs boutons annuler
@@ -184,7 +191,7 @@ elBtnEditEmail.addEventListener('click', async (e) => {
         const formEmail = new FormData(elFormEmail);
         try {
             //envoi des données au serveur avec la méthode POST
-            const response = await fetch("editEmail", {
+            const response = await fetch(URL_WEBSITE + "/account/editEmail", {
                 method: "POST",
                 body: formEmail,
             });
@@ -217,8 +224,9 @@ elBtnEditEmail.addEventListener('click', async (e) => {
 
         } catch (error) {
             if (error.message === "expired token") {
-                window.location.href = "http://localhost/projet-forum/accueil";
+                window.location.href = URL_WEBSITE + 'home';
             } else {
+
                 elAlertIdentifiant.textContent = error.message;
                 elAlertIdentifiant.style.backgroundColor = "#FF4242";
                 setTimeout(() => {
@@ -262,7 +270,7 @@ elBtnEditPassword.addEventListener('click', async (e) => {
         const formData = new FormData(elFormPassword);
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("password", {
+            const response = await fetch(URL_WEBSITE + "/account/editPassword", {
                 method: "POST",
                 body: formData,
             });
@@ -294,8 +302,11 @@ elBtnEditPassword.addEventListener('click', async (e) => {
 
         } catch (error) {
             if (error.message === "expired token") {
-                window.location.href = "http://localhost/projet-forum/accueil";
+                window.location.href = URL_WEBSITE + 'home';
             } else {
+                elAncienPassword.value = "";
+                elNouveauPassword.value = "";
+                elConfirmPassword.value = "";
                 elAlertIdentifiant.textContent = error.message;
                 elAlertIdentifiant.style.backgroundColor = "#FF4242";
             }
@@ -391,7 +402,7 @@ inputAvatar.addEventListener('change', async function () {
             let formData = new FormData(elFormulaireAvatar);
             // formData.append("avatarPhoto", fichier);
 
-            const response = await fetch("avatar", {
+            const response = await fetch(URL_WEBSITE + "/account/editAvatar", {
                 method: "POST",
                 body: formData,
             });
@@ -416,7 +427,7 @@ inputAvatar.addEventListener('change', async function () {
         }
     } catch (error) {
         if (error.message === "expired token") {
-            window.location.href = "/projet-forum/accueil";
+            window.location.href = URL_WEBSITE + 'home';
         } else {
             ElAlerteAvatarSpan.textContent = error.message
             ElAlerteAvatar.style.backgroundColor = 'red';
@@ -457,7 +468,7 @@ elBtnEditAbout.addEventListener('click', async (e) => {
 
 
         //envoi des données au serveur avec la méthode POST
-        const response = await fetch("about", {
+        const response = await fetch(URL_WEBSITE + "/account/editAbout", {
             method: "POST",
             body: formAbout,
         });
@@ -477,16 +488,15 @@ elBtnEditAbout.addEventListener('click', async (e) => {
 
         }
         //si résultat.boolean = "true" : 
-        const elAboutInputs = document.querySelectorAll('.formAbout input');
-        elAboutInputs.forEach(input => {
-            input.value = "";
-        });
+
+        elInputGuitare.value = "";
+        elInputEmploi.value = "";
+        elInputVille.value = "";
         elDivFormAbout.style.display = "none";
 
         elSpanGuitare.textContent = `Ma guitare : ${resultat.data.guitare}`;
         elSpanEmploi.textContent = `Emploi : ${resultat.data.emploi}`;
         elSpanVille.textContent = `Ville : ${resultat.data.ville}`;
-
         //on met à jour les variables déclarées au début du code
         //Si besoins, elles nous serviront pour mettre à jours les inputs 
         guitare = resultat.data.guitare;
@@ -505,7 +515,7 @@ elBtnEditAbout.addEventListener('click', async (e) => {
 
     } catch (error) {
         if (error.message === "expired token") {
-            window.location.href = "http://localhost/projet-forum/accueil";
+            window.location.href = URL_WEBSITE + 'home';
         } else {
             elDivFormAbout.style.display = "none";
             elDivAbout.style.display = "flex";

@@ -63,7 +63,7 @@ use Controllers\Services\Securite; ?>
                     <?php if (!Securite::isConnected()) : ?>
                     <a href="<?= URL; ?>login" class="linkLogin">Connexion</a>
                     <?php else : ?>
-                    <a href="<?= URL ?>compte/profil"
+                    <a href="<?= URL ?>account/profil"
                         class="linkProfil"><?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
                     <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
                     <?php endif; ?>
@@ -121,7 +121,7 @@ use Controllers\Services\Securite; ?>
                     <img src="<?= URL ?>public/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
                         alt="photo de profil de l'utilisateur">
                 </div>
-                <a href="<?= URL ?>compte/profil" class="linkProfil">Mon profil</a>
+                <a href="<?= URL ?>account/profil" class="linkProfil">Mon profil</a>
 
                 <div class="footerLogin">
 

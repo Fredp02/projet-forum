@@ -3,6 +3,7 @@ $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
 ?>
 <div class="profil">
     <div class="contentFormAvatar">
+
         <div class="divFormAvatar">
             <label for="formAvatar">Personnaliser ma photo</label>
             <div>
@@ -34,6 +35,7 @@ $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
     <p class="textRang">Rang : <?= htmlspecialchars($userDatas['role']); ?></p>
 
     <div class="contentInfos">
+        <div class="divMessageProfil"></div>
         <div class="identifiants">
             <div class="alertIdentifiants"></div>
             <h3>Mes identifiants</h3>
@@ -148,7 +150,7 @@ $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
                             value="<?= ($userDatas['ville']) ?? ""; ?>" />
                     </div>
                     <div>
-                        <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF; ?>">
+                        <input type="hidden" class="aboutCSRF" name="tokenCSRF" value="<?= $tokenCSRF; ?>">
                     </div>
                     <div class="divBtnAbout">
                         <button class="btnEditAbout">Modifier</button>
@@ -160,7 +162,7 @@ $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
         </div>
 
     </div>
-    <a href="<?= URL; ?>compte/supprimerCompte"><button class="btnDeleteAccount">Supprimer mon compte</button></a>
+    <a href="<?= URL; ?>account/deleteAccount"><button class="btnDeleteAccount">Supprimer mon compte</button></a>
 
 
 

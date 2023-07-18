@@ -338,10 +338,10 @@ class UserController extends MainController
         $user = $this->usersModel->getUserinfo($pseudo);
 
         $userDatasForm = [
-            'email' => $user->email,
-            'guitare' => $user->guitare,
-            'ville' => $user->ville,
-            'emploi' => $user->emploi,
+            'email' => html_entity_decode($user->email),
+            'guitare' => html_entity_decode($user->guitare),
+            'ville' => html_entity_decode($user->ville),
+            'emploi' => html_entity_decode($user->emploi),
         ];
         Toolbox::dataJson(true, "reponse ok", $userDatasForm);
         exit;
@@ -579,9 +579,9 @@ class UserController extends MainController
             //! voir méthode UpdateAboutUser() pour plus d'info
             $message = $resultat === 2 ? "Mise à jour des informations réalisées avec succès" : "Aucune modifications effectuées : valeur identique";
             $data = [
-                'guitare' => $guitare,
-                'emploi' => $emploi,
-                'ville' => $ville
+                'guitare' => html_entity_decode($guitare),
+                'emploi' => html_entity_decode($emploi),
+                'ville' => html_entity_decode($ville)
             ];
             Toolbox::dataJson(true, $message, $data);
             exit;

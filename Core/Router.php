@@ -96,19 +96,17 @@ class Router
                 case "register":
                     $this->registerController->register();
                     break;
-
-                    //c'est la route qui se trouve dans l'email reçu lors de la demande de changement d'email.
-                case "validationEditEmail":
+                case  "account":
                     if (isset($url[2]) && !empty($url[2])) {
-                        $tokenToVerify = $url[2];
-                        $this->userController->validationEditEmail($tokenToVerify);
-                        header("Location: " . URL);
-                        exit;
+                        $this->accountController->account($url[2]);
                     } else {
                         throw new Exception("La page n'existe pas");
                     }
                     break;
 
+
+
+                    //! en cours de codage
                 case 'createTopic':
                     if (Securite::isConnected()) {
                         $this->userController->createTopicView();
@@ -116,6 +114,9 @@ class Router
                         $this->visiteurController->connexionView();
                     }
                     break;
+
+
+
                 case "uploadImage":
                     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0 && !empty($_POST['topicID'])) {
                         $this->userController->uploadImage($_FILES['image'], $_POST['topicID']);
@@ -162,131 +163,8 @@ class Router
 
 
 
-                case  "account":
-                    if (isset($url[2]) && !empty($url[2])) {
-                        $this->accountController->account($url[2]);
-                    } else {
-                        throw new Exception("La page n'existe pas");
-                    }
-                    break;
-                    /**
-                     * en second paramètre de account j'aurais $url2 qui contiendra un chaine de caractère
-                     * 
-                     * account/profil -> affiche le profil
-                     * account/datasFormProfil (données envoyées à la page profil)
-                     * account/editAvatar
-                     * account/editEmail
-                     * account/editPassword
-                     * account/editAbout
-                     * account/viewDelete
-                     * account/validationDelete
-                     */
 
-                case "compte":
-                    if (!Securite::isConnected()) {
-                        $message = "Pour accéder à votre profil, veuillez vous connecter.";
-                        Toolbox::ajouterMessageAlerte($message, 'rouge');
-                        header("Location: " . URL);
-                        exit;
-                    } else {
-                        switch ($url[2]) {
-                            case 'profil':
-                                $this->userController->profil();
-                                break;
-                            case 'datasFormProfil':
-                                //données envoyées à la page profil pour alimenter les formulaires.
-                                $this->userController->datasFormProfil();
-                                break;
-                            case 'avatar':
 
-                                if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                                    if (isset($_FILES['avatarPhoto']) && $_FILES['avatarPhoto']['error'] == 0) {
-                                        $this->userController->editAvatar($_FILES['avatarPhoto']);
-                                    } else {
-                                        $message = "Une erreur est survenue...";
-                                        Toolbox::ajouterMessageAlerte($message, 'rouge');
-                                        header("Location: " . URL . "compte/profil");
-                                        exit;
-                                    }
-                                } else {
-                                    Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                                    /**
-                                     * ! Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
-                                     */
-                                    unset($_SESSION['profil']);
-                                    unset($_SESSION['tokenCSRF']);
-                                    Toolbox::dataJson(false, "expired token");
-                                    exit;
-                                }
-                                break;
-
-                            case 'editEmail':
-                                if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                                    // Le jeton anti-CSRF est valide, traiter les données du formulaire
-                                    if (!empty($_POST['email'])) {
-                                        $this->userController->editEmail(htmlspecialchars($_POST['email']));
-                                    }
-                                } else {
-                                    Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                                    unset($_SESSION['profil']);
-                                    unset($_SESSION['tokenCSRF']);
-                                    Toolbox::dataJson(false, "expired token");
-                                    exit;
-                                }
-                                break;
-
-                            case 'password':
-                                if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                                    if (!empty($_POST['ancienPassword']) && !empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
-                                        $ancienPassword = htmlspecialchars($_POST['ancienPassword']);
-                                        $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
-                                        $confirmPassword = htmlspecialchars($_POST['confirmPassword']);
-                                        $this->userController->changePassword($ancienPassword, $nouveauPassword, $confirmPassword);
-                                    }
-                                } else {
-                                    Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                                    unset($_SESSION['profil']);
-                                    unset($_SESSION['tokenCSRF']);
-                                    Toolbox::dataJson(false, "expired token");
-                                    exit;
-                                }
-
-                                break;
-
-                            case 'about':
-                                if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                                    if (!empty($_POST['guitare']) && !empty($_POST['emploi']) && !empty($_POST['ville'])) {
-                                        $guitare = htmlspecialchars($_POST['guitare']);
-                                        $emploi = htmlspecialchars($_POST['emploi']);
-                                        $ville = htmlspecialchars($_POST['ville']);
-                                        $this->userController->editAbout(trim($guitare), trim($emploi), trim($ville));
-                                    } else {
-                                        throw new Exception("La page n'existe pas");
-                                    }
-                                } else {
-                                    Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                                    unset($_SESSION['profil']);
-                                    unset($_SESSION['tokenCSRF']);
-                                    Toolbox::dataJson(false, "expired token");
-                                    exit;
-                                }
-
-                                break;
-                            case 'supprimerCompte':
-                                $this->userController->supprimerCompte();
-                                break;
-                            case 'validerSupprimerCompte':
-                                $this->userController->validerSupprimerCompte();
-                                header("Location: " . URL);
-                                exit;
-
-                                break;
-
-                            default:
-                                throw new Exception("La page n'existe pas");
-                                break;
-                        }
-                    }
 
 
                 default:

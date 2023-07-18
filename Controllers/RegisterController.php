@@ -98,7 +98,7 @@ class RegisterController extends MainController
     private function createAccount($pseudo, $email, $password, $confirmPassword)
     {
         $regexpPseudo = "/^[a-zA-Z0-9éèêëàâäôöûüçî ]+$/";
-        $regexpEmail = "/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/";
+        // $regexpEmail = "/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/";
         $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
         if ($this->usersModel->getUserBy('pseudo', $pseudo)) {
@@ -116,7 +116,7 @@ class RegisterController extends MainController
         } else if ($email == '') {
             Toolbox::dataJson(false, "Le champs email est requis", 'email');
             exit;
-        } else if (!preg_match($regexpEmail, $email)) {
+        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Toolbox::dataJson(false, "Le format d'email n'est pas correct", 'email');
             exit;
         } else if ($password == '') {
