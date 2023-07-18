@@ -60,7 +60,7 @@ let ville;
 [elAncienPassword, elNouveauPassword, elConfirmPassword, elInputEmail].forEach(elInput => {
     elInput.addEventListener("input", inputDefault);
 });
-console.log(URL_WEBSITE + 'account/datasFormProfil');
+
 
 async function getData() {
     try {

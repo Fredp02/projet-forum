@@ -132,7 +132,7 @@ nav {
 }
 
 .conteneurNav {
-    max-width: 1200px;
+    max-width: 1500px;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -230,7 +230,7 @@ nav {
 
 /******** M A I N *****************/
 .container {
-    max-width: 1200px;
+    max-width: 1500px;
     margin-left: auto;
     margin-right: auto;
     position: relative;
@@ -464,7 +464,7 @@ footer {
 }
 
 .contentFooter {
-    max-width: 1200px;
+    max-width: 1500px;
     width: 100%;
     margin-left: auto;
     margin-right: auto;

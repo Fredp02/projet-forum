@@ -23,19 +23,20 @@
 
 # Ces lignes redirigent toutes les requêtes qui ne correspondent pas à un fichier ou un dossier existant vers le dossier public. Par exemple, si l’URL demandée est http://localhost/projet-forum/contact, elle sera redirigée vers http://localhost/projet-forum/public/contact.
 
-#RewriteRule ^((?!public/).*)$ public/1[L,NC]estunereˋglequirecherchetoutcequisuitlenomdedomaine(.∗), sauf si c’est le mot public suivi d’un slash ((?!public/)). Le symbole ! signifie la négation. Le groupe capturant entre parenthèses permet de récupérer la valeur qui correspond à cette partie du motif. La substitution est public/$1, c’est-à-dire le mot public suivi d’un slash suivi de la valeur du premier groupe capturant. Le drapeau L signifie Last, c’est-à-dire que c’est la dernière règle à appliquer si elle correspond. Le drapeau NC signifie No Case, c’est-à-dire que la comparaison est insensible à la casse.
+#RewriteRule ^((?!public/).*)$ public/$1[L,NC]est une règle qui recherche tout ce qui suit le nom de domaine(.∗), sauf si c’est le mot public suivi d’un slash ((?!public/)). Le symbole ! signifie la négation. Le groupe capturant entre parenthèses permet de récupérer la valeur qui correspond à cette partie du motif. La substitution est public/$1, c’est-à-dire le mot public avec slash suivi de la valeur du premier groupe capturant. Le drapeau L signifie Last, c’est-à-dire que c’est la dernière règle à appliquer si elle correspond. Le drapeau NC signifie No Case, c’est-à-dire que la comparaison est insensible à la casse.
 #RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
 
-#RewriteCond %{REQUEST_FILENAME} !-f est une condition qui vérifie si le nom du fichier demandé n’existe pas (!-f) sur le serveur.
+#RewriteCond %{REQUEST_FILENAME} !-f est une condition qui vérifie si le nom du "fichier" demandé n’existe pas (!-f) sur le serveur.
 #RewriteCond %{REQUEST_FILENAME} !-f
 
-#RewriteCond %{REQUEST_FILENAME} !-d est une condition qui vérifie si le nom du dossier demandé n’existe pas (!-d) sur le serveur.
+#RewriteCond %{REQUEST_FILENAME} !-d est une condition qui vérifie si le nom du "dossier" demandé n’existe pas (!-d) sur le serveur.
 #RewriteCond %{REQUEST_FILENAME} !-d
 
 #---------------------------------
 #---------------------------------
 
-#Cette ligne passe le paramètre page à index.php, en conservant les autres paramètres GET éventuels. Par exemple, si l’URL demandée est http://localhost/projet-forum/contact?lang=fr, elle sera redirigée vers http://localhost/projet-forum/index.php?page=contact&lang=fr.
+#Cette ligne passe le paramètre page à index.php, en conservant les autres paramètres GET éventuels. Par exemple, si l’URL demandée est http://localhost/projet-forum/contact?lang=fr, elle sera redirigée vers http://localhost/projet-forum/index.php?page=contact&lang=fr. Mais dans notre cas, si l'url demandée est http://localhost/projet-forum/account/profil, elle sera redirigé vers :
+# http://localhost/projet-forum/index.php?page=account/profil
 
 #RewriteRule ^(.*)$ index.php?page=1[QSA,L]est une règle qui recherche tout ce qui suit le nom de domaine(.∗). Le groupe capturant entre parenthèses permet de récupérer la valeur qui correspond à cette partie du motif. La substitution est index.php?page=$1, c’est-à-dire le nom du fichier index.php suivi d’un point d’interrogation suivi du paramètre page égal à la valeur du premier groupe capturant. Le drapeau QSA signifie Query String Append, c’est-à-dire que les autres paramètres GET sont conservés et ajoutés à la substitution. Le drapeau L signifie Last, c’est-à-dire que c’est la dernière règle à appliquer si elle correspond.
 #RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]
@@ -54,3 +55,12 @@ RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]
+
+
+#Version sur hostinger : Ce qui à été supprimer concerne uniquement la redirection de la page vers "public". Hostinger fait ce boulot à notre place.
+
+#RewriteEngine On
+#RewriteBase /
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]

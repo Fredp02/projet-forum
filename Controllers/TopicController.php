@@ -39,7 +39,7 @@ class TopicController extends MainController
                 $data_page = [
                     "pageDescription" => "Sujet : " . $infosTopic->topicTitle . " du site Guitare-forum",
                     "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",
-                    "view" => "../Views/Visiteur/viewTopic.php",
+                    "view" => "../Views/viewTopic.php",
                     "css" => "public/style/topicStyle.css",
                     //editor quill
                     "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",

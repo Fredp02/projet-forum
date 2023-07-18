@@ -31,7 +31,7 @@ if (elBtnLogin) {
             const formData = new FormData(elFormLogin);
             try {
                 // envoi des données au serveur avec la méthode POST
-                const response = await fetch("/projet-forum/login", {
+                const response = await fetch(URL_WEBSITE + "login", {
                     method: "POST",
                     body: formData,
                 });
@@ -111,7 +111,7 @@ function updateDom(resultat) {
     lienNavlogout.textContent = "Déconnexion";
     elHeaderLinks.append(lienNavProfil, lienNavlogout);
 
-    if (elBtnLogin.classList.contains("btnLoginAnimate") && window.location.pathname.includes('sujet')) {
+    if (elBtnLogin.classList.contains("btnLoginAnimate") && window.location.pathname.includes('topic')) {
         document.querySelector('.divReponse').scrollIntoView({ behavior: 'smooth' });
     }
 

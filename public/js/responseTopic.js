@@ -78,7 +78,7 @@ formResponse.addEventListener('submit', async (e) => {
             }
             inputResponse.value = doc.body.innerHTML;
             const formData = new FormData(formResponse);
-            const response = await fetch("/projet-forum/validationResponseSujet", {
+            const response = await fetch(URL_WEBSITE + '/topicReply/validation', {
                 method: 'POST',
                 body: formData
             });
@@ -159,7 +159,7 @@ async function uploadImage(imageBase64) {
 
     // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
     // try {
-    const response = await fetch('/projet-forum/uploadImage', {
+    const response = await fetch(URL_WEBSITE + '/topicReply/uploadImage', {
         method: 'POST',
         body: formData,
     });
