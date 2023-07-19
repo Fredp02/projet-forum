@@ -1,0 +1,66 @@
+#Cette ligne active le module mod_rewrite d’Apache, qui permet de faire des réécritures d’URL.
+#RewriteEngine On
+
+#---------------------------------
+#---------------------------------
+
+#Cette ligne définit le chemin de base pour les réécritures d’URL. Il sert à résoudre les URL relatives en URL absolues. Par exemple, si on a une règle qui redirige vers index.php, sans RewriteBase, l’URL finale sera http://localhost/index.php. Avec RewriteBase /projet-forum/, l’URL finale sera http://localhost/projet-forum/index.php.
+#RewriteBase /projet-forum/
+
+#---------------------------------
+#---------------------------------
+
+# Supprimer le mot public de l'URL si celui-ci est présent. Par exemple, si l’URL demandée est http://localhost/projet-forum/public/contact, elle sera redirigée vers http://localhost/projet-forum/contact.
+
+#RewriteCond %{THE_REQUEST} /public/([^\s?]) [NC] est une condition qui vérifie si la requête HTTP contient le mot public suivi de n’importe quel caractère sauf un espace ou un point d’interrogation ([^\s?]). Le caractère * signifie zéro ou plusieurs répétitions. Le groupe capturant entre parenthèses permet de récupérer la valeur qui suit le mot public. Le drapeau NC signifie No Case, c’est-à-dire que la comparaison est insensible à la casse.
+#RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+
+#RewriteRule ^ %1 [L,NE,R=302] est une règle qui redirige vers la valeur du premier groupe capturant de la condition (%1). Le symbole ^ signifie le début de la chaîne. Le drapeau L signifie Last, c’est-à-dire que c’est la dernière règle à appliquer si elle correspond. Le drapeau NE signifie No Escape, c’est-à-dire que les caractères spéciaux ne sont pas échappés dans l’URL. Le drapeau R=302 signifie Redirect avec le code HTTP 302 (Found).
+#RewriteRule ^ %1 [L,NE,R=302]
+
+#---------------------------------
+#---------------------------------
+
+# Ces lignes redirigent toutes les requêtes qui ne correspondent pas à un fichier ou un dossier existant vers le dossier public. Par exemple, si l’URL demandée est http://localhost/projet-forum/contact, elle sera redirigée vers http://localhost/projet-forum/public/contact.
+
+#RewriteRule ^((?!public/).*)$ public/$1[L,NC]est une règle qui recherche tout ce qui suit le nom de domaine(.∗), sauf si c’est le mot public suivi d’un slash ((?!public/)). Le symbole ! signifie la négation. Le groupe capturant entre parenthèses permet de récupérer la valeur qui correspond à cette partie du motif. La substitution est public/$1, c’est-à-dire le mot public avec slash suivi de la valeur du premier groupe capturant. Le drapeau L signifie Last, c’est-à-dire que c’est la dernière règle à appliquer si elle correspond. Le drapeau NC signifie No Case, c’est-à-dire que la comparaison est insensible à la casse.
+#RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+
+#RewriteCond %{REQUEST_FILENAME} !-f est une condition qui vérifie si le nom du "fichier" demandé n’existe pas (!-f) sur le serveur.
+#RewriteCond %{REQUEST_FILENAME} !-f
+
+#RewriteCond %{REQUEST_FILENAME} !-d est une condition qui vérifie si le nom du "dossier" demandé n’existe pas (!-d) sur le serveur.
+#RewriteCond %{REQUEST_FILENAME} !-d
+
+#---------------------------------
+#---------------------------------
+
+#Cette ligne passe le paramètre page à index.php, en conservant les autres paramètres GET éventuels. Par exemple, si l’URL demandée est http://localhost/projet-forum/contact?lang=fr, elle sera redirigée vers http://localhost/projet-forum/index.php?page=contact&lang=fr. Mais dans notre cas, si l'url demandée est http://localhost/projet-forum/account/profil, elle sera redirigé vers :
+# http://localhost/projet-forum/index.php?page=account/profil
+
+#RewriteRule ^(.*)$ index.php?page=1[QSA,L]est une règle qui recherche tout ce qui suit le nom de domaine(.∗). Le groupe capturant entre parenthèses permet de récupérer la valeur qui correspond à cette partie du motif. La substitution est index.php?page=$1, c’est-à-dire le nom du fichier index.php suivi d’un point d’interrogation suivi du paramètre page égal à la valeur du premier groupe capturant. Le drapeau QSA signifie Query String Append, c’est-à-dire que les autres paramètres GET sont conservés et ajoutés à la substitution. Le drapeau L signifie Last, c’est-à-dire que c’est la dernière règle à appliquer si elle correspond.
+#RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]
+
+
+#--------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------
+
+
+#RewriteEngine On
+#RewriteBase /projet-forum/
+#RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+#RewriteRule ^ %1 [L,NE,R=302]
+#RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]
+
+
+#Version sur hostinger : Ce qui à été supprimer concerne uniquement la redirection de la page vers "public". Hostinger fait ce boulot à notre place.
+
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]

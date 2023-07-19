@@ -7,10 +7,10 @@
                 Je peux donc faire un echo de $category mais pas de $sousCategory.
                 Pour afficher le contenu de $sousCategory, il faire refaire un boucle dessus, donc deuxième foreach sur le second niveau du tableau d'origine. -->
             <?php
-                // dump($allCategorys);
-                // exit; 
-                ?>
-            <?php foreach ($categorysList as $category => $sousCategory) : ?>
+            // dump($allCategorys);
+            // exit; 
+            ?>
+            <?php foreach ($groupedCategories as $category => $sousCategory) : ?>
             <li class="headerCategory">
                 <div class="headerCategoryContent">
                     <div class="headerCategoryIcone">
@@ -46,7 +46,7 @@
                             <?= $infosSousCat['lastTopicTitle']; ?>
                         </div>
                         <div class="lastActivityUser">
-                            <?= $infosSousCat['lastMessageUser']; ?>
+                            par : <?= $infosSousCat['lastMessageUser']; ?>
                         </div>
                         <div class="lastActivityDate">
                             <?= $infosSousCat['lastMessageDate']; ?>

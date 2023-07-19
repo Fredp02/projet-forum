@@ -35,11 +35,12 @@ class Router
                 $page = "home";
             } else {
                 /**
-                 * !  Le fichier .htaccess utilise des règles de réécriture pour rediriger les requêtes vers le fichier index.php du dossier public, en passant l’URL demandée en tant que paramètre "page" dans la chaîne de requête
-                 *  $_GET['page'] = "public/nom_De_La_Route
+                 * !  Le fichier .htaccess passe l’URL demandée en tant que paramètre "page" dans la chaîne de requête
+                 *  $_GET['page'] = "/nom_De_La_Route
                  */
                 $paramGet = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
-                $page = $paramGet[1];
+
+                $page = $paramGet[0];
             }
             //on construit le chemin du bon controller
             $controllerName = 'Controllers\\' . ucfirst($page) . 'Controller';
@@ -48,8 +49,8 @@ class Router
             }
             $controller = new $controllerName();
             // if (method_exists($controllerName, $page))
-            if (isset($paramGet[2]) && !empty($paramGet[2])) {
-                $controller->$page($paramGet[2]);
+            if (isset($paramGet[1]) && !empty($paramGet[1])) {
+                $controller->$page($paramGet[1]);
             } else {
                 $controller->$page();
             }

@@ -14,7 +14,7 @@ elBtnForgot.addEventListener('click', async (e) => {
         const formData = new FormData(elFormForgot);
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("forgotPass", {
+            const response = await fetch("/forgotPass/sendEmail", {
                 method: "POST",
                 body: formData,
             });
@@ -35,12 +35,12 @@ elBtnForgot.addEventListener('click', async (e) => {
             }
             //Si true, on redirige
             elLoginMessage.style.display = 'block'
-            window.location = "home";
+            window.location = "/home";
 
         } catch (error) {
             //on affiche un message d'erreur dans le DOM
             if (error.message === "expired token") {
-                window.location = "home";
+                window.location = "/home";
             } else {
                 elInputForgot.classList.add('inputError');
                 elLabelForgot.style.backgroundColor = "#FF4242";

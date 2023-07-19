@@ -19,6 +19,7 @@ abstract class MainController
          * génère les variable suivante : $page_description, $page_title, $view, et $template
          * elle viennent du tableau $data_page de la méthode accueil ou page erreur ou les autres
          */
+
         extract($data);
         ob_start(); //on lance la temporisation
 
@@ -43,7 +44,7 @@ abstract class MainController
             "msg" => $msg,
             "view" => "../Views/erreur.view.php",
             "template" => "../Views/common/template.php",
-            "css" => "public/style/errorStyle.css"
+            "css" => "/style/errorStyle.css"
         ];
         $this->render($data_page);
     }

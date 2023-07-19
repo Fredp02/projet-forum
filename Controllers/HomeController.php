@@ -18,62 +18,45 @@ class HomeController extends MainController
     {
         $allCategorys = $this->categorysModel->getCategorysList();
 
-        // $categories = [];
-        // foreach ($allCategorys as $row) {
-        //     $parentCategoryName = $row['categoryName'];
-        //     if (!isset($categories[$parentCategoryName])) {
-        //         $categories[$parentCategoryName] = [];
-        //     }
-        //     if (isset($row['subCategoryName'])) {
-        //         $subCategory = [
-        //             'name' => $row['subCategoryName'],
-        //             'totalTopics' => $row['totalTopics'],
-        //             'totalMessages' => $row['totalMessages'],
-        //             'latestTopicTitle' => $row['latestTopicTitle'],
-        //             'latestMessageDate' => $row['latestMessageDate'],
-        //             'latestMessageUser' => $row['latestMessageUser']
-        //         ];
-        //         $categories[$parentCategoryName][] = $subCategory;
-        //     }
-        // }
-        $resultatsRegroupes = array_reduce($allCategorys, function ($accumulateur, $ligne) {
-            // On vérifie si la catégorie parente existe déjà dans le tableau des résultats
-            if (!isset($accumulateur[$ligne->parentCategoryName])) {
-                // Si ce n'est pas le cas, on crée une nouvelle entrée pour cette catégorie
-                $accumulateur[$ligne->parentCategoryName] = [];
-            }
+        //Ce code parcourt les résultats d’une requête SQL qui sélectionne des informations sur les catégories parentes et les sous-catégories, ainsi que des statistiques sur les sujets et les messages dans ces catégories. Le code utilise une boucle foreach pour parcourir chaque ligne de résultat de la requête, représentée par la variable $row.
 
-            // On crée un tableau pour stocker les informations de la sous-catégorie
+        //Pour chaque ligne de résultat, le code crée un tableau associatif $subCategory contenant des informations sur la sous-catégorie représentée par cette ligne. Les informations incluent le nom de la sous-catégorie, sa description, son ID, son URL, le nombre total de sujets et de messages dans cette sous-catégorie, ainsi que des informations sur le dernier message posté dans cette sous-catégorie.
+
+        //Ensuite, le code ajoute le tableau $subCategory au tableau $categories, en utilisant le nom de la catégorie parente comme clé. Cela crée un tableau associatif à deux niveaux, où le premier niveau représente les catégories parentes et le deuxième niveau représente les sous-catégories dans chaque catégorie parente.
+
+        //Si le nom de la catégorie parente n’existe pas encore comme clé dans le tableau $categories, cette ligne de code crée un nouvel index principal pour cette catégorie parente et ajoute le tableau associatif $subCategory comme première valeur sous cet index. Si le nom de la catégorie parente existe déjà comme clé dans le tableau $categories, cette ligne de code ajoute simplement le tableau associatif $subCategory à la “pile” de tableaux existants sous cet index principal.
+
+        $groupedCategories = [];
+        $groupedCategories = array_reduce($allCategorys, function ($acc, $row) {
             $subCategory = [
-                'name' => $ligne->subCategoryName,
-                'description' => $ligne->subCategoryDesc,
-                'id' => $ligne->subCategoryID,
-                'url' => 'sousCat/' . $ligne->subCategorySlug . '.' . $ligne->subCategoryID,
-                'totalTopics' => $ligne->totalTopics,
-                'totalMessages' => $ligne->totalMessages,
-                'lastTopicTitle' => $ligne->lastTopicTitle,
-                'lastMessageDate' => Toolbox::convertDate($ligne->lastMessageDate, 'd MMMM Y'),
-                'lastMessageUser' => $ligne->lastMessageUser
+                'name' => $row->subCategoryName,
+                'description' => $row->subCategoryDesc,
+                'id' => $row->subCategoryID,
+                'url' => 'topicsByCat/' . $row->subCategorySlug . '.' . $row->subCategoryID,
+                'totalTopics' => $row->totalTopics,
+                'totalMessages' => $row->totalMessages,
+                'lastTopicTitle' => $row->lastTopicTitle,
+                'lastMessageDate' => Toolbox::convertDate($row->lastMessageDate, 'd MMMM Y'),
+                'lastMessageUser' => $row->lastMessageUser
             ];
-            // On ajoute la sous-catégorie au tableau des sous-catégories pour cette catégorie parente
-            $accumulateur[$ligne->parentCategoryName][] = $subCategory;
-            // On retourne le tableau des résultats mis à jour
-            return $accumulateur;
+            $acc[$row->parentCategoryName][] = $subCategory;
+            return $acc;
         }, []);
 
-        //même résultat que le array_reduce
-        // $groupedResults = [];
+        // //même chose avec forecach : 
         // foreach ($allCategorys as $row) {
-        //     $category = $row->parentCategoryName;
-        //     $subcategory = $row->subCategoryName;
-        //     // if ($subcategory !== null) {
-        //     if (!isset($groupedResults[$category])) {
-        //         $groupedResults[$category] = [];
-        //     }
-        //     // $groupedResults[$category][] = $subcategory;
-        //     $groupedResults[$category][$subcategory][] = $row->totalTopics;
-        //     $groupedResults[$category][$subcategory][] = $row->totalMessages;
-        //     // }
+        //     $subCategory = [
+        //         'name' => $row->subCategoryName,
+        //         'description' => $row->subCategoryDesc,
+        //         'id' => $row->subCategoryID,
+        //         'url' => 'topicsByCat/' . $row->subCategorySlug . '.' . $row->subCategoryID,
+        //         'totalTopics' => $row->totalTopics,
+        //         'totalMessages' => $row->totalMessages,
+        //         'lastTopicTitle' => $row->lastTopicTitle,
+        //         'lastMessageDate' => Toolbox::convertDate($row->lastMessageDate, 'd MMMM Y'),
+        //         'lastMessageUser' => $row->lastMessageUser
+        //     ];
+        //     $groupedCategories[$row->parentCategoryName][] = $subCategory;
         // }
 
         //* Sinon, autre manière plus complexe de récupérer toute les catégories et de les classer en fonction de leur parent, quelque soit le nombre de sous categories
@@ -91,11 +74,12 @@ class HomeController extends MainController
             "pageDescription" => "Description de la page d'accueil",
             "pageTitle" => "Accueil Guitare forum",
             "view" => "../Views/viewHome.php",
-            "css" => "public/style/homeStyle.css",
+            "css" => "/style/homeStyle.css",
             "template" => "../Views/common/template.php",
             'allCategorys' => $allCategorys,
-            "categorysList" => $resultatsRegroupes
+            "groupedCategories" => $groupedCategories
         ];
+
         $this->render($data_page);
     }
 

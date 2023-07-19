@@ -9,6 +9,8 @@ use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
 use Controllers\Services\JWTService\JWTService;
 
+include 'Services\JWTService\configJWT.php';
+
 class AccountController extends MainController
 {
     private $usersModel;
@@ -52,8 +54,8 @@ class AccountController extends MainController
             "pageTitle" => "Profil",
             "view" => "../Views/account/viewProfil.php",
             "template" => "../views/common/template.php",
-            "css" => "public/style/profilStyle.css",
-            "script" => "public/js/profil.js",
+            "css" => "/style/profilStyle.css",
+            "script" => "/js/profil.js",
             'tokenCSRF' => $tokenCSRF,
             "userDatas" => $userDatas
         ];
@@ -97,20 +99,20 @@ class AccountController extends MainController
                     //on verifie le type mime du fichier
                     if (!in_array($dataPhoto['type'], $typeMime)) {
                         Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
-                        header("Location: " . URL . "compte/profil");
+                        header("Location: " . URL . "account/profil");
                         exit;
                     }
                     //on ajoute une couche de sécurité, peut-être inutile
                     if (!preg_match($regexExtention, $dataPhoto['name'])) {
                         Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
-                        header("Location: " . URL . "compte/profil");
+                        header("Location: " . URL . "account/profil");
                         exit;
                     }
 
                     //on vérifie sa taille
                     if ($dataPhoto['size'] > 153600) {
                         Toolbox::ajouterMessageAlerte("Le poids de l'image doit être inférieure à 150ko", 'rouge');
-                        header("Location: " . URL . "compte/profil");
+                        header("Location: " . URL . "account/profil");
                         exit;
                     }
                     $infoSize = getimagesize($dataPhoto['tmp_name']);
@@ -118,7 +120,7 @@ class AccountController extends MainController
                     //et on vérifie ses dimensions
                     if ($infoSize[0] > 200 || $infoSize[1] > 200) {
                         Toolbox::ajouterMessageAlerte("Le fichier doit avoir une largeur et une hauteur maximale de 200 pixels", 'rouge');
-                        header("Location: " . URL . "compte/profil");
+                        header("Location: " . URL . "account/profil");
                         exit;
                     }
 
@@ -195,7 +197,7 @@ class AccountController extends MainController
     }
     private function editEmail()
     {
-        $tokenJWT = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL))[3] ?? "";
+        $tokenJWT = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL))[2] ?? "";
 
 
         //!Si requete POST : envoie du mail avec tokenJWT
@@ -396,7 +398,7 @@ class AccountController extends MainController
             "pageTitle" => "Supprimer mon compte",
             "view" => "../Views/account/viewDeleteAccount.php",
             "template" => "../views/common/template.php",
-            "css" => "public/style/deleteAccountStyle.css",
+            "css" => "/style/deleteAccountStyle.css",
             'tokenCSRF' => $tokenCSRF
 
         ];

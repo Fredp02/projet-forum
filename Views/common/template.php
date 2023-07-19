@@ -18,9 +18,9 @@ use Controllers\Services\Securite; ?>
     <link href="<?= $quillSnowCSS ?? ''; ?>" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="<?= $quillImageCSS ?? ''; ?>">
     <link rel="stylesheet" type="text/css" href="<?= $quillEmojiCSS ?? ''; ?>">
-    <link rel="stylesheet" href="public/style/mainStyle.css" />
+    <link rel="stylesheet" href="/style/mainStyle.css" />
     <link rel="stylesheet" href="<?= $css ?? ''; ?>" />
-    <script src="public/js/app.js" defer></script>
+    <script src="/js/app.js" defer></script>
 
     <script src="<?= $quillJS ?? ''; ?>" defer></script>
     <script src="<?= $quillImageJS ?? ''; ?>" defer></script>
@@ -39,7 +39,7 @@ use Controllers\Services\Securite; ?>
                 ?>
             <?php foreach ($_SESSION['alert'] as $alert) : ?>
             <div class="blocMessage <?= htmlspecialchars($alert['couleur']) ?>" id="message<?= htmlspecialchars($i) ?>">
-                <div class="textMessage">
+                <div class="textMessageBanner">
                     <p><?= htmlspecialchars($alert['message']) ?></p>
                 </div>
             </div>
@@ -51,7 +51,7 @@ use Controllers\Services\Securite; ?>
             unset($_SESSION['alert']);
             ?>
             <div class="conteneurNav">
-                <a href="<?= URL ?>home" class="headerTitle">
+                <a href="/home" class="headerTitle">
                     <div class="textHeaderTitle">
                         <span>Guitare</span><span>forum</span>
                     </div>
@@ -61,11 +61,11 @@ use Controllers\Services\Securite; ?>
                 </div>
                 <div class="headerLinks">
                     <?php if (!Securite::isConnected()) : ?>
-                    <a href="<?= URL; ?>login" class="linkLogin">Connexion</a>
+                    <a href="/login" class="linkLogin">Connexion</a>
                     <?php else : ?>
-                    <a href="<?= URL ?>account/profil"
-                        class="linkProfil"><?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
-                    <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
+                    <a href="/account/profil" class="linkProfil">
+                        <?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
+                    <a href="/logout" class="logout">Déconnexion</a>
                     <?php endif; ?>
 
                 </div>
@@ -87,7 +87,7 @@ use Controllers\Services\Securite; ?>
                 <div class="headerLogin">
                     <h2>Se connecter</h2>
                     <div class="loginMessage">
-                        <p class="textMessage"></p>
+                        <p class="textMessageAside"></p>
                     </div>
                 </div>
 
@@ -106,11 +106,11 @@ use Controllers\Services\Securite; ?>
 
                     <button class="btnLogin">Connexion</button>
                 </form>
-                <a href="<?= URL; ?>forgotPass" class="linkForgot">Mot de passe oublié ?</a>
+                <a href="/forgotPass/forgotPassView" class="linkForgot">Mot de passe oublié ?</a>
 
                 <div class="footerLogin">
 
-                    <a href="<?= URL . 'register/viewRegister'; ?>">Créer un compte</a>
+                    <a href="/register/viewRegister">Créer un compte</a>
                 </div>
                 <?php else : ?>
                 <div class="headerLogin">
@@ -118,14 +118,14 @@ use Controllers\Services\Securite; ?>
                 </div>
 
                 <div class="divAvatar">
-                    <img src="<?= URL ?>public/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
+                    <img src="/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
                         alt="photo de profil de l'utilisateur">
                 </div>
-                <a href="<?= URL ?>account/profil" class="linkProfil">Mon profil</a>
+                <a href="/account/profil" class="linkProfil">Mon profil</a>
 
                 <div class="footerLogin">
 
-                    <a href="<?= URL . 'logout'; ?>" class="logout">Déconnexion</a>
+                    <a href="/logout" class="logout">Déconnexion</a>
                 </div>
                 <?php endif; ?>
 

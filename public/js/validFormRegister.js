@@ -45,7 +45,7 @@ elBtnInscription.addEventListener('click', async () => {
 
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch(`${URL_WEBSITE}register/sendMail`, {
+            const response = await fetch('/register/sendMail', {
                 method: "POST",
                 body: formData,
             });
@@ -64,7 +64,7 @@ elBtnInscription.addEventListener('click', async () => {
                 throw new Error(resultat.message);
 
             }
-            window.location.href = `${URL_WEBSITE}home`;
+            window.location.href = '/home';
 
         } catch (error) {
             console.log(error);

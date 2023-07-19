@@ -64,7 +64,7 @@ let ville;
 
 async function getData() {
     try {
-        const response = await fetch(URL_WEBSITE + 'account/datasFormProfil');
+        const response = await fetch('/account/datasFormProfil');
         const resultat = await response.json();
         email = resultat.data.email;
         emploi = resultat.data.emploi;
@@ -191,7 +191,7 @@ elBtnEditEmail.addEventListener('click', async (e) => {
         const formEmail = new FormData(elFormEmail);
         try {
             //envoi des données au serveur avec la méthode POST
-            const response = await fetch(URL_WEBSITE + "/account/editEmail", {
+            const response = await fetch("/account/editEmail", {
                 method: "POST",
                 body: formEmail,
             });
@@ -270,7 +270,7 @@ elBtnEditPassword.addEventListener('click', async (e) => {
         const formData = new FormData(elFormPassword);
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch(URL_WEBSITE + "/account/editPassword", {
+            const response = await fetch("/account/editPassword", {
                 method: "POST",
                 body: formData,
             });
@@ -402,7 +402,7 @@ inputAvatar.addEventListener('change', async function () {
             let formData = new FormData(elFormulaireAvatar);
             // formData.append("avatarPhoto", fichier);
 
-            const response = await fetch(URL_WEBSITE + "/account/editAvatar", {
+            const response = await fetch("/account/editAvatar", {
                 method: "POST",
                 body: formData,
             });
@@ -468,7 +468,7 @@ elBtnEditAbout.addEventListener('click', async (e) => {
 
 
         //envoi des données au serveur avec la méthode POST
-        const response = await fetch(URL_WEBSITE + "/account/editAbout", {
+        const response = await fetch("/account/editAbout", {
             method: "POST",
             body: formAbout,
         });

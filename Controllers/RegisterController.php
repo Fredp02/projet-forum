@@ -24,11 +24,11 @@ class RegisterController extends MainController
     {
 
         /**
-         * !       [0]     [1]        [2]         [3]
-         * ! 1 -> public/register/viewRegister
-         * ! 2 -> public/register/sendMail
-         * ! 2bis -> public/register/returnToken/jfgdkfjgbdlkfgn
-         * ! 3 -> public/register/accountActivation/jgbdfkjgndfgb
+         * !       [0]            [1]                   [2] 
+         * ! 1 -> register      /viewRegister
+         * ! 2 -> register      /sendMail
+         * ! 2bis -> register   /returnToken           /jfgdkfjgbdlkfgn
+         * ! 3 -> register      /accountActivation     /jgbdfkjgndfgb
          */
 
         if (!Securite::isConnected()) {
@@ -46,10 +46,10 @@ class RegisterController extends MainController
         $data_page = [
             "pageDescription" => "Page de création de compte",
             "pageTitle" => "Inscription",
-            "view" => "../Views/viewRegister.php",
+            "view" => "../Views/account/viewRegister.php",
             "template" => "../Views/common/template.php",
-            "css" => "public/style/registerStyle.css",
-            "script" => "public/js/validFormRegister.js",
+            "css" => "/style/registerStyle.css",
+            "script" => "/js/validFormRegister.js",
             "tokenCSRF" => $_SESSION['tokenCSRF']
         ];
         $this->render($data_page);
@@ -167,8 +167,8 @@ class RegisterController extends MainController
     {
         $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
 
-        if (isset($url[3]) && !empty($url[3])) {
-            $userId = $url[3];
+        if (isset($url[2]) && !empty($url[2])) {
+            $userId = $url[2];
             $user = $this->usersModel->getUserBy('userID', $userId);
             //si le user existe et qu'il n'est pas encore valide
             if ($user && !$user->isValid) {
@@ -209,8 +209,8 @@ class RegisterController extends MainController
     {
         $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
 
-        if (isset($url[3]) && !empty($url[3])) {
-            $tokenToVerify = $url[3];
+        if (isset($url[2]) && !empty($url[2])) {
+            $tokenToVerify = $url[2];
 
             $jwt = new JWTService();
             if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {

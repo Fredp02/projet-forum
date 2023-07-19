@@ -74,16 +74,37 @@ class CategorysModel extends DbConnect
         c.categoryDescription AS subCategoryDesc,
         COUNT(DISTINCT t.topicID) AS totalTopics,
         COUNT(m.messageID) AS totalMessages,
-        MAX(t.topicTitle) AS lastTopicTitle,
+        (SELECT t2.topicTitle FROM messages m2 JOIN topics t2 ON m2.topicID = t2.topicID WHERE m2.messageID = MAX(m.messageID)) AS lastTopicTitle,
         MAX(m.messageDate) AS lastMessageDate,
-        (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.topicID = t.topicID ORDER BY m2.messageDate DESC LIMIT 1) AS lastMessageUser
+        (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.messageID = MAX(m.messageID)) AS lastMessageUser
     FROM categorys p
     JOIN categorys c ON p.categoryID = c.CategoryParentID
     JOIN topics t ON c.categoryID = t.categoryID
     JOIN messages m ON t.topicID = m.topicID
     WHERE p.CategoryParentID IS NULL
-    GROUP BY p.categoryID, c.categoryID, t.topicID;
+    GROUP BY p.categoryID, c.categoryID
+    
+    
     ";
+        $req = "SELECT 
+            p.categoryName AS parentCategoryName,
+            c.categoryName AS subCategoryName,
+            c.categoryID AS subCategoryID,
+            c.categorySlug AS subCategorySlug,
+            c.categoryDescription AS subCategoryDesc,
+            COUNT(DISTINCT t.topicID) AS totalTopics,
+            COUNT(m.messageID) AS totalMessages,
+            (SELECT t2.topicTitle FROM messages m2 JOIN topics t2 ON m2.topicID = t2.topicID WHERE m2.messageID = MAX(m.messageID)) AS lastTopicTitle,
+            MAX(m.messageDate) AS lastMessageDate,
+            (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.messageID = MAX(m.messageID)) AS lastMessageUser
+        FROM categorys p
+        JOIN categorys c ON p.categoryID = c.CategoryParentID
+        JOIN topics t ON c.categoryID = t.categoryID
+        JOIN messages m ON t.topicID = m.topicID
+        WHERE p.CategoryParentID IS NULL
+        GROUP BY p.categoryID, c.categoryID        
+        ";
+
         $sql = $this->getBdd()->prepare($req);
         try {
             $sql->execute();

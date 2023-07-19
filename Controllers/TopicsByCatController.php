@@ -6,7 +6,7 @@ use Controllers\MainController;
 use Models\TopicsModel;
 use Models\CategorysModel;
 
-class SousCatController extends MainController
+class TopicsByCatController extends MainController
 {
 
     private $categorysModel;
@@ -22,8 +22,9 @@ class SousCatController extends MainController
 
 
 
-    public function sousCat($sousCategoryURL)
+    public function TopicsByCat($sousCategoryURL)
     {
+
         //en cliquant sur le nom de la sous catégorie depuis la page d'acceuil, il faudra afficher la liste des topics en fonction de l'ID de la sous catégorie
 
         //je récupère la seconde partie du slug séparée par un "." qui correspond à l'id de la sous catégorie
@@ -39,14 +40,16 @@ class SousCatController extends MainController
                 $data_page = [
                     "pageDescription" => "Catégorie " . $infosCategory->categoryName . " du site Guitare-forum",
                     "pageTitle" => $infosCategory->categoryName . " | Guitare-forum",
-                    "view" => "../Views/viewSousCat.php",
-                    "css" => "public/style/sousCat.css",
+                    "view" => "../Views/topics/viewTopicsByCat.php",
+                    "css" => "/style/topicsByCat.css",
                     "template" => "../Views/common/template.php",
                     "categoryName" => $infosCategory->categoryName,
                     "categorySlug" => $infosCategory->categorySlug,
                     "categoryID" => $infosCategory->categoryID,
                     "listTopics" => $listTopics
                 ];
+
+
                 $this->render($data_page);
             } else {
                 header("Location: " . URL);

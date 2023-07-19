@@ -13,7 +13,8 @@
                 <input type="text" class="inputPageLogin" name="pseudo" placeholder="Pseudo" required />
             </div>
             <div class="">
-                <input type="password" class="inputPasswordPageLogin" name="password" placeholder="Mot de passe" required />
+                <input type="password" class="inputPasswordPageLogin" name="password" placeholder="Mot de passe"
+                    required />
             </div>
             <div class="">
                 <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF;  ?>" />
@@ -26,7 +27,7 @@
                 <button class="btnPageLogin">Connexion</button>
             </div>
         </form>
-        <a href="forgotPass" class="linkForgotPageLogin">Mot de passe oublié ?</a>
+        <a href="forgotPass/forgotPassView" class="linkForgotPageLogin">Mot de passe oublié ?</a>
 
         <div class="footerPageLogin">
 

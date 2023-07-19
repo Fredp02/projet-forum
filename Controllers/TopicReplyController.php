@@ -53,6 +53,7 @@ class TopicReplyController extends MainController
                     exit;
                 }
 
+                //! 1 - l'image va correctement s'enregistrer avec le chemin 'images/topics/' (ou bien './images/topics/') 
                 $filePath = 'images/topics/' . $topicID;
                 //Si ce dossier n'existe pas, il faut le créer
                 if (!file_exists($filePath)) {
@@ -67,7 +68,8 @@ class TopicReplyController extends MainController
                 //on déplace l'image des "temporaire" dans le dossier du user
                 $moveImage = move_uploaded_file($datasImage['tmp_name'], $filePath . '/' . $imageRename);
                 if ($moveImage) {
-                    $imageURL = 'public/' . $filePath . '/' . $imageRename;
+                    // ! 2 - par contre ici, un slash (uniquement) est nécéssaire devant $filepath pour que l'image s'affiche dans le navigateur.
+                    $imageURL = '/' . $filePath . '/' . $imageRename;
                     $dataImage = [
                         'url' => $imageURL
                     ];
@@ -88,6 +90,7 @@ class TopicReplyController extends MainController
     }
     private function validation()
     {
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
                 if (Securite::isConnected()) {
@@ -95,9 +98,12 @@ class TopicReplyController extends MainController
 
                         /**
                          * !on fait la même vérif ici que celle de JS pour les réponses vides :
-                         * on retire toutes les balises vide par "". Si au final la chaine est completement vide alors c'est que la soumission ne contient rien.
+                         * Voir explication détaillée dans le cas particulier du fichier responseTopics
                          */
-                        $contenuDeVerification = preg_replace('/<[^>]*>/', '', $_POST['inputResponse']);
+
+                        $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
+                            return str_contains($match[0], 'img') ? $match[0] : '';
+                        }, $_POST['topicID']);
                         if ($contenuDeVerification) {
                             $escapedResponse = htmlspecialchars($_POST['inputResponse']);
 
@@ -144,7 +150,7 @@ class TopicReplyController extends MainController
                                 exit;
                             }
                         } else {
-                            Toolbox::dataJson(false, "Veuillez entrer du contenu avant de poster votre réponse");
+                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputResponse']);
                             exit;
                         }
                     } else {

@@ -4,13 +4,13 @@ const elLinkLogin = document.querySelector('.linkLogin');
 const elBtnLogin = document.querySelector('.btnLogin');
 const elFormLogin = document.querySelector('.formLogin');
 const elLoginMessage = document.querySelector('.loginMessage');
-const elTextMessage = document.querySelector('.textMessage');
+const elTextMessageAside = document.querySelector('.textMessageAside');
 const elHeaderLinks = document.querySelector('.headerLinks');
 const elInputLogin = document.querySelector('.inputLogin');
 const elInputPassword = document.querySelector('.inputPassword');
 const elContentLogin = document.querySelector('.contentLogin');
 const inputTokenCSRF = document.querySelector('.tokenCSRF')
-const URL_WEBSITE = 'http://localhost/projet-forum/';
+
 
 window.addEventListener("scroll", () => {
     //hauteur des deux éléments
@@ -31,7 +31,7 @@ if (elBtnLogin) {
             const formData = new FormData(elFormLogin);
             try {
                 // envoi des données au serveur avec la méthode POST
-                const response = await fetch(URL_WEBSITE + "login", {
+                const response = await fetch("/login", {
                     method: "POST",
                     body: formData,
                 });
@@ -49,6 +49,7 @@ if (elBtnLogin) {
                 //si dans ces données, on à un booléen à false, alors on affiche son message
                 //Il est "false" si les identifiants sont incorrectes ou si le compte est inactif
                 if (!resultat.boolean) {
+
                     throw new Error(resultat.message);
                 }
                 //Si true, on met à jour le DOM
@@ -58,11 +59,14 @@ if (elBtnLogin) {
                 if (error.message === "expired token") {
                     window.location.href = '/projet-forum/home';
                 } else {
+                    // debugger;
                     elLoginMessage.style.display = 'block'
                     elLoginMessage.classList.add('rouge');
                     elInputLogin.value = "";
                     elInputPassword.value = "";
-                    elTextMessage.innerHTML = error.message;
+                    elTextMessageAside.innerHTML = error.message;
+
+
                 }
 
             }
@@ -81,18 +85,18 @@ function updateDom(resultat) {
 
     const divAvatar = document.createElement('div');
     divAvatar.classList.add("divAvatar");
-    divAvatar.innerHTML = `<img src="/projet-forum/public/images/profils/${resultat.data.filepathAvatar}" alt="photo de profil de l'utilisateur">`;
+    divAvatar.innerHTML = `<img src="/images/profils/${resultat.data.filepathAvatar}" alt="photo de profil de l'utilisateur">`;
 
     const lienProfil = document.createElement('a');
     lienProfil.classList.add("linkProfil");
-    lienProfil.setAttribute("href", "/projet-forum/account/profil");
+    lienProfil.setAttribute("href", "/account/profil");
     lienProfil.textContent = "Mon profil";
 
     const divFooterLogin = document.createElement('div');
     divFooterLogin.classList.add("footerLogin");
     const lienlogout = document.createElement('a');
     lienlogout.classList.add("logout");
-    lienlogout.setAttribute("href", "/projet-forum/logout");
+    lienlogout.setAttribute("href", "/logout");
     lienlogout.textContent = "Déconnexion";
     divFooterLogin.append(lienlogout);
 
@@ -102,12 +106,12 @@ function updateDom(resultat) {
     elHeaderLinks.innerHTML = "";
     const lienNavProfil = document.createElement('a');
     lienNavProfil.classList.add("linkProfil");
-    lienNavProfil.setAttribute("href", "/projet-forum/account/profil");
+    lienNavProfil.setAttribute("href", "/account/profil");
     lienNavProfil.textContent = resultat.data.pseudo;
 
     const lienNavlogout = document.createElement('a');
     lienNavlogout.classList.add("logout");
-    lienNavlogout.setAttribute("href", "/projet-forum/logout");
+    lienNavlogout.setAttribute("href", "/logout");
     lienNavlogout.textContent = "Déconnexion";
     elHeaderLinks.append(lienNavProfil, lienNavlogout);
 
@@ -124,7 +128,7 @@ function updateDom(resultat) {
 let i = 0;
 function hideMessage(i) {
 
-    let message = document.getElementById("message" + i); // sélection de la div avec JavaScript pur
+    let message = document.getElementById("message" + i); // sélection de la div avec JavaScript
     if (message) { // vérification que l'élément existe
         message.classList.add("fade-out"); // ajout de la classe fade-out qui déclenche l'animation
         // ajout d'un écouteur d'événement qui se déclenche à la fin de l'animation
@@ -139,7 +143,7 @@ setTimeout(hideMessage, 5000, i); // utilisation de la fonction setTimeout qui e
 
 
 function inputDefault() {
-    elTextMessage.textContent = "";
+    elTextMessageAside.textContent = "";
     elLoginMessage.style.display = 'none'
     elLoginMessage.classList.remove('rouge');
     this.classList.remove("inputError");

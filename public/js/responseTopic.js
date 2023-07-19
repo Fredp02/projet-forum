@@ -44,13 +44,26 @@ const quill = new Quill('.editor', {
 formResponse.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    //On va placer le contenu de l'éditeur quill dans une variable qui va nous servir à vérifier si le contenu contient uniquement des balises vide. C'est le cas lorsque le user clique sur "envoyer" sans rien écrire ou clique sur envoyer avec du contenu "blanc" (espace uniquement, touche entrer uniquement...)
-    //On fait cela avec une regex qui remplace les balises par rien du tout
-    const contenuDeVérification = quill.root.innerHTML.replace(/<[^>]*>/g, '');
-
-    //Ensuite, si la chaîne résultante est vide, cela signifie que le contenu de l’éditeur est vide ou ne contient que des balises vides.
-    //si ya du contenu...
-    if (contenuDeVérification) {
+    /**
+     * !cas particulier
+     * si le user clique sur "enter" sans rien écrire, Quill va quand même insérer du contenu : des balises vides. Donc la vérification if (quill.root.innerHTML === "") ne fonctionne pas.
+     * l'astuce : 
+     * l'astuce c'est de remplacer les balises vides' par rien du tout, sauf si la chaîne contient au moins une balise img. La méthode replace prend en premier argument une expression régulière qui correspond à toutes les balises HTML (c’est-à-dire tout ce qui est entre < et >), et en second argument une fonction de callback (ou fléchée plus loin) qui renvoie la correspondance elle-même si elle contient la chaîne 'img', sinon une chaîne vide.
+     * 
+     * Autre version plus "lisible" :
+     * Dans cet exemple, nous utilisons une fonction de rappel pour vérifier si chaque correspondance de la regex contient la chaîne 'img'. Si c’est le cas, nous renvoyons la correspondance elle-même (c’est-à-dire que nous ne remplaçons rien), sinon nous renvoyons une chaîne vide pour remplacer la balise par rien du tout :
+     *  
+     * const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, function(match) {
+        if (match.includes('img')) {
+            return match;
+        } else {
+            return '';
+        }
+    });
+     */
+    const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('img') ? match : '');
+    // si la chaine n'est pas vide
+    if (contenuDeVerification) {
         //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
         inputResponse.value = quill.root.innerHTML;
         // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
@@ -78,7 +91,7 @@ formResponse.addEventListener('submit', async (e) => {
             }
             inputResponse.value = doc.body.innerHTML;
             const formData = new FormData(formResponse);
-            const response = await fetch(URL_WEBSITE + '/topicReply/validation', {
+            const response = await fetch('/topicReply/validation', {
                 method: 'POST',
                 body: formData
             });
@@ -106,7 +119,7 @@ formResponse.addEventListener('submit', async (e) => {
             const messageList = document.querySelector('.messageList');
             const lastMessage = templateItem.content.cloneNode(true);
 
-            lastMessage.querySelector('.avatar img').setAttribute('src', `projet-forum/public/images/profils/${filePathAvatar}`);
+            lastMessage.querySelector('.avatar img').setAttribute('src', `/images/profils/${filePathAvatar}`);
             lastMessage.querySelector('.pseudo span').textContent = pseudo;
             lastMessage.querySelector('.guitare span').textContent = 'Ma guitare: ' + userGuitare;
             lastMessage.querySelector('.totalMessagesUser span').textContent = messagesCount + ' message' + (messagesCount > 1 ? 's' : '');
@@ -128,7 +141,7 @@ formResponse.addEventListener('submit', async (e) => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
             } else if (error.message === 'expired token') {
-                window.location = "/projet-forum/connexion";
+                window.location = "/login";
             } else {
                 alertMessageTopic.textContent = error.message;
                 alertMessageTopic.style.display = "block";
@@ -159,7 +172,7 @@ async function uploadImage(imageBase64) {
 
     // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
     // try {
-    const response = await fetch(URL_WEBSITE + '/topicReply/uploadImage', {
+    const response = await fetch('/topicReply/uploadImage', {
         method: 'POST',
         body: formData,
     });

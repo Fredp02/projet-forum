@@ -69,10 +69,14 @@ class UsersModel extends DbConnect
     {
         //selectionne toutes les colonnes de "user", et la colonne nom_role de "roles" depuis la table "user" en jointure interne de "role" lorsque le users.id_role = roles.id_role. Le tout lorsque users.pseudo = $pseudo"
         //plus simplement, récupère tout les colonnes de user, et ajoute le nom_role en fonction de l'id_role de user qui est une clé étrangère de la table role.
-        $req = "SELECT users.*, roles.roleName, COUNT(messages.messageID) AS messagesCount FROM users 
-            INNER JOIN roles ON users.roleID = roles.roleID 
-            LEFT JOIN messages ON users.userID = messages.userID
-            WHERE users.pseudo = :pseudo";
+        $req = "SELECT users.*, roles.roleName, COUNT(messages.messageID) AS messagesCount
+        FROM users 
+        INNER JOIN roles ON users.roleID = roles.roleID 
+        LEFT JOIN messages ON users.userID = messages.userID
+        WHERE users.pseudo = :pseudo
+        GROUP BY users.userID
+        ";
+        // ajout de la clause "group by" car le mode "only_full_group_by" est configurer sur le serveur de Laragon.
         $sql = $this->getBdd()->prepare($req);
         $sql->bindValue(":pseudo", $pseudo);
         try {

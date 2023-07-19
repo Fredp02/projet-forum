@@ -39,17 +39,17 @@ class TopicController extends MainController
                 $data_page = [
                     "pageDescription" => "Sujet : " . $infosTopic->topicTitle . " du site Guitare-forum",
                     "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",
-                    "view" => "../Views/viewTopic.php",
-                    "css" => "public/style/topicStyle.css",
+                    "view" => "../Views/topics/viewTopic.php",
+                    "css" => "/style/topicStyle.css",
                     //editor quill
                     "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
                     "quillEmojiCSS" => "public/quill/dist/quill-emoji.css",
                     "quillJS" => "//cdn.quilljs.com/1.3.6/quill.js",
-                    "quillEmojiJS" => "public/quill/dist/quill-emoji.js",
-                    "quillImageJS" => "public/quill/dist/quill.imageUploader.js",
-                    "quillImageCSS" => "public/quill/dist/quill.imageUploader.css",
+                    "quillEmojiJS" => "/quill/dist/quill-emoji.js",
+                    "quillImageJS" => "/quill/dist/quill.imageUploader.js",
+                    "quillImageCSS" => "/quill/dist/quill.imageUploader.css",
                     //----------
-                    "script" => "public/js/responseTopic.js",
+                    "script" => "/js/responseTopic.js",
                     "template" => "../Views/common/template.php",
                     "tokenCSRF" => $_SESSION["tokenCSRF"],
                     // "categoryName" => $infosTopic->categoryName,

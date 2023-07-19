@@ -18,7 +18,7 @@ btnPageLogin.addEventListener('click', async (e) => {
         try {
 
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("login", {
+            const response = await fetch("/login", {
                 method: "POST",
                 body: formDataPageLogin,
             });

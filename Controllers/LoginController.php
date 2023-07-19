@@ -4,9 +4,6 @@ namespace Controllers;
 
 
 
-
-use Exception;
-// use Models\MessagesModel;
 use Models\UsersModel;
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
@@ -118,10 +115,10 @@ class LoginController extends MainController
         $data_page = [
             "pageDescription" => "Page de connexion au site Guitare Forum",
             "pageTitle" => "Connexion | Guitare Forum",
-            "view" => "../Views/viewLogin.php",
+            "view" => "../Views/account/viewLogin.php",
             "template" => "../Views/common/template.php",
-            "css" => "public/style/loginStyle.css",
-            "script" => "public/js/validFormPageLogin.js",
+            "css" => "/style/loginStyle.css",
+            "script" => "/js/validFormPageLogin.js",
             "tokenCSRF" => $_SESSION['tokenCSRF'],
             "previousURL" => $_SERVER['HTTP_REFERER'] ?? "home",
         ];
