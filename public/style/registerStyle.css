@@ -35,9 +35,10 @@
 
 .messageInscription {
     display: none;
+    margin-bottom: 10px;
     text-align: center;
     padding: 5px;
-    width: 60%;
+    width: 100%;
 }
 
 .contentInscription form label {

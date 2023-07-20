@@ -372,7 +372,7 @@ class AccountController extends MainController
                 $imageAvatar = 'images/profils/' . $userId . '/' . $user->avatar;
                 unlink($imageAvatar);
                 rmdir('images/profils/' . $userId);
-                if ($this->usersModel->supprimerUser($userId)) {
+                if ($this->usersModel->deleteAccount($userId)) {
                     Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
                     unset($_SESSION['profil']);
                     header("Location: " . URL . "home");

@@ -60,25 +60,6 @@ class Securite
     }
 
 
-
-    //! version d'origine
-    // public static function createTokenJWT($userId, $pseudo = null, $email = null)
-    // {
-    //     $header = [
-    //         'typ' => 'JWT',
-    //         'alg' => 'HS256'
-    //     ];
-    //     $payload = [
-    //         'userID' => $userId,
-    //         'pseudo' => $pseudo,
-    //         'email' => $email
-    //     ];
-    //     $jwt = new JWTService();
-
-    //     //Si "email" n'est pas null, c'est donc un token destiné à l'envoi d'un mail. Dans ce cas précis le token aura une durée de validité de 3h. Si "email" reste null, ce sera un token de connexion d'une durée de validité de 86400s -> 24h.
-    //     $validity = $email ? 10800 : 86400;
-    //     return $jwt->generate($header, $payload, SECRET, $validity);
-    // }
     public static function createTokenJWT($userId, $pseudo, $email)
     {
         $header = [
@@ -92,7 +73,6 @@ class Securite
         ];
         $jwt = new JWTService();
 
-        //Si "email" n'est pas null, c'est donc un token destiné à l'envoi d'un mail. Dans ce cas précis le token aura une durée de validité de 3h. Si "email" reste null, ce sera un token de connexion d'une durée de validité de 86400s -> 24h.
         $validity = 10800;
         return $jwt->generate($header, $payload, SECRET, $validity);
     }

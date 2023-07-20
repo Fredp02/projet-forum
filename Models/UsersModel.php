@@ -14,28 +14,7 @@ use Core\DbConnect;
 
 class UsersModel extends DbConnect
 {
-    // private $user;
 
-    // public function __construct()
-    // {
-    //     $this->user = new User();
-    // }
-    // private function getPasswordUser($pseudo): string
-    // {
-    //     $req = "SELECT password FROM users WHERE pseudo = :pseudo";
-    //     $sql = $this->getBdd()->prepare($req);
-    //     $sql->bindValue(":pseudo", $pseudo);
-    //     try {
-    //         $sql->execute();
-    //         $resultat = $sql->fetch();
-    //         $sql->closeCursor();
-    //         //return $resultat['password'];
-    //         return $resultat->password;
-    //     } catch (Exception $e) {
-    //         die('Erreur : ' . $e->getMessage());
-    //     }
-    // }
-    //vérifie si le mot de passe reçu correspond à celui de la basse de donnée
 
     public function lastInsertId()
     {
@@ -71,8 +50,8 @@ class UsersModel extends DbConnect
         //plus simplement, récupère tout les colonnes de user, et ajoute le nom_role en fonction de l'id_role de user qui est une clé étrangère de la table role.
         $req = "SELECT users.*, roles.roleName, COUNT(messages.messageID) AS messagesCount
         FROM users 
-        INNER JOIN roles ON users.roleID = roles.roleID 
-        LEFT JOIN messages ON users.userID = messages.userID
+        JOIN roles ON users.roleID = roles.roleID 
+        JOIN messages ON users.userID = messages.userID
         WHERE users.pseudo = :pseudo
         GROUP BY users.userID
         ";
@@ -123,7 +102,7 @@ class UsersModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
-    public function activatingUser($userId)
+    public function activatingUser($userId) //! passer par un objet User !!!!! car c'est un update !
     {
 
         $req = "UPDATE users SET isValid = 1 WHERE userID = :userId";
@@ -219,7 +198,7 @@ class UsersModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
-    public function supprimerUser($userId)
+    public function deleteAccount($userId)
     {
 
         $req = "DELETE FROM users WHERE userID = :userId";

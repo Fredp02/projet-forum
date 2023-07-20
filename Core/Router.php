@@ -4,14 +4,6 @@ namespace Core;
 
 use Exception;
 use Controllers\HomeController;
-// use Controllers\LoginController;
-// use Controllers\TopicController;
-// use Controllers\LogoutController;
-// use Controllers\AccountController;
-// use Controllers\SousCatController;
-// use Controllers\RegisterController;
-// use Controllers\ForgotPassController;
-// use Controllers\TopicReplyController;
 
 class Router
 {
@@ -19,16 +11,14 @@ class Router
     {
         /**
          * !! Système de routage basé sur une convention de nommage :
-         * Exemple : $_GET['page']) === "public/register", on récupère "register" avec un explode.
+         * Exemple : $_GET['page']) === "/register/viewRegister", on récupère "register" avec un explode.
          * register sera donc à la fois:
          * - le nom de la route
          * - le nom du controller (registerController)
          * - et le nom de la méthode à appeler
          * 
-         * Si existence de paramètres suplémentaires, exemple public/account/"profil", "profil" sera aussi récupére grâce au "explode" en indice [2] et passé en paramètre après l'instanciation de la bonne classe.
+         * par contre, il est possible que $_GET['page']) soit sous cette forme forgotPass/resetPassView/$JWT.
          */
-
-
 
         try {
             if (empty($_GET['page'])) {
@@ -36,7 +26,7 @@ class Router
             } else {
                 /**
                  * !  Le fichier .htaccess passe l’URL demandée en tant que paramètre "page" dans la chaîne de requête
-                 *  $_GET['page'] = "/nom_De_La_Route
+                 *  $_GET['page'] = "/nom_Du_controller/et-ou-nom_de_la_methode/paramètre_suplementaires
                  */
                 $paramGet = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
 

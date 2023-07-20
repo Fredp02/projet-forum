@@ -32,17 +32,6 @@ elBtnInscription.addEventListener('click', async () => {
         let dataTypeError;
         const formData = new FormData(elForm);
 
-        // // Créer un objet URLSearchParams à partir de FormData
-        // let params = new URLSearchParams(formData);
-
-        // // Parcourir les clés et les valeurs de params
-        // for (let [key, value] of params) {
-        //     // Décoder la valeur avec decodeURIComponent
-        //     value = decodeURIComponent(value);
-        //     // Remplacer la valeur dans params
-        //     params.set(key, value);
-        // }
-
         try {
             // envoi des données au serveur avec la méthode POST
             const response = await fetch('/register/sendMail', {
@@ -67,7 +56,6 @@ elBtnInscription.addEventListener('click', async () => {
             window.location.href = '/home';
 
         } catch (error) {
-            console.log(error);
             if (error.message === "expired token") {
                 window.location.href = "/projet-forum/home";
             } else if (dataTypeError === 'pseudo') {
@@ -83,8 +71,8 @@ elBtnInscription.addEventListener('click', async () => {
                 elEmailLabel.textContent = error.message;
                 elEmailLabel.style.color = "#FF4242";
             } else {
-                // faire un redirection ? ajouter un message ?
-                console.log(error.message);
+                elMessageInscription.textContent = error.message;
+                elMessageInscription.style.display = "block";
             }
 
 
