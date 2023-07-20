@@ -144,14 +144,13 @@ class ForgotPassController extends MainController
                     } else {
                         $payload = $jwt->getPayload($tokenToVerify);
                         $payload['userID'];
-                        //ici on pourrait ajouter une couche de sécurité pour re-vérifier les champs nouveauPassword et confirmPassword
                         $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
-                        $pseudo = $infosUser->pseudo;
+                        // $pseudo = $infosUser->pseudo;
                         $userId = $infosUser->userID;
-                        $created_at = $infosUser->userDate;
+                        // $created_at = $infosUser->userDate;
 
-
-                        $user = new Users($pseudo, $created_at, $userId);
+                        $user = new Users;
+                        $user->setUserId($userId);
                         $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
                         $resultat = $this->usersModel->updatePassword($user);
                         if ($resultat) {

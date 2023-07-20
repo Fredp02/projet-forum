@@ -70,10 +70,13 @@ class LoginController extends MainController
     }
     private function validationLogin($pseudo, $password, $previousURL)
     {
+
         if ($this->usersModel->verifLogin($pseudo, $password)) {
 
             $user = $this->usersModel->getUserinfo($pseudo);
-
+            $varIsvalid = $user->isValid;
+            Toolbox::dataJson(false, 'oops',  $varIsvalid);
+            exit;
             if ($user->isValid) {
 
                 //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur, avec des sessions qui pourrait contenir trop d'info. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.

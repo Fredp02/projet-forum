@@ -26,7 +26,7 @@ class RegisterController extends MainController
         /**
          * !       [0]            [1]                   [2] 
          * ! 1 -> register      /viewRegister
-         * ! 2 -> register      /sendMail
+         * ! 2 -> register      /validation
          * ! 2bis -> register   /returnToken           /jfgdkfjgbdlkfgn
          * ! 3 -> register      /accountActivation     /jgbdfkjgndfgb
          */
@@ -55,7 +55,7 @@ class RegisterController extends MainController
         $this->render($data_page);
     }
 
-    private function sendMail()
+    private function validation()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['pseudo']) && !empty($_POST['emailInscription']) && !empty($_POST['password']) && !empty($_POST['confirmPassword'])) {
@@ -108,8 +108,11 @@ class RegisterController extends MainController
                          * 
                          * * dernière remarque, je passe l'id à null par défaut car j'instancie la classe User avant l'enregistrement en BDD, donc je ne connais pas à l'avance l'id. le construct prend par defaut "null". Par contre à une prochaine instanciation, lorsque le user sera déjà enregistré, on pourra passer en 3ème paramètre son identifiant, qui ne prend plus la valeur "null", mais celle passé en paramètre. 
                          */
-                        $user = new Users($pseudo, Toolbox::creerDateActuelle());
+
+                        $user = new Users;
+                        $user->setPseudo($pseudo);
                         $user->setEmail($email);
+                        $user->setUserDate(Toolbox::creerDateActuelle());
                         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
                         $user->setGuitare('Non renseigné');
                         $user->setVille('Non renseigné');

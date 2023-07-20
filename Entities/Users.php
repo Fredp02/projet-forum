@@ -16,19 +16,6 @@ class Users
     private $isValid;
     private $idRole;
 
-    /**
-     * Constructeur de la classe User
-     * @param int $user_id L'identifiant de l'utilisateur
-     * @param string $pseudo Le pseudo de l'utilisateur
-     * @param string $created_at La date de création du compte de l'utilisateur
-     */
-    public function __construct($pseudo, $userDate, $userId = null)
-    { // Constructeur avec trois paramètres
-
-        $this->pseudo = $pseudo; // Initialisation de la propriété pseudo
-        $this->userDate = $userDate; // Initialisation de la propriété created_at
-        $this->userId = $userId; // Initialisation de la propriété user_id
-    }
 
     /**
      * Get the value of userId
@@ -43,12 +30,12 @@ class Users
      *
      * @return  self
      */
-    // public function setUserId($userId)
-    // {
-    //     $this->userId = $userId;
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
     /**
      * Get the value of pseudo
@@ -63,12 +50,12 @@ class Users
      *
      * @return  self
      */
-    // public function setPseudo($pseudo)
-    // {
-    //     $this->pseudo = $pseudo;
+    public function setPseudo($pseudo)
+    {
+        $this->pseudo = $pseudo;
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
     /**
      * Get the value of email
@@ -103,12 +90,12 @@ class Users
      *
      * @return  self
      */
-    // public function setuserDate($userDate)
-    // {
-    //     $this->userDate = $userDate;
+    public function setUserDate($userDate)
+    {
+        $this->userDate = $userDate;
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
     /**
      * Get the value of password
@@ -126,64 +113,6 @@ class Users
     public function setPassword($password)
     {
         $this->password = $password;
-
-        return $this;
-    }
-    /**
-     * Get the value of image
-     */
-    public function getAvatar()
-    {
-        return $this->avatar;
-    }
-
-    /**
-     * Set the value of image
-     *
-     * @return  self
-     */
-    public function setAvatar($avatar)
-    {
-        $this->avatar = $avatar;
-
-        return $this;
-    }
-    /**
-     * Get the value of isValid
-     */
-    public function getisValid()
-    {
-        return $this->isValid;
-    }
-
-    /**
-     * Set the value of isValid
-     *
-     * @return  self
-     */
-    public function setisValid($isValid)
-    {
-        $this->isValid = $isValid;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of idRole
-     */
-    public function getIdRole()
-    {
-        return $this->idRole;
-    }
-
-    /**
-     * Set the value of idRole
-     *
-     * @return  self
-     */
-    public function setIdRole($idRole)
-    {
-        $this->idRole = $idRole;
 
         return $this;
     }
@@ -228,8 +157,6 @@ class Users
         return $this;
     }
 
-
-
     /**
      * Get the value of guitare
      */
@@ -246,6 +173,66 @@ class Users
     public function setGuitare($guitare)
     {
         $this->guitare = $guitare;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of avatar
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    /**
+     * Set the value of avatar
+     *
+     * @return  self
+     */
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of isValid
+     */
+    public function getIsValid()
+    {
+        return $this->isValid;
+    }
+
+    /**
+     * Set the value of isValid
+     *
+     * @return  self
+     */
+    public function setIsValid($isValid)
+    {
+        $this->isValid = $isValid;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of idRole
+     */
+    public function getIdRole()
+    {
+        return $this->idRole;
+    }
+
+    /**
+     * Set the value of idRole
+     *
+     * @return  self
+     */
+    public function setIdRole($idRole)
+    {
+        $this->idRole = $idRole;
 
         return $this;
     }

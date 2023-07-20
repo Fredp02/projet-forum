@@ -137,9 +137,11 @@ class AccountController extends MainController
                     $nouvelAvatar = uniqid($userId, true) . '.' . $extension;
 
                     //on instancie l'objet user
-                    $user = new Users($userData->pseudo, $userData->userDate, $userId);
+                    // $user = new Users($userData->pseudo, $userData->userDate, $userId);
+                    $user = new Users;
 
                     //on lui attribue le nom du nouvel avatar
+                    $user->setUserId($userId);
                     $user->setAvatar($nouvelAvatar);
 
                     //on déplace l'image des "temporaire" dans le dossier du user
@@ -241,19 +243,20 @@ class AccountController extends MainController
             $jwt = new JWTService();
             if ($jwt->isValid($tokenJWT) && !$jwt->isExpired($tokenJWT) && $jwt->check($tokenJWT, SECRET)) {
                 $payload = $jwt->getPayload($tokenJWT);
-                /**
-                 * *je pourrais passer par la class User et faire en sorte que la méthode "editEmailUser()" utilise un getter pour récupérer l'id.
-                 * *Pour la vérification du token, j'ai proceder autrement, ici, je vais passer par la classe User afin d'exploiter toutes les possibilités.
-                 */
-                $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
-                $pseudo = $infosUser->pseudo;
-                $created_at = $infosUser->userDate;
-                $userId = $infosUser->userID;
+                if (is_int($payload['userID'])) {
+                    $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
+                    $userId = $infosUser->userID;
 
-                $user = new Users($pseudo, $created_at, $userId);
-                $user->setEmail($payload['email']);
-                if ($this->usersModel->editEmailUser($user)) {
-                    Toolbox::ajouterMessageAlerte("Adresse email modifiée avec succès", "vert");
+                    $user = new Users;
+                    $user->setUserId($userId);
+                    $user->setEmail($payload['email']);
+                    if ($this->usersModel->editEmailUser($user)) {
+                        Toolbox::ajouterMessageAlerte("Adresse email modifiée avec succès", "vert");
+                        header("Location: " . URL . "home");
+                        exit;
+                    }
+                } else {
+                    Toolbox::ajouterMessageAlerte("Erreur infos jeton JWT", "vert");
                     header("Location: " . URL . "home");
                     exit;
                 }
@@ -292,10 +295,11 @@ class AccountController extends MainController
                         exit;
                     }
                     $userData = $this->usersModel->getUserinfo($pseudo);
-                    $user = new Users($userData->pseudo, $userData->userDate, $userData->userID);
+                    $user = new Users;
+                    $user->setUserId($userData->userID);
                     $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
-                    $resultat = $this->usersModel->updatePassword($user);
-                    if ($resultat) {
+
+                    if ($this->usersModel->updatePassword($user)) {
                         Toolbox::dataJson(true, "Mot de passe modifié avec succès");
                         exit;
                     } else {
@@ -329,7 +333,8 @@ class AccountController extends MainController
 
 
                 $userData = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
-                $user = new Users($userData->pseudo, $userData->userDate, $userData->userID);
+                $user = new Users;
+                $user->setUserId($userData->userID);
                 $user->setGuitare($guitare);
                 $user->setEmploi($emploi);
                 $user->setVille($ville);
