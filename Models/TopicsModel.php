@@ -16,7 +16,7 @@ class TopicsModel extends DbConnect
          * Je souhaite ajouter le "pseudo" du user associé à la création de ce topic, ainsi que la date du message le plus récent enregistré en base de donnée en fonction du topic, ainsi que le pseudo du user à l'origine de cette réponse la plus récente.
          */
 
-        $req = "SELECT 
+        $req1 = "SELECT 
         t.*,
         u1.pseudo AS topicCreator,
         COUNT(m.messageID) AS totalMessages,
@@ -24,13 +24,25 @@ class TopicsModel extends DbConnect
         (SELECT u2.pseudo FROM messages m2 JOIN users u2 ON m2.userID = u2.userID WHERE m2.topicID = t.topicID ORDER BY m2.messageDate DESC LIMIT 1) AS latestMessageUser
         FROM topics t
         JOIN users u1 ON t.userID = u1.userID
-        LEFT JOIN messages m ON t.topicID = m.topicID
+        JOIN messages m ON t.topicID = m.topicID
         WHERE t.categoryID = $categoryID
-        GROUP BY t.topicID;
-                
-        
+        GROUP BY t.topicID;               
         ";
-        $sql = $this->getBdd()->prepare($req);
+        // $req2 = "SELECT 
+        // topics.*,
+        // topicCreator.pseudo AS topicCreatorPseudo,
+        // COUNT(messages.messageID) AS totalMessages,
+        // MAX(messages.messageDate) AS latestMessageDate,
+        // (SELECT latestMessageUser.pseudo FROM messages JOIN users latestMessageUser ON messages.userID = latestMessageUser.userID WHERE messages.topicID = topics.topicID ORDER BY messages.messageDate DESC LIMIT 1) AS latestMessageUserPseudo
+        // FROM topics
+        // JOIN users topicCreator ON topics.userID = topicCreator.userID
+        // LEFT JOIN messages ON topics.topicID = messages.topicID
+        // WHERE topics.categoryID = $categoryID
+        // GROUP BY topics.topicID
+
+        // ";
+
+        $sql = $this->getBdd()->prepare($req1);
         try {
             $sql->execute();
             $resultat = $sql->fetchAll();

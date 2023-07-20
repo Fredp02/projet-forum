@@ -60,7 +60,7 @@ class ForgotPassController extends MainController
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
             if (Securite::verifCSRF()) {
                 $email = htmlspecialchars($_POST['email']);
-                $userInfos = $this->usersModel->getUserBy('email', $email);
+                $userInfos = $this->usersModel->getUserByEmail($email);
 
                 if ($userInfos) {
                     $userId = $userInfos->userID;
@@ -144,12 +144,12 @@ class ForgotPassController extends MainController
                     } else {
                         $payload = $jwt->getPayload($tokenToVerify);
                         $payload['userID'];
-                        $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
+                        $infosUser = $this->usersModel->getUserById($payload['userID']);
                         // $pseudo = $infosUser->pseudo;
                         $userId = $infosUser->userID;
                         // $created_at = $infosUser->userDate;
 
-                        $user = new Users;
+                        $user = new Users();
                         $user->setUserId($userId);
                         $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
                         $resultat = $this->usersModel->updatePassword($user);

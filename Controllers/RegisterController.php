@@ -70,10 +70,10 @@ class RegisterController extends MainController
                     // $regexpEmail = "/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/";
                     $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
-                    if ($this->usersModel->getUserBy('pseudo', $pseudo)) {
+                    if ($this->usersModel->getUserByPseudo($pseudo)) {
                         Toolbox::dataJson(false, "Pseudo déjà utilisé", 'pseudo');
                         exit;
-                    } else if ($this->usersModel->getUserBy('email', $email)) {
+                    } else if ($this->usersModel->getUserByEmail($email)) {
                         Toolbox::dataJson(false, "Adresse email déjà utilisée", 'email');
                         exit;
                     } else if (strlen($pseudo) < 4 || strlen($pseudo) > 50) {
@@ -109,7 +109,7 @@ class RegisterController extends MainController
                          * * dernière remarque, je passe l'id à null par défaut car j'instancie la classe User avant l'enregistrement en BDD, donc je ne connais pas à l'avance l'id. le construct prend par defaut "null". Par contre à une prochaine instanciation, lorsque le user sera déjà enregistré, on pourra passer en 3ème paramètre son identifiant, qui ne prend plus la valeur "null", mais celle passé en paramètre. 
                          */
 
-                        $user = new Users;
+                        $user = new Users();
                         $user->setPseudo($pseudo);
                         $user->setEmail($email);
                         $user->setUserDate(Toolbox::creerDateActuelle());
@@ -119,8 +119,8 @@ class RegisterController extends MainController
                         $user->setEmploi('Non renseigné');
                         $user->setAvatar('avatarDefault.jpg');
 
-                        $resultat = $this->usersModel->inscription($user);
-                        if ($resultat) {
+
+                        if ($this->usersModel->inscription($user)) {
                             $userId = $this->usersModel->lastInsertId();
                             $filePath = 'images/profils/' . $userId;
                             //Si ce dossier n'existe pas, il faut le créer
@@ -172,7 +172,7 @@ class RegisterController extends MainController
 
         if (isset($url[2]) && !empty($url[2])) {
             $userId = $url[2];
-            $user = $this->usersModel->getUserBy('userID', $userId);
+            $user = $this->usersModel->getUserById($userId);
             //si le user existe et qu'il n'est pas encore valide
             if ($user && !$user->isValid) {
 
@@ -218,14 +218,12 @@ class RegisterController extends MainController
             $jwt = new JWTService();
             if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
                 $payload = $jwt->getPayload($tokenToVerify);
-                /**
-                 * *je pourrais passer par la class User et faire en sorte que la méthode "activatingUser()" utilise un getter pour récupérer l'id.
-                 * *Mais je décide autrement car je serais obligé instancier la classe User avec 3 paramètres : le pseudo, la date de création, et userId. Le userId je le connais, mais pas les deux autres. Pour les connaitre deux solutions :
-                 * * passer par une méthode du model pour récpérer les info du user en fonction de son ID, OU lors de la création du token, de passer dans le payload d'autres infomations : le pseudo et la date de création du compte. dans le cas, pas besoin de faire une requête sql.
-                 * *Donc au final je décide de faire au plus simple, je passe en paramètre l'id via la variable $payload['userID']
-                 */
-                if ($this->usersModel->activatingUser($payload['userID'])) {
+                $user = new Users;
+                $user->setUserId($payload['userID']);
+                if ($this->usersModel->accountActivation($user)) {
                     Toolbox::ajouterMessageAlerte("Votre compte a été validé avec succès, vous pouvez maintenant vous connecter", "vert");
+                } else {
+                    Toolbox::ajouterMessageAlerte("Problème inatendue lors de l'activation de votre compte", "rouge");
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("token NON valide", "rouge");

@@ -21,20 +21,40 @@ class UsersModel extends DbConnect
         return $this->getBdd()->lastInsertId();
     }
 
-    public function verifLogin($pseudo, $password)
+
+    public function getUserById($userID)
     {
-        $user = $this->getUserBy('pseudo', $pseudo);
-        if ($user) {
-            return password_verify($password, $user->password);
+        $req = "SELECT * FROM users WHERE userID = :userID";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":userID", $userID);
+        try {
+            $sql->execute();
+            $resultat = $sql->fetch();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
         }
     }
-
-
-    public function getUserBy($colonne, $valeur)
+    public function getUserByEmail($email)
     {
-        $req = "SELECT * FROM users WHERE $colonne = :valeur";
+        $req = "SELECT * FROM users WHERE email = :email";
         $sql = $this->getBdd()->prepare($req);
-        $sql->bindValue(":valeur", $valeur);
+        $sql->bindValue(":email", $email);
+        try {
+            $sql->execute();
+            $resultat = $sql->fetch();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function getUserByPseudo($pseudo)
+    {
+        $req = "SELECT * FROM users WHERE pseudo = :pseudo";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":pseudo", $pseudo);
         try {
             $sql->execute();
             $resultat = $sql->fetch();
@@ -46,12 +66,13 @@ class UsersModel extends DbConnect
     }
     public function getUserinfo($pseudo)
     {
-        //selectionne toutes les colonnes de "user", et la colonne nom_role de "roles" depuis la table "user" en jointure interne de "role" lorsque le users.id_role = roles.id_role. Le tout lorsque users.pseudo = $pseudo"
-        //plus simplement, récupère tout les colonnes de user, et ajoute le nom_role en fonction de l'id_role de user qui est une clé étrangère de la table role.
+        //On selectionne toutes les colonnes de la table user, la colonne "roleName" de la table roles, le nombre de lignes dans "messages" nommé comme "messageCount"
+        // une jointure standard avec "role" : on souhaite une correspondance du roleID de la table "roles" avec le roleID de la table "Users"
+        // et un jointure externe avec message : on souhaite une correspondance du userID de la table "messages" avec "userID de la table "users", même si il ne trouve aucune correspondances dans le cas ou un userID n'est pas présent dans la table "messages". Dans ce cas, la colonne "messageCount" sera donc de "0". 
         $req = "SELECT users.*, roles.roleName, COUNT(messages.messageID) AS messagesCount
         FROM users 
         JOIN roles ON users.roleID = roles.roleID 
-        JOIN messages ON users.userID = messages.userID
+        LEFT JOIN messages ON users.userID = messages.userID
         WHERE users.pseudo = :pseudo
         GROUP BY users.userID
         ";
@@ -66,12 +87,6 @@ class UsersModel extends DbConnect
         } catch (Exception $e) {
             die('Erreur : ' . $e->getMessage());
         }
-        // // Exécution de la requête SQL avec le paramètre pseudo
-        // $stmt = $bdd->prepare($sql);
-        // $stmt->execute(array(':pseudo' => $pseudo));
-
-        // Récupération du résultat sous forme d'un tableau associatif
-        // $result = $stmt->fetch(PDO::FETCH_ASSOC);
     }
     public function inscription(Users $user)
     {
@@ -102,9 +117,9 @@ class UsersModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
-    public function activatingUser($userId) //! passer par un objet User !!!!! car c'est un update !
+    public function accountActivation(Users $user)
     {
-
+        $userId = $user->getUserId();
         $req = "UPDATE users SET isValid = 1 WHERE userID = :userId";
         $sql = $this->getBdd()->prepare($req);
         $sql->bindValue(":userId", $userId);

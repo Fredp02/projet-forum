@@ -66,26 +66,7 @@ class CategorysModel extends DbConnect
         //*(SELECT COUNT(*) FROM topics t WHERE t.categoryID = c.categoryID) AS totalTopics
         //! MAIS l’utilisation de sous-requêtes peut affecter les performances de la requête en fonction de la taille de votre base de données.
 
-        $req = "SELECT 
-        p.categoryName AS parentCategoryName,
-        c.categoryName AS subCategoryName,
-        c.categoryID AS subCategoryID,
-        c.categorySlug AS subCategorySlug,
-        c.categoryDescription AS subCategoryDesc,
-        COUNT(DISTINCT t.topicID) AS totalTopics,
-        COUNT(m.messageID) AS totalMessages,
-        (SELECT t2.topicTitle FROM messages m2 JOIN topics t2 ON m2.topicID = t2.topicID WHERE m2.messageID = MAX(m.messageID)) AS lastTopicTitle,
-        MAX(m.messageDate) AS lastMessageDate,
-        (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.messageID = MAX(m.messageID)) AS lastMessageUser
-    FROM categorys p
-    JOIN categorys c ON p.categoryID = c.CategoryParentID
-    JOIN topics t ON c.categoryID = t.categoryID
-    JOIN messages m ON t.topicID = m.topicID
-    WHERE p.CategoryParentID IS NULL
-    GROUP BY p.categoryID, c.categoryID
-    
-    
-    ";
+
         $req = "SELECT 
             p.categoryName AS parentCategoryName,
             c.categoryName AS subCategoryName,

@@ -75,6 +75,7 @@
     color: rgb(255, 255, 255);
     border-radius: 0 0 10px 10px;
     border-color: #d60000;
+    position: relative;
 }
 
 .ql-toolbar {
@@ -163,6 +164,11 @@
     max-width: 200px;
 }
 
+#emoji-palette {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 
 /************************************/
 

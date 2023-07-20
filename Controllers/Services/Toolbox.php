@@ -88,7 +88,7 @@ class Toolbox
             $mailer->Password = '8d28441fd8e5fb'; // Le mot de passe du compte SMTP
 
             // On définit l'expéditeur  du mail
-            $mailer->setFrom('contact@fredericpoulain.fr', 'Guitare Forum');
+            $mailer->setFrom('contact@guitareforum.fr', 'Guitare Forum');
             // et le destinataire :
             $mailer->addAddress($userEmail);
             $mailer->CharSet = 'UTF-8';

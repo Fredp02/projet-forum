@@ -63,8 +63,8 @@ class AccountController extends MainController
     }
     private function datasFormProfil()
     {
-        $pseudo = $_SESSION["profil"]["pseudo"];
-        $user = $this->usersModel->getUserinfo($pseudo);
+        $userID = $_SESSION["profil"]["userID"];
+        $user = $this->usersModel->getUserById($userID);
 
         $userDatasForm = [
             'email' => html_entity_decode($user->email),
@@ -125,7 +125,7 @@ class AccountController extends MainController
                     }
 
                     //si l'image respecte les conditions ...
-                    $userData = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
+                    $userData = $this->usersModel->getUserById($_SESSION['profil']['userID']);
 
                     $userId = $userData->userID;
                     $ancienAvatar = $userData->avatar;
@@ -138,7 +138,7 @@ class AccountController extends MainController
 
                     //on instancie l'objet user
                     // $user = new Users($userData->pseudo, $userData->userDate, $userId);
-                    $user = new Users;
+                    $user = new Users();
 
                     //on lui attribue le nom du nouvel avatar
                     $user->setUserId($userId);
@@ -208,7 +208,7 @@ class AccountController extends MainController
                 // Le jeton anti-CSRF est valide, traiter les données du formulaire
                 if (!empty($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
 
-                    $user = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
+                    $user = $this->usersModel->getUserById($_SESSION['profil']['userID']);
                     $userId = $user->userID;
                     $pseudo = $user->pseudo;
 
@@ -243,20 +243,14 @@ class AccountController extends MainController
             $jwt = new JWTService();
             if ($jwt->isValid($tokenJWT) && !$jwt->isExpired($tokenJWT) && $jwt->check($tokenJWT, SECRET)) {
                 $payload = $jwt->getPayload($tokenJWT);
-                if (is_int($payload['userID'])) {
-                    $infosUser = $this->usersModel->getUserBy('userID', $payload['userID']);
-                    $userId = $infosUser->userID;
+                $infosUser = $this->usersModel->getUserById($payload['userID']);
+                $userId = $infosUser->userID;
 
-                    $user = new Users;
-                    $user->setUserId($userId);
-                    $user->setEmail($payload['email']);
-                    if ($this->usersModel->editEmailUser($user)) {
-                        Toolbox::ajouterMessageAlerte("Adresse email modifiée avec succès", "vert");
-                        header("Location: " . URL . "home");
-                        exit;
-                    }
-                } else {
-                    Toolbox::ajouterMessageAlerte("Erreur infos jeton JWT", "vert");
+                $user = new Users();
+                $user->setUserId($userId);
+                $user->setEmail($payload['email']);
+                if ($this->usersModel->editEmailUser($user)) {
+                    Toolbox::ajouterMessageAlerte("Adresse email modifiée avec succès", "vert");
                     header("Location: " . URL . "home");
                     exit;
                 }
@@ -294,8 +288,8 @@ class AccountController extends MainController
                         Toolbox::dataJson(false, "Les mots de passe ne correspondent pas");
                         exit;
                     }
-                    $userData = $this->usersModel->getUserinfo($pseudo);
-                    $user = new Users;
+                    $userData = $this->usersModel->getUserByPseudo($pseudo);
+                    $user = new Users();
                     $user->setUserId($userData->userID);
                     $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
 
@@ -332,8 +326,8 @@ class AccountController extends MainController
                 $ville = trim(htmlspecialchars($_POST['ville']));
 
 
-                $userData = $this->usersModel->getUserinfo($_SESSION['profil']['pseudo']);
-                $user = new Users;
+                $userData = $this->usersModel->getUserById($_SESSION['profil']['userID']);
+                $user = new Users();
                 $user->setUserId($userData->userID);
                 $user->setGuitare($guitare);
                 $user->setEmploi($emploi);
@@ -373,7 +367,7 @@ class AccountController extends MainController
 
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
                 $userId = $_SESSION['profil']['userID'];
-                $user = $this->usersModel->getUserBy('userID', $userId);
+                $user = $this->usersModel->getUserById($userId);
                 $imageAvatar = 'images/profils/' . $userId . '/' . $user->avatar;
                 unlink($imageAvatar);
                 rmdir('images/profils/' . $userId);

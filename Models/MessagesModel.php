@@ -31,17 +31,32 @@ class MessagesModel extends DbConnect
 
     public function getMessagesByTopic($topicID)
     {
-        // Je souhaite obtenir la liste de tout les messages en fonction de topicID, ainsi que les informations relative à l'utilisateur à l'origine de chaque message (id, pseudo, avatar, ville)
+        // req1 : Je souhaite obtenir la liste de tout les messages en fonction de topicID, ainsi que les informations relative à l'utilisateur à l'origine de chaque message (id, pseudo, avatar, ville)
+        //on fait une sous requete qui compte le nombre de ligne de la table message (renommée en "m2") lorsque qu'il y correspondance entre userID de la table user et le userID de la table m2 (messages) ). on renomme le compte en "totalUserMessages"
+        //on joint le tout avec la table user lorsque qu'il y correspondance entre userID de messages et userID de "users".
+        //le tout lorsque le topicID de message est égale au $topicID en paramètre
+        //et on réorgannise le tout par date du message
 
-        $req = "SELECT messages.*, users.userID, users.pseudo, users.avatar, users.guitare, 
-        (SELECT COUNT(*) FROM messages m2 WHERE m2.userID = users.userID) AS totalUserMessages
+        // $req1 = "SELECT messages.*, users.userID, users.pseudo, users.avatar, users.guitare, 
+        // (SELECT COUNT(*) FROM messages m2 WHERE m2.userID = users.userID) AS totalUserMessages
+        // FROM messages
+        // JOIN users ON messages.userID = users.userID
+        // WHERE messages.topicID = :topicID
+        // ORDER BY messages.messageDate ASC
+        // ";
+        $req2 = "SELECT messages.*, users.userID, users.pseudo, users.avatar, users.guitare, COUNT(m2.messageID) AS totalUserMessages
         FROM messages
         JOIN users ON messages.userID = users.userID
-        WHERE messages.topicID = $topicID
+        JOIN messages m2 ON m2.userID = users.userID
+        WHERE messages.topicID = :topicID
+        GROUP BY messages.messageID
         ORDER BY messages.messageDate ASC
+
         ";
 
-        $sql = $this->getBdd()->prepare($req);
+
+        $sql = $this->getBdd()->prepare($req2);
+        $sql->bindValue(":topicID", $topicID);
         try {
             $sql->execute();
             $resultat = $sql->fetchAll();

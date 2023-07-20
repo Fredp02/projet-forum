@@ -76,4 +76,9 @@ class Securite
         $validity = 10800;
         return $jwt->generate($header, $payload, SECRET, $validity);
     }
+
+    public static function verifPassword($password, $userPassBDD)
+    {
+        return password_verify($password, $userPassBDD);
+    }
 }

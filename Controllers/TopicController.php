@@ -33,6 +33,7 @@ class TopicController extends MainController
             //si $topicID est un id existant et que la requête à renvoyer un résultat
             if ($infosTopic) {
                 // $messagesTopics = $this->topicsModel->getMessagesByTopic($topicID);
+
                 $messagesTopics = $this->MessagesModel->getMessagesByTopic($topicID);
 
                 // dd($infosTopic);

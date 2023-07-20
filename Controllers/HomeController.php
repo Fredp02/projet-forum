@@ -2,16 +2,19 @@
 
 namespace Controllers;
 
+use Models\UsersModel;
 use Models\CategorysModel;
 use Controllers\Services\Toolbox;
 
 class HomeController extends MainController
 {
     private $categorysModel;
+    private $usersModel;
 
     public function __construct()
     {
         $this->categorysModel = new CategorysModel();
+        $this->usersModel = new UsersModel();
     }
 
     public function home()
@@ -43,32 +46,32 @@ class HomeController extends MainController
             return $acc;
         }, []);
 
-        // //même chose avec forecach : 
-        // foreach ($allCategorys as $row) {
-        //     $subCategory = [
-        //         'name' => $row->subCategoryName,
-        //         'description' => $row->subCategoryDesc,
-        //         'id' => $row->subCategoryID,
-        //         'url' => 'topicsByCat/' . $row->subCategorySlug . '.' . $row->subCategoryID,
-        //         'totalTopics' => $row->totalTopics,
-        //         'totalMessages' => $row->totalMessages,
-        //         'lastTopicTitle' => $row->lastTopicTitle,
-        //         'lastMessageDate' => Toolbox::convertDate($row->lastMessageDate, 'd MMMM Y'),
-        //         'lastMessageUser' => $row->lastMessageUser
-        //     ];
-        //     $groupedCategories[$row->parentCategoryName][] = $subCategory;
-        // }
+            // //même chose avec forecach : 
+            // foreach ($allCategorys as $row) {
+            //     $subCategory = [
+            //         'name' => $row->subCategoryName,
+            //         'description' => $row->subCategoryDesc,
+            //         'id' => $row->subCategoryID,
+            //         'url' => 'topicsByCat/' . $row->subCategorySlug . '.' . $row->subCategoryID,
+            //         'totalTopics' => $row->totalTopics,
+            //         'totalMessages' => $row->totalMessages,
+            //         'lastTopicTitle' => $row->lastTopicTitle,
+            //         'lastMessageDate' => Toolbox::convertDate($row->lastMessageDate, 'd MMMM Y'),
+            //         'lastMessageUser' => $row->lastMessageUser
+            //     ];
+            //     $groupedCategories[$row->parentCategoryName][] = $subCategory;
+            // }
 
-        //* Sinon, autre manière plus complexe de récupérer toute les catégories et de les classer en fonction de leur parent, quelque soit le nombre de sous categories
-        // ! méthodes utilisées : 
-        //! voir méthode getCategorysListWithRECURSIVE() du model
-        // ! voir méthode static buildCategoryHierarchy() de la Toolbox
+            //* Sinon, autre manière plus complexe de récupérer toute les catégories et de les classer en fonction de leur parent, quelque soit le nombre de sous categories
+            // ! méthodes utilisées : 
+            //! voir méthode getCategorysListWithRECURSIVE() du model
+            // ! voir méthode static buildCategoryHierarchy() de la Toolbox
 
-        // on récupère la liste de catégorie et sous catégorie avec un "level"
-        //$allCategorys = $this->CategorysModel->getCategorysListWithRECURSIVE();
-        //on utilise la méthode pour construire un tableau hérarchique
-        // $hierarchy = Toolbox::buildCategoryHierarchy($allCategorys);
-
+            // on récupère la liste de catégorie et sous catégorie avec un "level"
+            //$allCategorys = $this->CategorysModel->getCategorysListWithRECURSIVE();
+            //on utilise la méthode pour construire un tableau hérarchique
+            // $hierarchy = Toolbox::buildCategoryHierarchy($allCategorys);
+        ;
 
         $data_page = [
             "pageDescription" => "Description de la page d'accueil",
@@ -77,8 +80,10 @@ class HomeController extends MainController
             "css" => "/style/homeStyle.css",
             "template" => "../Views/common/template.php",
             'allCategorys' => $allCategorys,
-            "groupedCategories" => $groupedCategories
+            "groupedCategories" => $groupedCategories,
+
         ];
+
 
         $this->render($data_page);
     }

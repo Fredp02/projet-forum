@@ -1,6 +1,5 @@
 <section>
     <div class="forumListBloc">
-
         <div id="filAriane">Guitare Forum > Accueil</div>
         <div class="categorys">
             <!-- c'est un tableau à deux dimension. 1er foreach : depuis le premier niveau. "$category" sera une string, et $sousCategory un array.
@@ -11,50 +10,49 @@
             // exit; 
             ?>
             <?php foreach ($groupedCategories as $category => $sousCategory) : ?>
-            <li class="headerCategory">
-                <div class="headerCategoryContent">
-                    <div class="headerCategoryIcone">
-                        <span></span>
+                <li class="headerCategory">
+                    <div class="headerCategoryContent">
+                        <div class="headerCategoryIcone">
+                            <span></span>
+                        </div>
+                        <div class="categoryNameAndDesc">
+                            <h3 class="titreCat"><?= $category; ?></h3>
+                        </div>
+                        <div class="topicsNumber"><span>Sujets</span></div>
+                        <div class="responsesNumber"><span>Messages</span></div>
+                        <div class="lastResponse">
+                            <span>Dernier message</span>
+                        </div>
                     </div>
-                    <div class="categoryNameAndDesc">
-                        <h3 class="titreCat"><?= $category; ?></h3>
-                    </div>
-                    <div class="topicsNumber"><span>Sujets</span></div>
-                    <div class="responsesNumber"><span>Messages</span></div>
-                    <div class="lastResponse">
-                        <span>Dernier message</span>
-                    </div>
-                </div>
-            </li>
-            <?php foreach ($sousCategory as $infosSousCat) : ?>
-            <li class="subCategorysList">
-                <div class="subCategory">
-                    <div class="subCategoryIcon">
-                        <span></span>
-                    </div>
-                    <div class="categoryNameAndDesc">
+                </li>
+                <?php foreach ($sousCategory as $infosSousCat) : ?>
+                    <li class="subCategorysList">
+                        <div class="subCategory">
+                            <div class="subCategoryIcon">
+                                <span></span>
+                            </div>
+                            <div class="categoryNameAndDesc">
 
-                        <div class="categoryName"><a
-                                href="<?= $infosSousCat['url'] ?>"><?= $infosSousCat['name']; ?></a>
+                                <div class="categoryName"><a href="<?= $infosSousCat['url'] ?>"><?= $infosSousCat['name']; ?></a>
+                                </div>
+                                <div class="categoryDesc"><?= $infosSousCat['description']; ?></div>
+                            </div>
+                            <div class="topicsNumber"><?= $infosSousCat['totalTopics']; ?></div>
+                            <div class="responsesNumber"><?= $infosSousCat['totalMessages']; ?></div>
+                            <div class="lastResponse">
+                                <div class="lastTopicTitle">
+                                    <?= $infosSousCat['lastTopicTitle']; ?>
+                                </div>
+                                <div class="lastActivityUser">
+                                    par : <?= $infosSousCat['lastMessageUser']; ?>
+                                </div>
+                                <div class="lastActivityDate">
+                                    <?= $infosSousCat['lastMessageDate']; ?>
+                                </div>
+                            </div>
                         </div>
-                        <div class="categoryDesc"><?= $infosSousCat['description']; ?></div>
-                    </div>
-                    <div class="topicsNumber"><?= $infosSousCat['totalTopics']; ?></div>
-                    <div class="responsesNumber"><?= $infosSousCat['totalMessages']; ?></div>
-                    <div class="lastResponse">
-                        <div class="lastTopicTitle">
-                            <?= $infosSousCat['lastTopicTitle']; ?>
-                        </div>
-                        <div class="lastActivityUser">
-                            par : <?= $infosSousCat['lastMessageUser']; ?>
-                        </div>
-                        <div class="lastActivityDate">
-                            <?= $infosSousCat['lastMessageDate']; ?>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <?php endforeach; ?>
+                    </li>
+                <?php endforeach; ?>
             <?php endforeach; ?>
 
         </div>

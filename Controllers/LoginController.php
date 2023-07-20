@@ -70,22 +70,23 @@ class LoginController extends MainController
     }
     private function validationLogin($pseudo, $password, $previousURL)
     {
+        $userPassBDD = $this->usersModel->getUserByPseudo($pseudo)->password;
 
-        if ($this->usersModel->verifLogin($pseudo, $password)) {
+        if (Securite::verifPassword($password, $userPassBDD)) {
 
-            $user = $this->usersModel->getUserinfo($pseudo);
-            $varIsvalid = $user->isValid;
-            Toolbox::dataJson(false, 'oops',  $varIsvalid);
-            exit;
+
+            $user = $this->usersModel->getUserByPseudo($pseudo);
+
+            // Toolbox::dataJson(false, 'hahahhala',  $user);
+            // die;
             if ($user->isValid) {
 
-                //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur, avec des sessions qui pourrait contenir trop d'info. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
+                //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur ????, avec des sessions qui pourrait contenir trop d'info ???. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
                 $filepathAvatar = $user->userID . '/' . $user->avatar;
                 $_SESSION['profil'] = [
                     'userID' => $user->userID,
                     'pseudo' => $user->pseudo,
                     'filepathAvatar' => $filepathAvatar,
-                    'messagesCount' => $user->messagesCount,
                     'userGuitare' => $user->guitare,
                 ];
 
