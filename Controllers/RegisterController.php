@@ -20,26 +20,6 @@ class RegisterController extends MainController
         $this->usersModel = new UsersModel();
     }
 
-    // public function register($action)
-    // {
-
-    //     /**
-    //      * !       [0]            [1]                   [2] 
-    //      * ! 1 -> register      /viewRegister
-    //      * ! 2 -> register      /validation
-    //      * ! 2bis -> register   /returnToken           /jfgdkfjgbdlkfgn
-    //      * ! 3 -> register      /accountActivation     /jgbdfkjgndfgb
-    //      */
-
-    //     if (!Securite::isConnected()) {
-
-
-    //         $this->$action();
-    //     } else {
-    //         header("Location: " . URL . "home");
-    //         exit;
-    //     }
-    // }
 
     public function index()
     {
@@ -48,8 +28,8 @@ class RegisterController extends MainController
             "pageTitle" => "Inscription",
             "view" => "../Views/account/viewRegister.php",
             "template" => "../Views/common/template.php",
-            "css" => "/style/registerStyle.css",
-            "script" => "/js/validFormRegister.js",
+            "css" => "./style/registerStyle.css",
+            "script" => "./js/validFormRegister.js",
             "tokenCSRF" => $_SESSION['tokenCSRF']
         ];
         $this->render($data_page);

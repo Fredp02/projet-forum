@@ -30,8 +30,8 @@ class ForgotPassController extends MainController
             "pageTitle" => "Page pour réinitialiser le mot de passe",
             "view" => "../Views/forgotPass/forgotPassView.php",
             "template" => "../Views/common/template.php",
-            "css" => "/style/forgotPassStyle.css",
-            "script" => "/js/forgotPass.js",
+            "css" => "./style/forgotPassStyle.css",
+            "script" => "./js/forgotPass.js",
             "tokenCSRF" => $_SESSION["tokenCSRF"]
         ];
         $this->render($data_page);
@@ -87,8 +87,8 @@ class ForgotPassController extends MainController
             "pageTitle" => "Réinitialiser mot de passe",
             "view" => "../Views/forgotPass/resetPassView.php",
             "template" => "../Views/common/template.php",
-            "css" => "/style/resetPasswordStyle.css",
-            "script" => "/js/validFormResetPassword.js",
+            "css" => "./style/resetPasswordStyle.css",
+            "script" => "./js/validFormResetPassword.js",
             'tokenCSRF' => $_SESSION['tokenCSRF'],
             "jwt" => $tokenJWT
         ];

@@ -79,7 +79,7 @@ class HomeController extends MainController
             "pageDescription" => "Description de la page d'accueil",
             "pageTitle" => "Accueil Guitare forum",
             "view" => "../Views/viewHome.php",
-            "css" => "/style/homeStyle.css",
+            "css" => "./style/homeStyle.css",
             "template" => "../Views/common/template.php",
             'allCategorys' => $allCategorys,
             "groupedCategories" => $groupedCategories,

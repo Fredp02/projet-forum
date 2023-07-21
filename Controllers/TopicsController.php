@@ -42,7 +42,7 @@ class TopicsController extends MainController
                 "pageDescription" => "Catégorie " . $infosCategory->categoryName . " du site Guitare-forum",
                 "pageTitle" => $infosCategory->categoryName . " | Guitare-forum",
                 "view" => "../Views/topics/viewTopicsList.php",
-                "css" => "/style/topicsByCat.css",
+                "css" => "./style/topicsByCat.css",
                 "template" => "../Views/common/template.php",
                 "categoryName" => $infosCategory->categoryName,
                 "categorySlug" => $infosCategory->categorySlug,

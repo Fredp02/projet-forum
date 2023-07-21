@@ -45,8 +45,8 @@ class AccountController extends MainController
             "pageTitle" => "Profil",
             "view" => "../Views/account/viewProfil.php",
             "template" => "../views/common/template.php",
-            "css" => "/style/profilStyle.css",
-            "script" => "/js/profil.js",
+            "css" => "./style/profilStyle.css",
+            "script" => "./js/profil.js",
             'tokenCSRF' => $tokenCSRF,
             "userDatas" => $userDatas
         ];
@@ -381,7 +381,7 @@ class AccountController extends MainController
             "pageTitle" => "Supprimer mon compte",
             "view" => "../Views/account/viewDeleteAccount.php",
             "template" => "../views/common/template.php",
-            "css" => "/style/deleteAccountStyle.css",
+            "css" => "./style/deleteAccountStyle.css",
             'tokenCSRF' => $tokenCSRF
 
         ];

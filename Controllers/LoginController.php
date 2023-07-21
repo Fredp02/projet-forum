@@ -37,8 +37,8 @@ class LoginController extends MainController
                 "pageTitle" => "Connexion | Guitare Forum",
                 "view" => "../Views/account/viewLogin.php",
                 "template" => "../Views/common/template.php",
-                "css" => "/style/loginStyle.css",
-                "script" => "/js/validFormPageLogin.js",
+                "css" => "./style/loginStyle.css",
+                "script" => "./js/validFormPageLogin.js",
                 "tokenCSRF" => $_SESSION['tokenCSRF'],
                 "previousURL" => $_SERVER['HTTP_REFERER'] ?? "index.php",
             ];
