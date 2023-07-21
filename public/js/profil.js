@@ -417,9 +417,9 @@ inputAvatar.addEventListener('change', async function () {
                 throw new Error(resultat.message);
             }
             //si résultat "true" :
-            const userId = resultat.data.userId
-            const avatar = resultat.data.avatar
-            const cheminNouvelAvatar = "../images/profils/" + userId + '/' + avatar;
+
+            const filepathAvatar = resultat.data.filepathAvatar
+            const cheminNouvelAvatar = "../images/profils/" + filepathAvatar;
             elImgAvatar.setAttribute("src", cheminNouvelAvatar);
             inputAvatar.value = "";
             elContentFormAvatar.style.display = "none";

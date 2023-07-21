@@ -46,7 +46,7 @@ class AccountController extends MainController
             'guitare' => $user->guitare,
             'ville' => $user->ville,
             'emploi' => $user->emploi,
-            'avatar' => $user->avatar
+            'filepathAvatar' =>  $_SESSION['profil']['filepathAvatar']
         ];
 
         $data_page = [
@@ -155,7 +155,7 @@ class AccountController extends MainController
                             //on supprime l'ancien avatar
                             unlink($filePath . DIRECTORY_SEPARATOR . $ancienAvatar);
                             //on met à jour la session avec le nouvel avatar
-                            $_SESSION['profil']['avatar'] = $nouvelAvatar;
+                            $_SESSION['profil']['filepathAvatar'] = $userId . '/' . $nouvelAvatar;
                         } else {
                             Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
                             exit;
@@ -171,8 +171,7 @@ class AccountController extends MainController
 
                     //on créé les données que JS va récupérer
                     $data = [
-                        'userId' => $userId,
-                        'avatar' => $_SESSION['profil']['avatar']
+                        'filepathAvatar' => $_SESSION['profil']['filepathAvatar']
                     ];
                     //et on envoie la réponse en json
                     Toolbox::dataJson(true, "Avatar ok", $data);
@@ -343,6 +342,7 @@ class AccountController extends MainController
                         'emploi' => html_entity_decode($emploi),
                         'ville' => html_entity_decode($ville)
                     ];
+                    $_SESSION['profil']['userGuitare'] = html_entity_decode($guitare);
                     Toolbox::dataJson(true, $message, $data);
                     exit;
                 } else {

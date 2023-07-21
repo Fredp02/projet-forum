@@ -1,5 +1,5 @@
 <?php
-$avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
+// $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
 ?>
 <div class="profil">
     <div class="contentFormAvatar">
@@ -25,7 +25,7 @@ $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
     <h1><?= htmlspecialchars($userDatas['pseudo']); ?></h1>
     <div class="contentAvatar">
         <div class="divAvatar">
-            <img src="../images/profils/<?= $avatar; ?>" alt="photo de profil de l'utilisateur">
+            <img src="../images/profils/<?= $userDatas['filepathAvatar']; ?>" alt="photo de profil de l'utilisateur">
             <div>
                 <p>Modifier</p>
             </div>
