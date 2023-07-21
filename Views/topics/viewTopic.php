@@ -22,10 +22,10 @@ use Controllers\Services\Toolbox; ?>
                     <div class="userInfos">
                         <div class="avatar"><img src="/images/profils/<?= $message->userID . '/'; ?><?= $message->avatar; ?>" alt="photo de profil de l'utilisateur"></div>
                         <div class="pseudo">
-                            <span><?= $message->pseudo; ?></span>
+                            <span><?= html_entity_decode($message->pseudo); ?></span>
                         </div>
                         <div class="guitare">
-                            <span>Ma guitare : <?= $message->guitare; ?></span>
+                            <span>Ma guitare : <?= html_entity_decode($message->guitare); ?></span>
                         </div>
                         <div class="totalMessagesUser">
                             <span><?= $message->totalUserMessages; ?>

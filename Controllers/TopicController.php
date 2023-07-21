@@ -44,7 +44,7 @@ class TopicController extends MainController
                     "css" => "/style/topicStyle.css",
                     //editor quill
                     "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
-                    "quillEmojiCSS" => "public/quill/dist/quill-emoji.css",
+                    "quillEmojiCSS" => "/quill/dist/quill-emoji.css",
                     "quillJS" => "//cdn.quilljs.com/1.3.6/quill.js",
                     "quillEmojiJS" => "/quill/dist/quill-emoji.js",
                     "quillImageJS" => "/quill/dist/quill.imageUploader.js",
