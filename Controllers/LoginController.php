@@ -75,7 +75,7 @@ class LoginController extends MainController
         if (Securite::verifPassword($password, $userPassBDD)) {
 
 
-            $user = $this->usersModel->getUserByPseudo($pseudo);
+            $user = $this->usersModel->getUserinfo($pseudo);
 
             // Toolbox::dataJson(false, 'hahahhala',  $user);
             // die;
@@ -85,9 +85,10 @@ class LoginController extends MainController
                 $filepathAvatar = $user->userID . '/' . $user->avatar;
                 $_SESSION['profil'] = [
                     'userID' => $user->userID,
-                    'pseudo' => $user->pseudo,
+                    'pseudo' => html_entity_decode($user->pseudo),
                     'filepathAvatar' => $filepathAvatar,
-                    'userGuitare' => $user->guitare,
+                    'userGuitare' => html_entity_decode($user->guitare),
+                    'messagesCount' => html_entity_decode($user->messagesCount),
                 ];
 
                 Toolbox::dataJson(

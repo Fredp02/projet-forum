@@ -109,31 +109,9 @@ formResponse.addEventListener('submit', async (e) => {
                 throw new Error(resultat.message);
             }
             //Si true, on met à jour le DOM
+            updateDOM(resultat);
 
-            const filePathAvatar = resultat.data.dataUser.filepathAvatar;
-            const pseudo = resultat.data.dataUser.pseudo;
-            const userGuitare = resultat.data.dataUser.userGuitare;
-            const messagesCount = resultat.data.dataUser.messagesCount + 1;
 
-            const templateItem = document.querySelector('.template-item');
-            const messageList = document.querySelector('.messageList');
-            const lastMessage = templateItem.content.cloneNode(true);
-
-            lastMessage.querySelector('.avatar img').setAttribute('src', `/images/profils/${filePathAvatar}`);
-            lastMessage.querySelector('.pseudo span').textContent = pseudo;
-            lastMessage.querySelector('.guitare span').textContent = 'Ma guitare: ' + userGuitare;
-            lastMessage.querySelector('.totalMessagesUser span').textContent = messagesCount + ' message' + (messagesCount > 1 ? 's' : '');
-
-            let date = new Date();
-            const dateActuelle = formatDate(date);
-
-            lastMessage.querySelector('.messageDate span').textContent = dateActuelle;
-            lastMessage.querySelector('.quoteMessage').setAttribute('data-pseudo', pseudo);
-            lastMessage.querySelector('.quoteMessage').setAttribute('data-date', dateActuelle);
-            lastMessage.querySelector('.messageText span').innerHTML = resultat.data.reponseTopic;
-
-            messageList.append(lastMessage);
-            quill.root.innerHTML = "";
         } catch (error) {
 
             if (error.message === 'noConnected') {
@@ -250,3 +228,29 @@ const formatDate = (date) => {
 }
 
 
+function updateDOM(resultat) {
+    const filePathAvatar = resultat.data.dataUser.filepathAvatar;
+    const pseudo = resultat.data.dataUser.pseudo;
+    const userGuitare = resultat.data.dataUser.userGuitare;
+    const messagesCount = Number(resultat.data.dataUser.messagesCount) + 1;
+
+    const templateItem = document.querySelector('.template-item');
+    const messageList = document.querySelector('.messageList');
+    const lastMessage = templateItem.content.cloneNode(true);
+
+    lastMessage.querySelector('.avatar img').setAttribute('src', `/images/profils/${filePathAvatar}`);
+    lastMessage.querySelector('.pseudo span').textContent = pseudo;
+    lastMessage.querySelector('.guitare span').textContent = 'Ma guitare: ' + userGuitare;
+    lastMessage.querySelector('.totalMessagesUser span').textContent = messagesCount + ' message' + (messagesCount > 1 ? 's' : '');
+
+    let date = new Date();
+    const dateActuelle = formatDate(date);
+
+    lastMessage.querySelector('.messageDate span').textContent = dateActuelle;
+    lastMessage.querySelector('.quoteMessage').setAttribute('data-pseudo', pseudo);
+    lastMessage.querySelector('.quoteMessage').setAttribute('data-date', dateActuelle);
+    lastMessage.querySelector('.messageText span').innerHTML = resultat.data.reponseTopic;
+
+    messageList.append(lastMessage);
+    quill.root.innerHTML = "";
+}
