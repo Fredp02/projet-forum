@@ -20,17 +20,8 @@ class AccountController extends MainController
         $this->usersModel = new UsersModel();
     }
 
-    public function account($action)
-    {
-        if (Securite::isConnected()) {
-            $this->$action();
-        } else {
-            header("Location: " . URL . "home");
-            exit;
-        }
-    }
 
-    private function profil()
+    public function index()
     {
 
         $tokenCSRF = $_SESSION["tokenCSRF"];
@@ -61,7 +52,7 @@ class AccountController extends MainController
         ];
         $this->render($data_page);
     }
-    private function datasFormProfil()
+    public function dataInput()
     {
         $userID = $_SESSION["profil"]["userID"];
         $user = $this->usersModel->getUserById($userID);
@@ -75,7 +66,7 @@ class AccountController extends MainController
         Toolbox::dataJson(true, "reponse ok", $userDatasForm);
         exit;
     }
-    private function editAvatar()
+    public function editAvatar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
@@ -196,9 +187,9 @@ class AccountController extends MainController
             exit;
         }
     }
-    private function editEmail()
+    public function editEmail($tokenJWT = null)
     {
-        $tokenJWT = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL))[2] ?? "";
+
 
 
         //!Si requete POST : envoie du mail avec tokenJWT
@@ -217,7 +208,7 @@ class AccountController extends MainController
                     $nouveauEmail = htmlspecialchars($_POST['email']);
                     $token = Securite::createTokenJWT($userId, $pseudo, $nouveauEmail);
                     $cheminTemplate = '../Views/templateMail/templateEditEmail.html';
-                    $route = URL . "account/editEmail/" . $token;
+                    $route = URL . 'index.php?controller=account&action=editEmail&tokenJWT=' . $token;
                     $sujet = 'Validation adresse email sur Guitare Forum';
                     if (Toolbox::sendMail($pseudo, $nouveauEmail, $route, $sujet, $cheminTemplate)) {
                         $message = "Un email de validation a été envoyé sur cette adresse email. Ce mail sera valide pendant 3h";
@@ -238,7 +229,7 @@ class AccountController extends MainController
                 Toolbox::dataJson(false, "expired token");
                 exit;
             }
-        } elseif ($tokenJWT !== '') { //!Si paramètre en GET : on vérifie le JWT et on modifie l'email
+        } elseif ($tokenJWT !== null) { //!Si paramètre en GET : on vérifie le JWT et on modifie l'email
             $jwt = new JWTService();
             if ($jwt->isValid($tokenJWT) && !$jwt->isExpired($tokenJWT) && $jwt->check($tokenJWT, SECRET)) {
                 $payload = $jwt->getPayload($tokenJWT);
@@ -250,20 +241,16 @@ class AccountController extends MainController
                 $user->setEmail($payload['email']);
                 if ($this->usersModel->editEmailUser($user)) {
                     Toolbox::ajouterMessageAlerte("Adresse email modifiée avec succès", "vert");
-                    header("Location: " . URL . "home");
-                    exit;
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("token NON valide", "rouge");
-                header("Location: " . URL . "home");
-                exit;
             }
-        } else { //!sinon redirection
-            header("Location: " . URL . "home");
-            exit;
         }
+        //!sinon redirection
+        header("Location:index.php");
+        exit;
     }
-    private function editPassword()
+    public function editPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
 
@@ -317,7 +304,7 @@ class AccountController extends MainController
         }
     }
 
-    private function editAbout()
+    public function editAbout()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
             if (!empty($_POST['guitare']) && !empty($_POST['emploi']) && !empty($_POST['ville'])) {
@@ -362,7 +349,7 @@ class AccountController extends MainController
         }
     }
 
-    private function deleteAccount()
+    public function deleteAccount()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -375,20 +362,16 @@ class AccountController extends MainController
                 if ($this->usersModel->deleteAccount($userId)) {
                     Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
                     unset($_SESSION['profil']);
-                    header("Location: " . URL . "home");
-                    exit;
                 } else {
                     Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
-                    header("Location: " . URL . "home");
-                    exit;
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
                 unset($_SESSION['profil']);
                 unset($_SESSION['tokenCSRF']);
-                header("Location: " . URL . "home");
-                exit;
             }
+            header("Location:index.php");
+            exit;
         }
 
 

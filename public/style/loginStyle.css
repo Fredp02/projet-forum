@@ -35,9 +35,13 @@
     margin-left: auto;
     margin-right: auto;
     padding: 0px;
-    font-size: 12px;
+    font-size: 15px;
     /* text-transform: uppercase; */
     background-color: #FF4242;
+}
+
+.messagePagelogin a {
+    color: var(--text-primary);
 }
 
 .headerPageLogin {

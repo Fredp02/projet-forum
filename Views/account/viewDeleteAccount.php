@@ -15,5 +15,5 @@
     </div>
 </div>
 <div class="cancelSupp">
-    <a href="<?= URL; ?>account/profil"><button class="btnCancel">Annuler</button></a>
+    <a href="?controller=account"><button class="btnCancel">Annuler</button></a>
 </div>

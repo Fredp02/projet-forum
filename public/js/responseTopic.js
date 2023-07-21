@@ -91,7 +91,7 @@ formResponse.addEventListener('submit', async (e) => {
             }
             inputResponse.value = doc.body.innerHTML;
             const formData = new FormData(formResponse);
-            const response = await fetch('/topicReply/validation', {
+            const response = await fetch('?controller=topics&action=validation', {
                 method: 'POST',
                 body: formData
             });
@@ -119,7 +119,7 @@ formResponse.addEventListener('submit', async (e) => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
             } else if (error.message === 'expired token') {
-                window.location = "/login";
+                window.location = "?controller=login";
             } else {
                 alertMessageTopic.textContent = error.message;
                 alertMessageTopic.style.display = "block";
@@ -150,7 +150,7 @@ async function uploadImage(imageBase64) {
 
     // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
     // try {
-    const response = await fetch('/topicReply/uploadImage', {
+    const response = await fetch('?controller=topics&action=uploadImage', {
         method: 'POST',
         body: formData,
     });

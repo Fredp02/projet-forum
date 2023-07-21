@@ -53,10 +53,7 @@ let emploi;
 let guitare;
 let ville;
 
-// elAncienPassword.addEventListener("input", inputDefault);
-// elNouveauPassword.addEventListener("input", inputDefault);
-// elConfirmPassword.addEventListener("input", inputDefault);
-// elInputEmail.addEventListener("input", inputDefault);
+
 [elAncienPassword, elNouveauPassword, elConfirmPassword, elInputEmail].forEach(elInput => {
     elInput.addEventListener("input", inputDefault);
 });
@@ -64,7 +61,7 @@ let ville;
 
 async function getData() {
     try {
-        const response = await fetch('/account/datasFormProfil');
+        const response = await fetch('?controller=account&action=dataInput');
         const resultat = await response.json();
         email = resultat.data.email;
         emploi = resultat.data.emploi;
@@ -191,7 +188,7 @@ elBtnEditEmail.addEventListener('click', async (e) => {
         const formEmail = new FormData(elFormEmail);
         try {
             //envoi des données au serveur avec la méthode POST
-            const response = await fetch("/account/editEmail", {
+            const response = await fetch("?controller=account&action=editEmail", {
                 method: "POST",
                 body: formEmail,
             });
@@ -224,7 +221,7 @@ elBtnEditEmail.addEventListener('click', async (e) => {
 
         } catch (error) {
             if (error.message === "expired token") {
-                window.location.href = URL_WEBSITE + 'home';
+                window.location.href = 'index.php';
             } else {
 
                 elAlertIdentifiant.textContent = error.message;
@@ -270,7 +267,7 @@ elBtnEditPassword.addEventListener('click', async (e) => {
         const formData = new FormData(elFormPassword);
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("/account/editPassword", {
+            const response = await fetch("?controller=account&action=editPassword", {
                 method: "POST",
                 body: formData,
             });
@@ -302,7 +299,7 @@ elBtnEditPassword.addEventListener('click', async (e) => {
 
         } catch (error) {
             if (error.message === "expired token") {
-                window.location.href = URL_WEBSITE + 'home';
+                window.location.href = 'index.php';
             } else {
                 elAncienPassword.value = "";
                 elNouveauPassword.value = "";
@@ -402,7 +399,7 @@ inputAvatar.addEventListener('change', async function () {
             let formData = new FormData(elFormulaireAvatar);
             // formData.append("avatarPhoto", fichier);
 
-            const response = await fetch("/account/editAvatar", {
+            const response = await fetch("?controller=account&action=editAvatar", {
                 method: "POST",
                 body: formData,
             });
@@ -427,7 +424,7 @@ inputAvatar.addEventListener('change', async function () {
         }
     } catch (error) {
         if (error.message === "expired token") {
-            window.location.href = 'home';
+            window.location.href = 'index.php';
         } else {
             ElAlerteAvatarSpan.textContent = error.message
             ElAlerteAvatar.style.backgroundColor = 'red';
@@ -468,7 +465,7 @@ elBtnEditAbout.addEventListener('click', async (e) => {
 
 
         //envoi des données au serveur avec la méthode POST
-        const response = await fetch("/account/editAbout", {
+        const response = await fetch("?controller=account&action=editAbout", {
             method: "POST",
             body: formAbout,
         });
@@ -515,7 +512,7 @@ elBtnEditAbout.addEventListener('click', async (e) => {
 
     } catch (error) {
         if (error.message === "expired token") {
-            window.location.href = URL_WEBSITE + 'home';
+            window.location.href = 'index.php';
         } else {
             elDivFormAbout.style.display = "none";
             elDivAbout.style.display = "flex";

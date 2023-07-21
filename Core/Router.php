@@ -24,25 +24,31 @@ class Router
 
             //on intialise le controller
             if (isset($_GET['controller'])) {
+
                 $controller = ucfirst(array_shift($_GET));
             } else {
                 $controller = 'Home';
             }
 
-            $controllerName = 'Controllers\\' . ucfirst($controller) . 'Controller';
-
+            $controllerName = 'Controllers\\' . $controller . 'Controller';
+            // dd('je suis ici ' . $controllerName);
             //on intialise l'action
             if (isset($_GET['action'])) {
-                $action = ucfirst(array_shift($_GET));
+
+                $action = array_shift($_GET);
             } else {
-                $action = '';
+                $action = 'index';
+                // dd('je suis ici ');
             }
+
             $controller = new $controllerName();
+
             // if (method_exists($controllerName, $page))
-            if (isset($paramGet[1]) && !empty($paramGet[1])) {
-                $controller->$page($paramGet[1]);
+            if (method_exists($controller, $action)) {
+                (isset($_GET)) ? call_user_func_array([$controller, $action], $_GET) : $controller->$action();
             } else {
-                $controller->$page();
+                http_response_code(404);
+                echo "la page recherchée n'existe pas";
             }
         } catch (Exception $e) {
             $homeController = new HomeController();

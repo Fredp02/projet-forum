@@ -51,7 +51,7 @@ use Controllers\Services\Securite; ?>
             unset($_SESSION['alert']);
             ?>
             <div class="conteneurNav">
-                <a href="/home" class="headerTitle">
+                <a href="index.php" class="headerTitle">
                     <div class="textHeaderTitle">
                         <span>Guitare</span><span>forum</span>
                     </div>
@@ -61,11 +61,11 @@ use Controllers\Services\Securite; ?>
                 </div>
                 <div class="headerLinks">
                     <?php if (!Securite::isConnected()) : ?>
-                    <a href="/login" class="linkLogin">Connexion</a>
+                    <a href="?controller=login" class="linkLogin">Connexion</a>
                     <?php else : ?>
-                    <a href="/account/profil" class="linkProfil">
+                    <a href="?controller=account" class="linkProfil">
                         <?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
-                    <a href="/logout" class="logout">Déconnexion</a>
+                    <a href="?controller=logout" class="logout">Déconnexion</a>
                     <?php endif; ?>
 
                 </div>
@@ -106,11 +106,11 @@ use Controllers\Services\Securite; ?>
 
                     <button class="btnLogin">Connexion</button>
                 </form>
-                <a href="/forgotPass/forgotPassView" class="linkForgot">Mot de passe oublié ?</a>
+                <a href="?controller=forgotPass" class="linkForgot">Mot de passe oublié ?</a>
 
                 <div class="footerLogin">
 
-                    <a href="/register/viewRegister">Créer un compte</a>
+                    <a href="index.php?controller=register">Créer un compte</a>
                 </div>
                 <?php else : ?>
                 <div class="headerLogin">
@@ -121,11 +121,11 @@ use Controllers\Services\Securite; ?>
                     <img src="/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
                         alt="photo de profil de l'utilisateur">
                 </div>
-                <a href="/account/profil" class="linkProfil">Mon profil</a>
+                <a href="?controller=account" class="linkProfil">Mon profil</a>
 
                 <div class="footerLogin">
 
-                    <a href="/logout" class="logout">Déconnexion</a>
+                    <a href="?controller=logout" class="logout">Déconnexion</a>
                 </div>
                 <?php endif; ?>
 

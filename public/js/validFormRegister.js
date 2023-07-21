@@ -34,7 +34,7 @@ elBtnInscription.addEventListener('click', async () => {
 
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch('/register/validation', {
+            const response = await fetch('?controller=register&action=validation', {
                 method: "POST",
                 body: formData,
             });
@@ -53,11 +53,11 @@ elBtnInscription.addEventListener('click', async () => {
                 throw new Error(resultat.message);
 
             }
-            window.location.href = '/home';
+            window.location.href = 'index.php';
 
         } catch (error) {
             if (error.message === "expired token") {
-                window.location.href = "/projet-forum/home";
+                window.location.href = "index.php";
             } else if (dataTypeError === 'pseudo') {
                 elPseudo.classList.add('inputError');
                 elPseudoLabel.textContent = error.message;

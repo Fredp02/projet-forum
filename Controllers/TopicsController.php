@@ -3,30 +3,100 @@
 namespace Controllers;
 
 use Entities\Messages;
-use Models\UsersModel;
+use Models\TopicsModel;
 use Models\MessagesModel;
+use Models\CategorysModel;
+use Controllers\MainController;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
 
-class TopicReplyController extends MainController
+class TopicsController extends MainController
 {
 
-    private $message; //getter-setter de l'entité messages
-    private $messageModel;
+    private $categorysModel;
+    private $topicsModel;
+    private $messagesModel;
+    private $message;
 
     public function __construct()
     {
-
-        $this->messageModel = new MessagesModel;
+        $this->categorysModel = new CategorysModel();
+        $this->topicsModel = new TopicsModel();
+        $this->messagesModel = new MessagesModel();
         $this->message = new Messages;
     }
 
-    public function topicReply($action)
+    public function list($catID)
     {
-        $this->$action();
+
+        //en cliquant sur le nom de la sous catégorie depuis la page d'acceuil, il faudra afficher la liste des topics en fonction de l'ID de la sous catégorie       
+
+
+
+        $listTopics = $this->topicsModel->getListTopicsByCat($catID);
+        //si $souscategoryID est un id existant et que la requête à renvoyer un résultat
+        if ($listTopics) {
+            $infosCategory = $this->categorysModel->getInfoCategory($catID);
+
+            $data_page = [
+                "pageDescription" => "Catégorie " . $infosCategory->categoryName . " du site Guitare-forum",
+                "pageTitle" => $infosCategory->categoryName . " | Guitare-forum",
+                "view" => "../Views/topics/viewTopicsList.php",
+                "css" => "/style/topicsByCat.css",
+                "template" => "../Views/common/template.php",
+                "categoryName" => $infosCategory->categoryName,
+                "categorySlug" => $infosCategory->categorySlug,
+                "categoryID" => $infosCategory->categoryID,
+                "listTopics" => $listTopics
+            ];
+
+
+            $this->render($data_page);
+        } else {
+            header("Location:index.php");
+        }
     }
 
-    private function uploadImage()
+    public function thread($threadID)
+    {
+        $infosTopic = $this->topicsModel->getTopicInfos($threadID);
+        //si $topicID est un id existant et que la requête à renvoyer un résultat
+        if ($infosTopic) {
+            // $messagesTopics = $this->topicsModel->getMessagesByTopic($topicID);
+
+            $messagesTopics = $this->messagesModel->getMessagesByTopic($threadID);
+
+            // dd($infosTopic);
+            $data_page = [
+                "pageDescription" => "Sujet : " . $infosTopic->topicTitle . " du site Guitare-forum",
+                "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",
+                "view" => "../Views/topics/viewThread.php",
+                "css" => "./style/topicStyle.css",
+                //editor quill
+                "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
+                "quillEmojiCSS" => "./quill/dist/quill-emoji.css",
+                "quillJS" => "//cdn.quilljs.com/1.3.6/quill.js",
+                "quillEmojiJS" => "./quill/dist/quill-emoji.js",
+                "quillImageJS" => "./quill/dist/quill.imageUploader.js",
+                "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
+                //----------
+                "script" => "./js/responseTopic.js",
+                "template" => "../Views/common/template.php",
+                "tokenCSRF" => $_SESSION["tokenCSRF"],
+                // "categoryName" => $infosTopic->categoryName,
+                // "categorySlug" => $infosTopic->categorySlug,
+                // "categoryID" => $infosTopic->categoryID,
+                "infosTopic" => $infosTopic,
+                'messagesTopics' => $messagesTopics
+            ];
+            $this->render($data_page);
+        } else {
+            //si "id" inexistant, on redirige.
+            header("Location:index.php");
+        }
+    }
+
+    public function uploadImage()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0 && !empty($_POST['topicID'])) {
@@ -80,15 +150,15 @@ class TopicReplyController extends MainController
                     exit;
                 }
             } else {
-                echo 'erreur';
+                Toolbox::dataJson(false, "Erreur d'upload d'image");
                 exit;
             }
         } else {
-            header("Location: " . URL . "home");
+            header("Location:index.php");
             exit;
         }
     }
-    private function validation()
+    public function validation()
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -117,7 +187,7 @@ class TopicReplyController extends MainController
                                 $this->message->setTopicID($topicID);
 
                                 //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
-                                if ($this->messageModel->createMessage($this->message)) {
+                                if ($this->messagesModel->createMessage($this->message)) {
                                     $decodedResponse = html_entity_decode($escapedResponse);
 
                                     /**
@@ -134,7 +204,7 @@ class TopicReplyController extends MainController
                                     $clean_html = $purifier->purify($decodedResponse);
 
                                     $data = [
-                                        'reponseTopic' => $clean_html,
+                                        'reponseTopic' => html_entity_decode($clean_html),
                                         'topicID' => $topicID,
                                         'dataUser' => $_SESSION['profil']
                                     ];
@@ -169,7 +239,7 @@ class TopicReplyController extends MainController
                 exit;
             }
         } else {
-            header("Location: " . URL . "home");
+            header("Location:index.php");
             exit;
         }
     }

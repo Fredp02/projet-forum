@@ -4,12 +4,12 @@ namespace Controllers;
 
 class LogoutController extends MainController
 {
-    public function logout()
+    public function index()
     {
         unset($_SESSION['profil']);
         unset($_SESSION['tokenCSRF']);
         session_destroy();
-        header("Location: " . URL . "home");
+        header("Location:index.php");
         exit;
     }
 }

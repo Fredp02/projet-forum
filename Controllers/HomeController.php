@@ -17,8 +17,9 @@ class HomeController extends MainController
         $this->usersModel = new UsersModel();
     }
 
-    public function home()
+    public function index()
     {
+
         $allCategorys = $this->categorysModel->getCategorysList();
 
         //Ce code parcourt les résultats d’une requête SQL qui sélectionne des informations sur les catégories parentes et les sous-catégories, ainsi que des statistiques sur les sujets et les messages dans ces catégories. Le code utilise une boucle foreach pour parcourir chaque ligne de résultat de la requête, représentée par la variable $row.
@@ -35,7 +36,8 @@ class HomeController extends MainController
                 'name' => $row->subCategoryName,
                 'description' => $row->subCategoryDesc,
                 'id' => $row->subCategoryID,
-                'url' => 'topicsByCat/' . $row->subCategorySlug . '.' . $row->subCategoryID,
+                'url' => '?controller=topics&action=list&catID=' . $row->subCategoryID,
+                // 'url' => 'topicsByCat/' . $row->subCategorySlug . '.' . $row->subCategoryID,
                 'totalTopics' => $row->totalTopics,
                 'totalMessages' => $row->totalMessages,
                 'lastTopicTitle' => $row->lastTopicTitle,

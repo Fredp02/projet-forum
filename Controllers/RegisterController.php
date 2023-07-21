@@ -20,28 +20,28 @@ class RegisterController extends MainController
         $this->usersModel = new UsersModel();
     }
 
-    public function register($action)
-    {
+    // public function register($action)
+    // {
 
-        /**
-         * !       [0]            [1]                   [2] 
-         * ! 1 -> register      /viewRegister
-         * ! 2 -> register      /validation
-         * ! 2bis -> register   /returnToken           /jfgdkfjgbdlkfgn
-         * ! 3 -> register      /accountActivation     /jgbdfkjgndfgb
-         */
+    //     /**
+    //      * !       [0]            [1]                   [2] 
+    //      * ! 1 -> register      /viewRegister
+    //      * ! 2 -> register      /validation
+    //      * ! 2bis -> register   /returnToken           /jfgdkfjgbdlkfgn
+    //      * ! 3 -> register      /accountActivation     /jgbdfkjgndfgb
+    //      */
 
-        if (!Securite::isConnected()) {
+    //     if (!Securite::isConnected()) {
 
 
-            $this->$action();
-        } else {
-            header("Location: " . URL . "home");
-            exit;
-        }
-    }
+    //         $this->$action();
+    //     } else {
+    //         header("Location: " . URL . "home");
+    //         exit;
+    //     }
+    // }
 
-    private function viewRegister()
+    public function index()
     {
         $data_page = [
             "pageDescription" => "Page de création de compte",
@@ -55,8 +55,9 @@ class RegisterController extends MainController
         $this->render($data_page);
     }
 
-    private function validation()
+    public function validation()
     {
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['pseudo']) && !empty($_POST['emailInscription']) && !empty($_POST['password']) && !empty($_POST['confirmPassword'])) {
                 if (Securite::verifCSRF()) {
@@ -67,7 +68,7 @@ class RegisterController extends MainController
                     //on crée le compte
 
                     $regexpPseudo = "/^[a-zA-Z0-9éèêëàâäôöûüçî ]+$/";
-                    // $regexpEmail = "/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/";
+
                     $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
                     if ($this->usersModel->getUserByPseudo($pseudo)) {
@@ -98,16 +99,7 @@ class RegisterController extends MainController
                         Toolbox::dataJson(false, "Les mots de passe ne sont pas identiques", 'password');
                         exit;
                     } else {
-                        /**
-                         * !Pourquoi je passe au constructeur le pseudo, la date actuelle (l'id sera null par defaut) ?
-                         * *parce que je pars du principe que tout ce qui ne sera pas concerné par une modification en bdd (userid, pseudo et date de création du compte) n'auront pas de setter. Donc, il faut les initialiser au construct.
-                         * *c’est une bonne pratique de passer les propriétés qui ne seront jamais modifiées dans le constructeur. Cela permet de garantir l’immuabilité de ces propriétés, et de simplifier la création des objets. On peux aussi rendre ces propriétés privées ou protégées, pour empêcher leur accès direct depuis l’extérieur de la classe. Et donc utiliser des getters pour les lire, mais pas de setters pour les écrire.
-                         * 
-                         * *Ce n’est pas obligatoire ...Cependant, l’avantage du constructeur est qu’il permet de garantir que l’objet user est créé avec un état valide et cohérent. Si on n'utilise pas de constructeur, on doit s'assurer que les propriétés de l’objet user sont bien initialisées avant de les utiliser, ce qui peut être source d’erreurs ou d’oublis. De plus, le constructeur rend le code plus clair et plus concis, car on a pas à appeler plusieurs setters pour créer un objet user.
-                         * *...l'inconvénient c'est qu'il y a plus de paramètre lors de l'instanciation.
-                         * 
-                         * * dernière remarque, je passe l'id à null par défaut car j'instancie la classe User avant l'enregistrement en BDD, donc je ne connais pas à l'avance l'id. le construct prend par defaut "null". Par contre à une prochaine instanciation, lorsque le user sera déjà enregistré, on pourra passer en 3ème paramètre son identifiant, qui ne prend plus la valeur "null", mais celle passé en paramètre. 
-                         */
+
 
                         $user = new Users();
                         $user->setPseudo($pseudo);
@@ -134,7 +126,7 @@ class RegisterController extends MainController
 
                             $token = Securite::createTokenJWT($userId, $pseudo, $email);
                             $cheminTemplate = '../Views/templateMail/templateInscription.html';
-                            $route = URL . "register/accountActivation/" . $token;
+                            $route = URL . "index.php?controller=register&action=accountActivation&token=" . $token;
                             $sujet = 'Activation de votre compte sur Guitare Forum';
 
                             if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
@@ -166,75 +158,58 @@ class RegisterController extends MainController
         }
     }
 
-    private function returnToken()
+    public function returnToken($userID)
     {
-        $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
+        $user = $this->usersModel->getUserById($userID);
+        //si le user existe et qu'il n'est pas encore valide
+        if ($user && !$user->isValid) {
 
-        if (isset($url[2]) && !empty($url[2])) {
-            $userId = $url[2];
-            $user = $this->usersModel->getUserById($userId);
-            //si le user existe et qu'il n'est pas encore valide
-            if ($user && !$user->isValid) {
+            $pseudo = $user->pseudo;
+            $email = $user->email;
+            $token = Securite::createTokenJWT($userID, $pseudo, $email);
+            $route = URL . "index.php?controller=register&action=accountActivation&token=" . $token;
+            $cheminTemplate = '../Views/templateMail/templateInscription.html';
+            $sujet = 'Validation inscription Guitare Forum';
 
-                $pseudo = $user->pseudo;
-                $email = $user->email;
-                $token = Securite::createTokenJWT($userId, $pseudo, $email);
-                $route = URL . "register/accountActivation/" . $token;
-                $cheminTemplate = '../Views/templateMail/templateInscription.html';
-                $sujet = 'Validation inscription Guitare Forum';
-
-                if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
-                    $message = "Un mail de validation a été envoyé sur votre boite mail !";
-                    Toolbox::ajouterMessageAlerte($message, 'vert');
-                    header("Location: " . URL);
-                    exit;
-                } else {
-                    $message = "Problème rencontré. Veuillez contacter l'administrateur du site.";
-                    Toolbox::ajouterMessageAlerte($message, 'rouge');
-                    header("Location: " . URL);
-                    exit;
-                }
+            if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
+                $message = "Un mail de validation a été envoyé sur votre boite mail !";
+                Toolbox::ajouterMessageAlerte($message, 'vert');
+                header("Location:index.php");
+                exit;
             } else {
-                //si le $user existé (mais que le compte était déjà validé)
-                $message =  $user ? "Compte déjà validé" : 'Erreur';
+                $message = "Problème rencontré. Veuillez contacter l'administrateur du site.";
                 Toolbox::ajouterMessageAlerte($message, 'rouge');
-                header("Location: " . URL);
+                header("Location:index.php");
                 exit;
             }
         } else {
-
-            header("Location: " . URL . "home");
+            //si le $user existé (mais que le compte était déjà validé)
+            $message =  $user ? "Compte déjà validé" : 'Erreur';
+            Toolbox::ajouterMessageAlerte($message, 'rouge');
+            header("Location:index.php");
             exit;
         }
     }
 
-    private function accountActivation()
+    public function accountActivation($token)
     {
-        $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
+        // $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
 
-        if (isset($url[2]) && !empty($url[2])) {
-            $tokenToVerify = $url[2];
-
-            $jwt = new JWTService();
-            if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
-                $payload = $jwt->getPayload($tokenToVerify);
-                $user = new Users;
-                $user->setUserId($payload['userID']);
-                if ($this->usersModel->accountActivation($user)) {
-                    Toolbox::ajouterMessageAlerte("Votre compte a été validé avec succès, vous pouvez maintenant vous connecter", "vert");
-                } else {
-                    Toolbox::ajouterMessageAlerte("Problème inatendue lors de l'activation de votre compte", "rouge");
-                }
+        $jwt = new JWTService();
+        if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
+            $payload = $jwt->getPayload($token);
+            $user = new Users;
+            $user->setUserId($payload['userID']);
+            if ($this->usersModel->accountActivation($user)) {
+                Toolbox::ajouterMessageAlerte("Votre compte a été validé avec succès, vous pouvez maintenant vous connecter", "vert");
             } else {
-                Toolbox::ajouterMessageAlerte("token NON valide", "rouge");
+                Toolbox::ajouterMessageAlerte("Problème inatendue lors de l'activation de votre compte", "rouge");
             }
-
-            header("Location: " . URL);
-            exit;
         } else {
-            Toolbox::ajouterMessageAlerte("Token absent", 'rouge');
-            header("Location: " . URL . "home");
-            exit;
+            Toolbox::ajouterMessageAlerte("token NON valide", "rouge");
         }
+
+        header("Location:index.php");
+        exit;
     }
 }

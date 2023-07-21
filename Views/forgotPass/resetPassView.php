@@ -4,7 +4,7 @@
         <div class="alertPassword"></div>
         <h1>Réinitialisation du mot de passe</h1>
         <div class="divFormPassword">
-            <form method="POST" class="formPassword" action="/forgotPass/validResetPass/<?= $jwt ?>" onsubmit="return validateFormReset()">
+            <form method="POST" class="formPassword" action="?controller=forgotPass&action=validResetPass&tokenJWT=<?= $jwt ?>" onsubmit="return validateFormReset()">
 
                 <div class="divNouveauPassword">
                     <label for="nouveauPassword">Nouveau mot de passe : <br>(entre 8 et 50 caractères dont 2 caractères

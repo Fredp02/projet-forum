@@ -31,7 +31,7 @@ if (elBtnLogin) {
             const formData = new FormData(elFormLogin);
             try {
                 // envoi des données au serveur avec la méthode POST
-                const response = await fetch("/login", {
+                const response = await fetch("index.php?controller=login&action=validationlogin", {
                     method: "POST",
                     body: formData,
                 });
@@ -57,7 +57,7 @@ if (elBtnLogin) {
             } catch (error) {
                 //on affiche un message d'erreur dans le DOM
                 if (error.message === "expired token") {
-                    window.location.href = '/projet-forum/home';
+                    window.location.href = 'index.php';
                 } else {
                     // debugger;
                     elLoginMessage.style.display = 'block'
@@ -89,14 +89,14 @@ function updateDom(resultat) {
 
     const lienProfil = document.createElement('a');
     lienProfil.classList.add("linkProfil");
-    lienProfil.setAttribute("href", "/account/profil");
+    lienProfil.setAttribute("href", "?controller=account");
     lienProfil.textContent = "Mon profil";
 
     const divFooterLogin = document.createElement('div');
     divFooterLogin.classList.add("footerLogin");
     const lienlogout = document.createElement('a');
     lienlogout.classList.add("logout");
-    lienlogout.setAttribute("href", "/logout");
+    lienlogout.setAttribute("href", "?controller=logout");
     lienlogout.textContent = "Déconnexion";
     divFooterLogin.append(lienlogout);
 
@@ -106,16 +106,18 @@ function updateDom(resultat) {
     elHeaderLinks.innerHTML = "";
     const lienNavProfil = document.createElement('a');
     lienNavProfil.classList.add("linkProfil");
-    lienNavProfil.setAttribute("href", "/account/profil");
+    lienNavProfil.setAttribute("href", "?controller=account");
     lienNavProfil.textContent = resultat.data.pseudo;
 
     const lienNavlogout = document.createElement('a');
     lienNavlogout.classList.add("logout");
-    lienNavlogout.setAttribute("href", "/logout");
+    lienNavlogout.setAttribute("href", "?controller=logout");
     lienNavlogout.textContent = "Déconnexion";
     elHeaderLinks.append(lienNavProfil, lienNavlogout);
 
-    if (elBtnLogin.classList.contains("btnLoginAnimate") && window.location.pathname.includes('topic')) {
+    //si le logo est animé et que la page courante est celle qui contient la chaine "&action=thread&threadID=" laors c'est que le user viens de se connecter via la aside pour poster un message. Donc on le redirige au niveau de la "divReponse"
+
+    if (elBtnLogin.classList.contains("btnLoginAnimate") && window.location.search.includes('&action=thread&threadID=')) {
         document.querySelector('.divReponse').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -151,8 +153,7 @@ function inputDefault() {
 }
 
 function checkLoginValidity() {
-    // elInputLogin 
-    // elInputPassword
+
     if (elInputLogin.value === "") {
         elTextMessage.innerHTML = "Champ pseudo requis";
         alertLogin();

@@ -13,34 +13,16 @@ include 'Services\JWTService\configJWT.php';
 
 class ForgotPassController extends MainController
 {
-    private $usersModel;
+    public $usersModel;
 
     public function __construct()
     {
         $this->usersModel = new UsersModel();
     }
 
-    public function forgotPass($action)
-    {
 
-        /**
-         * URL  /methode_public  / methode_privée    /  arguments
-         * !         [0]            [1]                   [2] 
-         * ! 1 -> forgotPass      /forgotPassView
-         * ! 2 -> forgotPass      /sendEmail            / $email
-         * ! 3 -> forgotPass      /resetPassView        / $JWT
-         * ! 4 -> forgotPass      /validResetPass 
-         * 
-         */
-        if (!Securite::isConnected()) {
-            $this->$action();
-        } else {
-            header("Location: " . URL . "home");
-            exit;
-        }
-    }
 
-    private function forgotPassView()
+    public function index()
     {
 
         $data_page = [
@@ -55,7 +37,7 @@ class ForgotPassController extends MainController
         $this->render($data_page);
     }
 
-    private function sendEmail()
+    public function sendEmail()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
             if (Securite::verifCSRF()) {
@@ -67,7 +49,8 @@ class ForgotPassController extends MainController
                     $pseudo = $userInfos->pseudo;
                     $cheminTemplate = '../Views/templateMail/templateForgotPassword.html';
                     $token = Securite::createTokenJWT($userId, $pseudo, $email);
-                    $route = URL . "forgotPass/resetPassView/" . $token;
+
+                    $route = URL . "?controller=forgotPass&action=resetPassView&tokenJWT=" . $token;
                     $sujet = 'Réinitialisation du mot de passe sur Guitare Forum';
 
                     if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
@@ -96,10 +79,9 @@ class ForgotPassController extends MainController
         }
     }
 
-    private function resetPassView()
+    public function resetPassView($tokenJWT)
     {
-        $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
-        $jwt = $url[2];
+
         $data_page = [
             "pageDescription" => "Page de réinitialisation de mot de passe",
             "pageTitle" => "Réinitialiser mot de passe",
@@ -108,16 +90,14 @@ class ForgotPassController extends MainController
             "css" => "/style/resetPasswordStyle.css",
             "script" => "/js/validFormResetPassword.js",
             'tokenCSRF' => $_SESSION['tokenCSRF'],
-            "jwt" => $jwt
+            "jwt" => $tokenJWT
         ];
         $this->render($data_page);
     }
 
-    private function validResetPass()
+    public function validResetPass($tokenJWT)
     {
-        //on récupère mes paramètres
-        $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
-        $tokenToVerify = $url[2];
+
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
 
@@ -129,25 +109,26 @@ class ForgotPassController extends MainController
 
 
                 $jwt = new JWTService();
-                if ($jwt->isValid($tokenToVerify) && !$jwt->isExpired($tokenToVerify) && $jwt->check($tokenToVerify, SECRET)) {
+
+                if ($jwt->isValid($tokenJWT) && !$jwt->isExpired($tokenJWT) && $jwt->check($tokenJWT, SECRET)) {
 
                     if (!preg_match($regexpPassword, $nouveauPassword)) {
                         $message = "Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule";
                         Toolbox::ajouterMessageAlerte($message, 'rouge');
-                        header("Location: " . URL . 'forgotPass/validResetPass/' . $tokenToVerify);
+                        header("Location:?controller=forgotPass&action=resetPassView&tokenJWT=" . $tokenJWT);
                         exit;
                     } elseif ($nouveauPassword !== $confirmPassword) {
                         $message = "Les mots de passe ne sont pas identiques";
                         Toolbox::ajouterMessageAlerte($message, 'rouge');
-                        header("Location: " . URL . 'forgotPass/validResetPass/' . $tokenToVerify);
+                        header("Location:?controller=forgotPass&action=resetPassView&tokenJWT=" . $tokenJWT);
                         exit;
                     } else {
-                        $payload = $jwt->getPayload($tokenToVerify);
+                        $payload = $jwt->getPayload($tokenJWT);
                         $payload['userID'];
                         $infosUser = $this->usersModel->getUserById($payload['userID']);
-                        // $pseudo = $infosUser->pseudo;
+
                         $userId = $infosUser->userID;
-                        // $created_at = $infosUser->userDate;
+
 
                         $user = new Users();
                         $user->setUserId($userId);
@@ -155,28 +136,22 @@ class ForgotPassController extends MainController
                         $resultat = $this->usersModel->updatePassword($user);
                         if ($resultat) {
                             Toolbox::ajouterMessageAlerte("Mot de passe réinitialisé avec succès", "vert");
-                            header("Location: " . URL . "home");
-                            exit;
                         } else {
                             Toolbox::ajouterMessageAlerte("Une erreur est survenue", "rouge");
-                            header("Location: " . URL . "home");
-                            exit;
                         }
                     }
                 } else {
                     Toolbox::ajouterMessageAlerte("Token invalide ou expiré", "rouge");
-                    header("Location: " . URL . "home");
-                    exit;
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("Erreur token", 'rouge');
-                header("Location: " . URL . "home");
-                exit;
             }
         } else {
             Toolbox::ajouterMessageAlerte("Les deux champs sont requis", 'rouge');
-            header("Location: " . URL . "forgotPass/resetPassView/" . $tokenToVerify);
+            header("Location:?controller=forgotPass&action=resetPassView&tokenJWT=" . $tokenJWT);
             exit;
         }
+        header("Location:index.php");
+        exit;
     }
 }

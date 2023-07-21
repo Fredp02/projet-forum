@@ -162,7 +162,8 @@
         </div>
 
     </div>
-    <a href="<?= URL; ?>account/deleteAccount"><button class="btnDeleteAccount">Supprimer mon compte</button></a>
+    <a href="?controller=account&action=deleteAccount"><button class="btnDeleteAccount">Supprimer mon
+            compte</button></a>
 
 
 

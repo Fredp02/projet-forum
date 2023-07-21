@@ -27,11 +27,11 @@
                 <button class="btnPageLogin">Connexion</button>
             </div>
         </form>
-        <a href="forgotPass/forgotPassView" class="linkForgotPageLogin">Mot de passe oublié ?</a>
+        <a href="?controller=forgotPass" class="linkForgotPageLogin">Mot de passe oublié ?</a>
 
         <div class="footerPageLogin">
 
-            <a href="<?= URL . 'register/viewRegister'; ?>">Créer un compte</a>
+            <a href="index.php?controller=register">Créer un compte</a>
         </div>
 
     </div>

@@ -18,7 +18,7 @@ btnPageLogin.addEventListener('click', async (e) => {
         try {
 
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch("/login", {
+            const response = await fetch("index.php?controller=login&action=validationlogin", {
                 method: "POST",
                 body: formDataPageLogin,
             });
@@ -42,9 +42,11 @@ btnPageLogin.addEventListener('click', async (e) => {
         } catch (error) {
             //on affiche un message d'erreur dans le DOM
             if (error.message === "expired token") {
-                window.location.href = "home";
+                window.location.href = "index.php";
             } else {
-                messagePagelogin.textContent = error.message;
+                messagePagelogin.innerHTML = error.message;
+                inputPageLogin.value = "";
+                inputPasswordPageLogin.value = "";
             }
 
         }

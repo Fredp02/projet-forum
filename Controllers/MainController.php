@@ -44,7 +44,7 @@ abstract class MainController
             "msg" => $msg,
             "view" => "../Views/erreur.view.php",
             "template" => "../Views/common/template.php",
-            "css" => "/style/errorStyle.css"
+            "css" => "./style/errorStyle.css"
         ];
         $this->render($data_page);
     }
