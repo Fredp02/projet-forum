@@ -9,33 +9,33 @@ class Router
 {
     public function routes()
     {
-        /**
-         * !! Système de routage basé sur une convention de nommage :
-         * Exemple : $_GET['page']) === "/register/viewRegister", on récupère "register" avec un explode.
-         * register sera donc à la fois:
-         * - le nom de la route
-         * - le nom du controller (registerController)
-         * - et le nom de la méthode à appeler
-         * 
-         * par contre, il est possible que $_GET['page']) soit sous cette forme forgotPass/resetPassView/$JWT.
-         */
 
+        // ! index.php?controller=register&action=registerView 
+        // $_GET = [
+        //     'controller' => 'register',
+        //     'action' => 'registerView'
+        // ];
+        // ! index.php?controller=forgotPass&action=sendEmail= 
+        // $_GET = [
+        //     'controller' => 'register',
+        //     'action' => 'registerView'
+        // ];
         try {
-            if (empty($_GET['page'])) {
-                $page = "home";
-            } else {
-                /**
-                 * !  Le fichier .htaccess passe l’URL demandée en tant que paramètre "page" dans la chaîne de requête
-                 *  $_GET['page'] = "/nom_Du_controller/et-ou-nom_de_la_methode/paramètre_suplementaires
-                 */
-                $paramGet = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
 
-                $page = $paramGet[0];
+            //on intialise le controller
+            if (isset($_GET['controller'])) {
+                $controller = ucfirst(array_shift($_GET));
+            } else {
+                $controller = 'Home';
             }
-            //on construit le chemin du bon controller
-            $controllerName = 'Controllers\\' . ucfirst($page) . 'Controller';
-            if (!class_exists($controllerName)) {
-                throw new Exception("La page n'existe pas");
+
+            $controllerName = 'Controllers\\' . ucfirst($controller) . 'Controller';
+
+            //on intialise l'action
+            if (isset($_GET['action'])) {
+                $action = ucfirst(array_shift($_GET));
+            } else {
+                $action = '';
             }
             $controller = new $controllerName();
             // if (method_exists($controllerName, $page))

@@ -427,7 +427,7 @@ inputAvatar.addEventListener('change', async function () {
         }
     } catch (error) {
         if (error.message === "expired token") {
-            window.location.href = URL_WEBSITE + 'home';
+            window.location.href = 'home';
         } else {
             ElAlerteAvatarSpan.textContent = error.message
             ElAlerteAvatar.style.backgroundColor = 'red';
