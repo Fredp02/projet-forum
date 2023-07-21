@@ -277,8 +277,10 @@ class AccountController extends MainController
 
                 $regexpPassword = "/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?].*[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,50}$/";
 
-                $pseudo = $_SESSION['profil']['pseudo'];
-                if ($this->usersModel->verifLogin($pseudo, $ancienPassword)) {
+                $userID = $_SESSION['profil']['userID'];
+                $userData = $this->usersModel->getUserById($userID);
+                $userPassBDD = $userData->password;
+                if (Securite::verifPassword($ancienPassword, $userPassBDD)) {
 
                     if (!preg_match($regexpPassword, $nouveauPassword)) {
                         Toolbox::dataJson(false, "Le mot de passe doit contenir entre 8 et 50 caractères dont au moins 2 caractères spéciaux et une majuscule");
@@ -288,7 +290,6 @@ class AccountController extends MainController
                         Toolbox::dataJson(false, "Les mots de passe ne correspondent pas");
                         exit;
                     }
-                    $userData = $this->usersModel->getUserByPseudo($pseudo);
                     $user = new Users();
                     $user->setUserId($userData->userID);
                     $user->setPassword(password_hash($nouveauPassword, PASSWORD_DEFAULT));
