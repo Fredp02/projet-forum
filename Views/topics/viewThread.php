@@ -1,11 +1,9 @@
 <?php
 
 
-use Controllers\Services\Toolbox; ?>
+use Controllers\Services\Toolbox;
+?>
 <section>
-    <?php
-
-    ?>
     <div class="headerPageTopic">
         <div class="filAriane">
             <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
@@ -26,11 +24,19 @@ use Controllers\Services\Toolbox; ?>
                                 <span><?= html_entity_decode($message->pseudo); ?></span>
                             </div>
                             <div class="guitare">
-                                <span>Ma guitare : <?= html_entity_decode($message->guitare); ?></span>
+                                <span>
+                                    <?php if ($message->pseudo !== 'Anonymous') : ?>
+                                        Ma guitare : <?= html_entity_decode($message->guitare); ?>
+                                </span>
+                            <?php endif; ?>
                             </div>
                             <div class="totalMessagesUser">
-                                <span><?= $message->totalUserMessages; ?>
-                                    message<?= $message->totalUserMessages > 1 ? 's' : ''; ?></span>
+                                <span>
+                                    <?php if ($message->pseudo !== 'Anonymous') : ?>
+                                        <?= $message->totalUserMessages; ?>
+                                        message<?= $message->totalUserMessages > 1 ? 's' : ''; ?>
+                                    <?php endif; ?>
+                                </span>
                             </div>
 
                         </div>
@@ -88,7 +94,7 @@ use Controllers\Services\Toolbox; ?>
         <div>
 
         </div>
-
+    </div>
 
 
 </section>

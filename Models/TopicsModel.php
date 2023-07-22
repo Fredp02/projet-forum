@@ -76,6 +76,22 @@ class TopicsModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
+
+    public function replaceTopicsByAnonymous($userID, $anonymousID)
+    {
+        $req = "UPDATE messages SET userID = :anonymousID WHERE userID = :userID";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":anonymousID", $anonymousID);
+        $sql->bindValue(":userID", $userID);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
     // public function getMessagesByTopic($topicID)
     // {
     //     // Je souhaite obtenir la liste de tout les messages en fonction de topicID, ainsi que les informations relative à l'utilisateur à l'origine de chaque message (id, pseudo, avatar, ville)

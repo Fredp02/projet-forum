@@ -19,7 +19,7 @@ use Controllers\Services\Toolbox;
 
 
         <div class="categorys">
-            <!-- header -->
+
             <li class="headerCategory">
                 <div class="headerCategoryContent">
                     <div class="headerCategoryIcone">
@@ -37,34 +37,34 @@ use Controllers\Services\Toolbox;
             </li>
             <!-- foreach -->
             <?php foreach ($listTopics as $topic) : ?>
-                <li class="subCategorysList">
-                    <div class="subCategory">
-                        <div class="subCategoryIcon">
-                            <span></span>
-                        </div>
-                        <div class="infosTopic">
-                            <!-- Je profite du foreach de cette page pour construire les urls de chaque topics -->
-                            <?php $topicUrl = "?controller=topics&action=thread&threadID=" . $topic->topicID; ?>
-                            <div class="topicName"><a href="<?= $topicUrl; ?>"><?= $topic->topicTitle; ?></a>
-                            </div>
-                            <div class="topicAuthor"><?= $topic->topicCreator; ?> -
-                                <?= Toolbox::convertDate($topic->topicDate, 'd MMMM Y'); ?> </div>
-                        </div>
-                        <div class="responsesNumber"><?= $topic->totalMessages - 1; ?></div>
-                        <div class="viewNumber">215</div>
-                        <div class="lastResponse">
-
-                            <div class="lastActivityDate">
-                                <span><?= Toolbox::convertDate($topic->latestMessageDate, 'd MMMM Y'); ?></span>
-                            </div>
-                            <div class="lastActivityUser">
-                                <span>Par : <?= $topic->latestMessageUser; ?></span>
-                            </div>
-
-
-                        </div>
+            <li class="subCategorysList">
+                <div class="subCategory">
+                    <div class="subCategoryIcon">
+                        <span></span>
                     </div>
-                </li>
+                    <div class="infosTopic">
+                        <!-- Je profite du foreach de cette page pour construire les urls de chaque topics -->
+                        <?php $topicUrl = "?controller=topics&action=thread&threadID=" . $topic->topicID; ?>
+                        <div class="topicName"><a href="<?= $topicUrl; ?>"><?= $topic->topicTitle; ?></a>
+                        </div>
+                        <div class="topicAuthor"><?= $topic->topicCreator; ?> -
+                            <?= Toolbox::convertDate($topic->topicDate, 'd MMMM Y'); ?> </div>
+                    </div>
+                    <div class="responsesNumber"><?= $topic->totalMessages - 1; ?></div>
+                    <div class="viewNumber">215</div>
+                    <div class="lastResponse">
+
+                        <div class="lastActivityDate">
+                            <span><?= Toolbox::convertDate($topic->latestMessageDate, 'd MMMM Y'); ?></span>
+                        </div>
+                        <div class="lastActivityUser">
+                            <span>Par : <?= $topic->latestMessageUser; ?></span>
+                        </div>
+
+
+                    </div>
+                </div>
+            </li>
             <?php endforeach; ?>
 
         </div>

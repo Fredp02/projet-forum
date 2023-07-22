@@ -8,6 +8,7 @@ use Models\UsersModel;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
 use Controllers\Services\JWTService\JWTService;
+use Models\TopicsModel;
 
 include 'Services\JWTService\configJWT.php';
 
@@ -362,16 +363,24 @@ class AccountController extends MainController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                $userId = $_SESSION['profil']['userID'];
-                $user = $this->usersModel->getUserById($userId);
-                $imageAvatar = 'images/profils/' . $userId . '/' . $user->avatar;
-                unlink($imageAvatar);
-                rmdir('images/profils/' . $userId);
-                if ($this->usersModel->deleteAccount($userId)) {
-                    Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
-                    unset($_SESSION['profil']);
+                $userID = $_SESSION['profil']['userID'];
+
+                $anonymousID = 2;
+                $topic = new TopicsModel();
+
+                if ($topic->replaceTopicsByAnonymous($userID, $anonymousID)) {
+                    $user = $this->usersModel->getUserById($userID);
+                    $imageAvatar = 'images/profils/' . $userID . '/' . $user->avatar;
+                    unlink($imageAvatar);
+                    rmdir('images/profils/' . $userID);
+                    if ($this->usersModel->deleteAccount($userID)) {
+                        Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
+                        unset($_SESSION['profil']);
+                    } else {
+                        Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
+                    }
                 } else {
-                    Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
+                    Toolbox::ajouterMessageAlerte("Erreur inatendue", 'rouge');
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
