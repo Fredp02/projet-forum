@@ -246,18 +246,17 @@ nav {
 
 
 .loginAside {
-    /* width: 100%; */
-    background-color: var(--gris-fonce1);
-    /* padding-left: 10px; */
+
+    background-color: #272727;
+
     text-align: center;
     display: flex;
     align-items: center;
     flex-direction: column;
-    /* backdrop-filter: blur(30px) saturate(100%);
-    -webkit-backdrop-filter: blur(30px) saturate(100%);
-    background-color: transparent; */
-    /* border-radius: 10px; */
-    width: 100%;
+    width: 95%;
+    margin-top: 15px;
+    margin-left: 10px;
+
     margin-top: 15px;
 }
 
@@ -379,7 +378,7 @@ nav {
 
 .footerLogin {
     width: 100%;
-    background-color: var(--gris-fonce1);
+    /* background-color: var(--gris-fonce1); */
     margin-top: 10px;
     font-size: 13px;
 }
