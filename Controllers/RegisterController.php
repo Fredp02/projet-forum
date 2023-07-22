@@ -105,11 +105,15 @@ class RegisterController extends MainController
                             copy($source, $destination);
 
                             $token = Securite::createTokenJWT($userId, $pseudo, $email);
-                            $cheminTemplate = '../Views/templateMail/templateInscription.html';
+
                             $route = URL . "index.php?controller=register&action=accountActivation&token=" . $token;
                             $sujet = 'Activation de votre compte sur Guitare Forum';
 
-                            if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
+
+                            $template = '../Views/templateMail/templateInscription.html';
+                            $contentMail = Toolbox::createEmailContent($template, $pseudo, $route);
+
+                            if (Toolbox::sendMail($email, $sujet, $contentMail)) {
                                 $message = "Votre compte a été créé avec succès ! Un mail d'activation a été envoyé sur votre boite mail !";
                                 Toolbox::ajouterMessageAlerte($message, 'vert');
                             } else {
@@ -148,10 +152,12 @@ class RegisterController extends MainController
             $email = $user->email;
             $token = Securite::createTokenJWT($userID, $pseudo, $email);
             $route = URL . "index.php?controller=register&action=accountActivation&token=" . $token;
-            $cheminTemplate = '../Views/templateMail/templateInscription.html';
             $sujet = 'Validation inscription Guitare Forum';
 
-            if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
+            $template = '../Views/templateMail/templateInscription.html';
+            $contentMail = Toolbox::createEmailContent($template, $pseudo, $route);
+
+            if (Toolbox::sendMail($email, $sujet, $contentMail)) {
                 $message = "Un mail de validation a été envoyé sur votre boite mail !";
                 Toolbox::ajouterMessageAlerte($message, 'vert');
                 header("Location:index.php");

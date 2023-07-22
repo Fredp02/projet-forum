@@ -416,7 +416,7 @@ inputAvatar.addEventListener('change', async function () {
             //si résultat "true" :
 
             const filepathAvatar = resultat.data.filepathAvatar
-            const cheminNouvelAvatar = "../images/profils/" + filepathAvatar;
+            const cheminNouvelAvatar = "./images/profils/" + filepathAvatar;
             elImgAvatar.setAttribute("src", cheminNouvelAvatar);
             inputAvatar.value = "";
             elContentFormAvatar.style.display = "none";

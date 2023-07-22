@@ -190,8 +190,6 @@ class AccountController extends MainController
     public function editEmail($tokenJWT = null)
     {
 
-
-
         //!Si requete POST : envoie du mail avec tokenJWT
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
@@ -207,10 +205,13 @@ class AccountController extends MainController
 
                     $nouveauEmail = htmlspecialchars($_POST['email']);
                     $token = Securite::createTokenJWT($userId, $pseudo, $nouveauEmail);
-                    $cheminTemplate = '../Views/templateMail/templateEditEmail.html';
                     $route = URL . 'index.php?controller=account&action=editEmail&tokenJWT=' . $token;
                     $sujet = 'Validation adresse email sur Guitare Forum';
-                    if (Toolbox::sendMail($pseudo, $nouveauEmail, $route, $sujet, $cheminTemplate)) {
+
+                    $template = '../Views/templateMail/templateEditEmail.html';
+                    $contentMail = Toolbox::createEmailContent($template, $pseudo, $route);
+
+                    if (Toolbox::sendMail($nouveauEmail, $sujet, $contentMail)) {
                         $message = "Un email de validation a été envoyé sur cette adresse email. Ce mail sera valide pendant 3h";
                         Toolbox::dataJson(true, $message);
                         exit;

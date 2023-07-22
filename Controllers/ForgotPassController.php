@@ -47,13 +47,14 @@ class ForgotPassController extends MainController
                 if ($userInfos) {
                     $userId = $userInfos->userID;
                     $pseudo = $userInfos->pseudo;
-                    $cheminTemplate = '../Views/templateMail/templateForgotPassword.html';
                     $token = Securite::createTokenJWT($userId, $pseudo, $email);
-
                     $route = URL . "?controller=forgotPass&action=resetPassView&tokenJWT=" . $token;
-                    $sujet = 'Réinitialisation du mot de passe sur Guitare Forum';
 
-                    if (Toolbox::sendMail($pseudo, $email, $route, $sujet, $cheminTemplate)) {
+                    $sujet = 'Réinitialisation du mot de passe sur Guitare Forum';
+                    $template = '../Views/templateMail/templateForgotPassword.html';
+                    $contentMail = Toolbox::createEmailContent($template, $pseudo, $route);
+
+                    if (Toolbox::sendMail($email, $sujet, $contentMail)) {
                         $message = "Un mail a été envoyé sur votre boite mail afin de réinitialiser votre mot de passe !";
                         Toolbox::ajouterMessageAlerte($message, 'vert');
                         Toolbox::dataJson(true, "email envoyé");
