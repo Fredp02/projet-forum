@@ -4,14 +4,19 @@
 }
 
 
-#filAriane,
-#filAriane a {
-    color: var(--text-primary);
+.filAriane,
+.filAriane a {
+    color: var(--text-primaryOpacity2);
     text-decoration: none;
 
 }
 
-#filAriane a:hover {
+.filAriane a {
+    color: var(--text-primary);
+
+}
+
+.filAriane a:hover {
     text-decoration: underline;
 }
 

@@ -47,7 +47,8 @@ class TopicsController extends MainController
                 "categoryName" => $infosCategory->categoryName,
                 "categorySlug" => $infosCategory->categorySlug,
                 "categoryID" => $infosCategory->categoryID,
-                "listTopics" => $listTopics
+                "listTopics" => $listTopics,
+                'categoryParentName' => $infosCategory->categoryParentName
             ];
 
 
@@ -62,8 +63,6 @@ class TopicsController extends MainController
         $infosTopic = $this->topicsModel->getTopicInfos($threadID);
         //si $topicID est un id existant et que la requête à renvoyer un résultat
         if ($infosTopic) {
-            // $messagesTopics = $this->topicsModel->getMessagesByTopic($topicID);
-
             $messagesTopics = $this->messagesModel->getMessagesByTopic($threadID);
 
             // dd($infosTopic);
@@ -83,8 +82,8 @@ class TopicsController extends MainController
                 "script" => "./js/responseTopic.js",
                 "template" => "../Views/common/template.php",
                 "tokenCSRF" => $_SESSION["tokenCSRF"],
-                // "categoryName" => $infosTopic->categoryName,
-                // "categorySlug" => $infosTopic->categorySlug,
+                "categoryName" => $infosTopic->categoryName,
+                "parentCategoryName" => $infosTopic->parentCategoryName,
                 // "categoryID" => $infosTopic->categoryID,
                 "infosTopic" => $infosTopic,
                 'messagesTopics' => $messagesTopics

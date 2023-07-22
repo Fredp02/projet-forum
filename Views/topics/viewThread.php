@@ -7,17 +7,23 @@ use Controllers\Services\Toolbox; ?>
 
     ?>
     <div class="headerPageTopic">
-        <div id="filAriane"><a href="index.php">Guitare Forum </a> > <a href="#"><?= $infosTopic->categoryName; ?></a>
-            > <a href="#"><?= $infosTopic->topicTitle; ?></a>
+        <div class="filAriane">
+            <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
+            <?= $parentCategoryName; ?> <i class="fa-solid fa-caret-right"></i>
+            <?= $categoryName; ?> <i class="fa-solid fa-caret-right"></i>
         </div>
-        <h1><?= $infosTopic->topicTitle; ?></h1>
-    </div>
-    <div class="contentTopic">
-        <div class="messageList">
-            <?php foreach ($messagesTopics as $message) : ?>
+        <div class="divBtnCreateTopic">
+            <h1><?= $infosTopic->topicTitle; ?></h1>
+        </div>
+        <div class="contentTopic">
+            <div class="messageList">
+
+                <?php foreach ($messagesTopics as $message) : ?>
                 <div class="messageBloc">
                     <div class="userInfos">
-                        <div class="avatar"><img src="./images/profils/<?= $message->userID . '/'; ?><?= $message->avatar; ?>" alt="photo de profil de l'utilisateur"></div>
+                        <div class="avatar"><img
+                                src="./images/profils/<?= $message->userID . '/'; ?><?= $message->avatar; ?>"
+                                alt="photo de profil de l'utilisateur"></div>
                         <div class="pseudo">
                             <span><?= html_entity_decode($message->pseudo); ?></span>
                         </div>
@@ -35,7 +41,8 @@ use Controllers\Services\Toolbox; ?>
                             <div class="messageDate">
                                 <span><?= Toolbox::convertDate($message->messageDate); ?></span>
                             </div>
-                            <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>" data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
+                            <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>"
+                                data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
                                 <button><i class="fa-solid fa-quote-right"></i></button>
                             </div>
                         </div>
@@ -44,46 +51,46 @@ use Controllers\Services\Toolbox; ?>
                         <div class="messageText"><span><?= html_entity_decode($message->messageText); ?></span></div>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
-        <div class="alertMessageTopic"></div>
-        <div class="divReponse">
-            <form class="formResponse">
-                <input name="inputResponse" class="inputResponse" type="hidden">
-                <input name="topicID" class="topicID" type="hidden" value="<?= $infosTopic->topicID; ?>">
-                <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
-                <div class="editor">
-                </div>
-
-                <button type="submit" class="btnEnvoyer">Envoyer</button>
-            </form>
-        </div>
-
-        <template class="template-item">
-            <div class="messageBloc">
-                <div class="userInfos">
-                    <div class="avatar"><img src="" alt="photo de profil de l'utilisateur"></div>
-                    <div class="pseudo"><span></span></div>
-                    <div class="guitare"><span></span></div>
-                    <div class="totalMessagesUser"><span></span></div>
-                </div>
-                <div class="userMessage">
-                    <div class="headerMessage">
-                        <div class="messageDate"><span></span></div>
-                        <div class="quoteMessage" data-pseudo="" data-date="">
-                            <button><i class="fa-solid fa-quote-right"></i></button>
-                        </div>
-                    </div>
-                    <div class="messageText"><span></span></div>
-                </div>
+                <?php endforeach; ?>
             </div>
-        </template>
-    </div>
+            <div class="alertMessageTopic"></div>
+            <div class="divReponse">
+                <form class="formResponse">
+                    <input name="inputResponse" class="inputResponse" type="hidden">
+                    <input name="topicID" class="topicID" type="hidden" value="<?= $infosTopic->topicID; ?>">
+                    <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
+                    <div class="editor">
+                    </div>
+
+                    <button type="submit" class="btnEnvoyer">Envoyer</button>
+                </form>
+            </div>
+
+            <template class="template-item">
+                <div class="messageBloc">
+                    <div class="userInfos">
+                        <div class="avatar"><img src="" alt="photo de profil de l'utilisateur"></div>
+                        <div class="pseudo"><span></span></div>
+                        <div class="guitare"><span></span></div>
+                        <div class="totalMessagesUser"><span></span></div>
+                    </div>
+                    <div class="userMessage">
+                        <div class="headerMessage">
+                            <div class="messageDate"><span></span></div>
+                            <div class="quoteMessage" data-pseudo="" data-date="">
+                                <button><i class="fa-solid fa-quote-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="messageText"><span></span></div>
+                    </div>
+                </div>
+            </template>
+        </div>
 
 
-    <div>
+        <div>
 
-    </div>
+        </div>
 
 
 

@@ -2,12 +2,14 @@
 
 use Controllers\Services\Toolbox;
 
-// dump($categoryID);
+
+
 ?>
 <section>
     <div class="forumListBloc">
         <div class="topformList">
-            <div id="filAriane"><a href="index.php">Guitare Forum </a> > <a href="#"><?= $categoryName; ?></a></div>
+            <div class="filAriane"><a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
+                <?= $categoryParentName; ?> <i class="fa-solid fa-caret-right"></i></div>
             <div class="divBtnCreateTopic">
                 <a href="<?= URL; ?>createTopic/<?= $categoryID; ?>">
                     <button class="btnCreateTopic">Créer</button>

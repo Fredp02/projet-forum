@@ -152,7 +152,11 @@ class CategorysModel extends DbConnect
     // }
     public function getInfoCategory($categoryID)
     {
-        $req = "SELECT * FROM categorys WHERE categoryID = :categoryID";
+        //la requete est executée seulement pour les sous catégories, son elles auront toujours un parent. le LEFT est donc optionnel.
+        $req = "SELECT categorys.*, parent.categoryName AS categoryParentName    
+        FROM categorys
+        LEFT JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
+        WHERE categorys.categoryID = :categoryID";
         $sql = $this->getBdd()->prepare($req);
         $sql->bindValue(":categoryID", $categoryID);
         try {
@@ -164,6 +168,20 @@ class CategorysModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
+    // public function getInfoCategory($categoryID)
+    // {
+    //     $req = "SELECT * FROM categorys WHERE categoryID = :categoryID";
+    //     $sql = $this->getBdd()->prepare($req);
+    //     $sql->bindValue(":categoryID", $categoryID);
+    //     try {
+    //         $sql->execute();
+    //         $resultat = $sql->fetch();
+    //         $sql->closeCursor();
+    //         return $resultat;
+    //     } catch (Exception $e) {
+    //         die('Erreur : ' . $e->getMessage());
+    //     }
+    // }
 }
 
 // $stmt = $pdo->prepare($sql);
