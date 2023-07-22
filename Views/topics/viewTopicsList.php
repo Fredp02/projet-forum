@@ -7,8 +7,7 @@ use Controllers\Services\Toolbox;
 <section>
     <div class="forumListBloc">
         <div class="topformList">
-            <div id="filAriane"><a href="<?= URL; ?>">Guitare Forum </a> > <a
-                    href="<?= URL . 'home/' . $categorySlug . '.' . $categoryID ?>"><?= $categoryName; ?></a></div>
+            <div id="filAriane"><a href="index.php">Guitare Forum </a> > <a href="#"><?= $categoryName; ?></a></div>
             <div class="divBtnCreateTopic">
                 <a href="<?= URL; ?>createTopic/<?= $categoryID; ?>">
                     <button class="btnCreateTopic">Créer</button>
@@ -36,34 +35,34 @@ use Controllers\Services\Toolbox;
             </li>
             <!-- foreach -->
             <?php foreach ($listTopics as $topic) : ?>
-            <li class="subCategorysList">
-                <div class="subCategory">
-                    <div class="subCategoryIcon">
-                        <span></span>
-                    </div>
-                    <div class="infosTopic">
-                        <!-- Je profite du foreach de cette page pour construire les urls de chaque topics -->
-                        <?php $topicUrl = "?controller=topics&action=thread&threadID=". $topic->topicID; ?>
-                        <div class="topicName"><a href="<?= $topicUrl; ?>"><?= $topic->topicTitle; ?></a>
+                <li class="subCategorysList">
+                    <div class="subCategory">
+                        <div class="subCategoryIcon">
+                            <span></span>
                         </div>
-                        <div class="topicAuthor"><?= $topic->topicCreator; ?> -
-                            <?= Toolbox::convertDate($topic->topicDate, 'd MMMM Y'); ?> </div>
-                    </div>
-                    <div class="responsesNumber"><?= $topic->totalMessages - 1; ?></div>
-                    <div class="viewNumber">215</div>
-                    <div class="lastResponse">
-
-                        <div class="lastActivityDate">
-                            <span><?= Toolbox::convertDate($topic->latestMessageDate, 'd MMMM Y'); ?></span>
+                        <div class="infosTopic">
+                            <!-- Je profite du foreach de cette page pour construire les urls de chaque topics -->
+                            <?php $topicUrl = "?controller=topics&action=thread&threadID=" . $topic->topicID; ?>
+                            <div class="topicName"><a href="<?= $topicUrl; ?>"><?= $topic->topicTitle; ?></a>
+                            </div>
+                            <div class="topicAuthor"><?= $topic->topicCreator; ?> -
+                                <?= Toolbox::convertDate($topic->topicDate, 'd MMMM Y'); ?> </div>
                         </div>
-                        <div class="lastActivityUser">
-                            <span>Par : <?= $topic->latestMessageUser; ?></span>
+                        <div class="responsesNumber"><?= $topic->totalMessages - 1; ?></div>
+                        <div class="viewNumber">215</div>
+                        <div class="lastResponse">
+
+                            <div class="lastActivityDate">
+                                <span><?= Toolbox::convertDate($topic->latestMessageDate, 'd MMMM Y'); ?></span>
+                            </div>
+                            <div class="lastActivityUser">
+                                <span>Par : <?= $topic->latestMessageUser; ?></span>
+                            </div>
+
+
                         </div>
-
-
                     </div>
-                </div>
-            </li>
+                </li>
             <?php endforeach; ?>
 
         </div>

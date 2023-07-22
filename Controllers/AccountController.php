@@ -44,7 +44,7 @@ class AccountController extends MainController
             "pageDescription" => "Page du profil",
             "pageTitle" => "Profil",
             "view" => "../Views/account/viewProfil.php",
-            "template" => "../views/common/template.php",
+            "template" => "../Views/common/template.php",
             "css" => "./style/profilStyle.css",
             "script" => "./js/profil.js",
             'tokenCSRF' => $tokenCSRF,
@@ -58,10 +58,10 @@ class AccountController extends MainController
         $user = $this->usersModel->getUserById($userID);
 
         $userDatasForm = [
-            'email' => html_entity_decode($user->email),
-            'guitare' => html_entity_decode($user->guitare),
-            'ville' => html_entity_decode($user->ville),
-            'emploi' => html_entity_decode($user->emploi),
+            'email' => $user->email,
+            'guitare' => $user->guitare,
+            'ville' => $user->ville,
+            'emploi' => $user->emploi,
         ];
         Toolbox::dataJson(true, "reponse ok", $userDatasForm);
         exit;
@@ -304,14 +304,21 @@ class AccountController extends MainController
         }
     }
 
+    //section a propos
     public function editAbout()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
             if (!empty($_POST['guitare']) && !empty($_POST['emploi']) && !empty($_POST['ville'])) {
-                $guitare = trim(htmlspecialchars($_POST['guitare']));
-                $emploi = trim(htmlspecialchars($_POST['emploi']));
-                $ville = trim(htmlspecialchars($_POST['ville']));
 
+                $config = \HTMLPurifier_Config::createDefault();
+                $purifier = new \HTMLPurifier($config);
+
+                $guitare = $purifier->purify($_POST['guitare']);
+                $emploi = $purifier->purify($_POST['emploi']);
+                $ville = $purifier->purify($_POST['ville']);
+
+                //!pour vérifier que html purifier fonctionne bien, on pourrait insérer ce code : "<script>alert('salut')</script>" 
+                //!html purifier va automatiquement remplacer le tout par "";
 
                 $userData = $this->usersModel->getUserById($_SESSION['profil']['userID']);
                 $user = new Users();
@@ -325,11 +332,11 @@ class AccountController extends MainController
                     //! voir méthode UpdateAboutUser() pour plus d'info
                     $message = $resultat === 2 ? "Mise à jour des informations réalisées avec succès" : "Aucune modifications effectuées : valeur identique";
                     $data = [
-                        'guitare' => html_entity_decode($guitare),
-                        'emploi' => html_entity_decode($emploi),
-                        'ville' => html_entity_decode($ville)
+                        'guitare' => $guitare,
+                        'emploi' => $emploi,
+                        'ville' => $ville
                     ];
-                    $_SESSION['profil']['userGuitare'] = html_entity_decode($guitare);
+                    $_SESSION['profil']['userGuitare'] = $guitare;
                     Toolbox::dataJson(true, $message, $data);
                     exit;
                 } else {
@@ -380,7 +387,7 @@ class AccountController extends MainController
             "pageDescription" => "Page de suppression du compte",
             "pageTitle" => "Supprimer mon compte",
             "view" => "../Views/account/viewDeleteAccount.php",
-            "template" => "../views/common/template.php",
+            "template" => "../Views/common/template.php",
             "css" => "./style/deleteAccountStyle.css",
             'tokenCSRF' => $tokenCSRF
 

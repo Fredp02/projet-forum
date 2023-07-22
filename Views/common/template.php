@@ -18,9 +18,9 @@ use Controllers\Services\Securite; ?>
     <link href="<?= $quillSnowCSS ?? ''; ?>" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="<?= $quillImageCSS ?? ''; ?>">
     <link rel="stylesheet" type="text/css" href="<?= $quillEmojiCSS ?? ''; ?>">
-    <link rel="stylesheet" href="/style/mainStyle.css" />
+    <link rel="stylesheet" href="./style/mainStyle.css" />
     <link rel="stylesheet" href="<?= $css ?? ''; ?>" />
-    <script src="/js/app.js" defer></script>
+    <script src="./js/app.js" defer></script>
 
     <script src="<?= $quillJS ?? ''; ?>" defer></script>
     <script src="<?= $quillImageJS ?? ''; ?>" defer></script>
@@ -118,7 +118,7 @@ use Controllers\Services\Securite; ?>
                 </div>
 
                 <div class="divAvatar">
-                    <img src="/images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
+                    <img src="./images/profils/<?= $_SESSION['profil']['filepathAvatar']; ?>"
                         alt="photo de profil de l'utilisateur">
                 </div>
                 <a href="?controller=account" class="linkProfil">Mon profil</a>

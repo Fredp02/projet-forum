@@ -85,7 +85,7 @@ function updateDom(resultat) {
 
     const divAvatar = document.createElement('div');
     divAvatar.classList.add("divAvatar");
-    divAvatar.innerHTML = `<img src="/images/profils/${resultat.data.filepathAvatar}" alt="photo de profil de l'utilisateur">`;
+    divAvatar.innerHTML = `<img src="./images/profils/${resultat.data.filepathAvatar}" alt="photo de profil de l'utilisateur">`;
 
     const lienProfil = document.createElement('a');
     lienProfil.classList.add("linkProfil");

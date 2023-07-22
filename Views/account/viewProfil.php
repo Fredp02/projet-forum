@@ -1,6 +1,3 @@
-<?php
-// $avatar = $userDatas['userID'] . '/' . $userDatas['avatar'];
-?>
 <div class="profil">
     <div class="contentFormAvatar">
 
@@ -53,8 +50,7 @@
                     <form class="formEmail" action="">
                         <div class="divInputEmail">
                             <label for="mail">Mon Email :</label>
-                            <input type="email" id="mail" name="email" class="inputEmail"
-                                value="<?= ($userDatas['email']); ?>">
+                            <input type="email" id="mail" name="email" class="inputEmail" value="<?= ($userDatas['email']); ?>">
                         </div>
                         <div>
                             <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF; ?>">
@@ -136,18 +132,15 @@
                 <form class="formAbout" action="">
                     <div class="divInputGuitare">
                         <label for="guitare">Ma guitare :</label>
-                        <input type="text" id="guitare" name="guitare" class="inputGuitare"
-                            value="<?= ($userDatas['guitare']) ?? ""; ?>" />
+                        <input type="text" id="guitare" name="guitare" class="inputGuitare" value="<?= ($userDatas['guitare']) ?? ""; ?>" />
                     </div>
                     <div class="divInputEmploi">
                         <label for="emploi">Emploi :</label>
-                        <input type="text" id="emploi" name="emploi" class="inputEmploi"
-                            value="<?= ($userDatas['emploi']) ?? ""; ?>" />
+                        <input type="text" id="emploi" name="emploi" class="inputEmploi" value="<?= ($userDatas['emploi']) ?? ""; ?>" />
                     </div>
                     <div class="divInputVille">
                         <label for="ville">Ville :</label>
-                        <input type="text" id="ville" name="ville" class="inputVille"
-                            value="<?= ($userDatas['ville']) ?? ""; ?>" />
+                        <input type="text" id="ville" name="ville" class="inputVille" value="<?= ($userDatas['ville']) ?? ""; ?>" />
                     </div>
                     <div>
                         <input type="hidden" class="aboutCSRF" name="tokenCSRF" value="<?= $tokenCSRF; ?>">

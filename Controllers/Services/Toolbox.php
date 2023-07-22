@@ -9,6 +9,7 @@ use DateTimeImmutable;
 // use PHPMailer\PHPMailer\PHPMailer;
 use IntlDateFormatter;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 use Controllers\Services\HtmlTemplateMail\HtmlTemplateMail;
 
 require '../vendor/autoload.php';
@@ -58,6 +59,37 @@ class Toolbox
 
         // Affiche la date formatée
         return ucfirst($dateFormatee);
+    }
+    public static function sendmail2($pseudo, $userEmail, $route, $sujet, $cheminTemplate = null)
+    {
+        $mail = new PHPMailer(true);
+        try {
+            $mail->setFrom('f.poulain@gmx.com', 'Mon site');
+            $mail->addAddress($userEmail);
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Nouveau message du site';
+            $mail->Body    = "
+            <html>
+            <head>
+              <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+              <title>email</title>
+            </head>
+            <body>
+              <div style='text-align: center;'>               
+                  Nouveau Message !
+                    " . $sujet . "
+                    " . $route . "
+                    " . $pseudo . "
+                    
+              </div>
+            </body>
+          </html>
+            ";
+            return $mail->send();
+        } catch (Exception $e) {
+            echo "Une erreur est survenue: {$mail->ErrorInfo}";
+        }
     }
     public static function sendMail($pseudo, $userEmail, $route, $sujet, $cheminTemplate)
     {

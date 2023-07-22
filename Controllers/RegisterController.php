@@ -116,7 +116,7 @@ class RegisterController extends MainController
                                 $message = "Votre compte a été créé, mais un problème est survenu lors de l'envoi du mail d'activation'. Veuillez contacter l'administrateur du site.";
                                 Toolbox::ajouterMessageAlerte($message, 'rouge');
                             }
-                            Toolbox::dataJson(true);
+                            Toolbox::dataJson(true, 'inscription ok');
                         } else {
                             Toolbox::ajouterMessageAlerte("Problème rencontré", "rouge");
                             Toolbox::dataJson(false, "Problème rencontré");

@@ -34,7 +34,7 @@ elBtnInscription.addEventListener('click', async () => {
 
         try {
             // envoi des données au serveur avec la méthode POST
-            const response = await fetch('?controller=register&action=validation', {
+            const response = await fetch('index.php?controller=register&action=validation', {
                 method: "POST",
                 body: formData,
             });
