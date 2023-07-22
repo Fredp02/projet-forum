@@ -26,8 +26,9 @@ class UsersModel extends DbConnect
     {
         $req = "SELECT * FROM users WHERE userID = :userID";
         $sql = $this->getBdd()->prepare($req);
-        $sql->bindValue(":userID", $userID);
+
         try {
+            $sql->bindValue(":userID", $userID);
             $sql->execute();
             $resultat = $sql->fetch();
             $sql->closeCursor();
@@ -40,8 +41,9 @@ class UsersModel extends DbConnect
     {
         $req = "SELECT * FROM users WHERE email = :email";
         $sql = $this->getBdd()->prepare($req);
-        $sql->bindValue(":email", $email);
+
         try {
+            $sql->bindValue(":email", $email);
             $sql->execute();
             $resultat = $sql->fetch();
             $sql->closeCursor();
@@ -54,8 +56,9 @@ class UsersModel extends DbConnect
     {
         $req = "SELECT * FROM users WHERE pseudo = :pseudo";
         $sql = $this->getBdd()->prepare($req);
-        $sql->bindValue(":pseudo", $pseudo);
+
         try {
+            $sql->bindValue(":pseudo", $pseudo);
             $sql->execute();
             $resultat = $sql->fetch();
             $sql->closeCursor();
@@ -78,8 +81,9 @@ class UsersModel extends DbConnect
         ";
         // ajout de la clause "group by" car le mode "only_full_group_by" est configurer sur le serveur de Laragon.
         $sql = $this->getBdd()->prepare($req);
-        $sql->bindValue(":pseudo", $pseudo);
+
         try {
+            $sql->bindValue(":pseudo", $pseudo);
             $sql->execute();
             $resultat = $sql->fetch();
             $sql->closeCursor();

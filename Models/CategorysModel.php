@@ -157,9 +157,10 @@ class CategorysModel extends DbConnect
         FROM categorys
         LEFT JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
         WHERE categorys.categoryID = :categoryID";
+
         $sql = $this->getBdd()->prepare($req);
-        $sql->bindValue(":categoryID", $categoryID);
         try {
+            $sql->bindValue(":categoryID", $categoryID);
             $sql->execute();
             $resultat = $sql->fetch();
             $sql->closeCursor();

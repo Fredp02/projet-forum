@@ -25,7 +25,7 @@ class TopicsModel extends DbConnect
         FROM topics t
         JOIN users u1 ON t.userID = u1.userID
         JOIN messages m ON t.topicID = m.topicID
-        WHERE t.categoryID = $categoryID
+        WHERE t.categoryID = :categoryID
         GROUP BY t.topicID;               
         ";
         // $req2 = "SELECT 
@@ -44,6 +44,7 @@ class TopicsModel extends DbConnect
 
         $sql = $this->getBdd()->prepare($req1);
         try {
+            $sql->bindParam(':categoryID', $categoryID);
             $sql->execute();
             $resultat = $sql->fetchAll();
             $sql->closeCursor();
@@ -61,11 +62,12 @@ class TopicsModel extends DbConnect
         FROM topics
         JOIN categorys ON topics.categoryID = categorys.categoryID
         JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
-        WHERE topics.topicID = $topicID
+        WHERE topics.topicID = :topicID
         ";
 
         $sql = $this->getBdd()->prepare($req);
         try {
+            $sql->bindParam(':topicID', $topicID);
             $sql->execute();
             $resultat = $sql->fetch();
             $sql->closeCursor();
