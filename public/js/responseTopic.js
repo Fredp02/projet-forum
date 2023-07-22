@@ -238,7 +238,7 @@ function updateDOM(resultat) {
     const messageList = document.querySelector('.messageList');
     const lastMessage = templateItem.content.cloneNode(true);
 
-    lastMessage.querySelector('.avatar img').setAttribute('src', `/images/profils/${filePathAvatar}`);
+    lastMessage.querySelector('.avatar img').setAttribute('src', `./images/profils/${filePathAvatar}`);
     lastMessage.querySelector('.pseudo span').textContent = pseudo;
     lastMessage.querySelector('.guitare span').textContent = 'Ma guitare: ' + userGuitare;
     lastMessage.querySelector('.totalMessagesUser span').textContent = messagesCount + ' message' + (messagesCount > 1 ? 's' : '');

@@ -123,8 +123,9 @@ class TopicsController extends MainController
                     exit;
                 }
 
-                //! 1 - l'image va correctement s'enregistrer avec le chemin 'images/topics/' (ou bien './images/topics/') 
-                $filePath = 'images/topics/' . $topicID;
+
+                $filePath = './images/topics/' . $topicID;
+                // $filePath = 'images/topics/' . $topicID;
                 //Si ce dossier n'existe pas, il faut le créer
                 if (!file_exists($filePath)) {
                     mkdir($filePath, 0777, true);
@@ -138,8 +139,9 @@ class TopicsController extends MainController
                 //on déplace l'image des "temporaire" dans le dossier du user
                 $moveImage = move_uploaded_file($datasImage['tmp_name'], $filePath . '/' . $imageRename);
                 if ($moveImage) {
-                    // ! 2 - par contre ici, un slash (uniquement) est nécéssaire devant $filepath pour que l'image s'affiche dans le navigateur.
-                    $imageURL = '/' . $filePath . '/' . $imageRename;
+
+                    $imageURL = $filePath . '/' . $imageRename;
+                    // $imageURL = './' . $filePath . '/' . $imageRename;
                     $dataImage = [
                         'url' => $imageURL
                     ];

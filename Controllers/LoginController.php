@@ -59,8 +59,8 @@ class LoginController extends MainController
                         $pseudo = htmlspecialchars($_POST['pseudo']);
                         $password = htmlspecialchars($_POST['password']);
 
-                        //j'ai placé un input hidden qui contient l'url précédent. obligé car lorsque le script va sur cette route 'case "validationLogin":" le contenu de la variable http_referrer c'est la page de connexion, et pas celle encore d'avant. 
-                        $previousURL = htmlspecialchars($_POST['previousURL'] ?? "");
+                        //j'ai placé un input hidden qui contient l'url précédent. 
+                        $previousURL = filter_var($_POST['previousURL'] ?? "index.php", FILTER_SANITIZE_URL);
                         $userPassBDD = $this->usersModel->getUserByPseudo($pseudo)->password;
 
                         if (Securite::verifPassword($password, $userPassBDD)) {

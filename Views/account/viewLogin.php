@@ -13,8 +13,7 @@
                 <input type="text" class="inputPageLogin" name="pseudo" placeholder="Pseudo" required />
             </div>
             <div class="">
-                <input type="password" class="inputPasswordPageLogin" name="password" placeholder="Mot de passe"
-                    required />
+                <input type="password" class="inputPasswordPageLogin" name="password" placeholder="Mot de passe" required />
             </div>
             <div class="">
                 <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF;  ?>" />
