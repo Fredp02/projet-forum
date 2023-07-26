@@ -84,7 +84,7 @@ class RegisterController extends MainController
                         $user = new Users();
                         $user->setPseudo($pseudo);
                         $user->setEmail($email);
-                        $user->setUserDate(Toolbox::creerDateActuelle());
+                        // $user->setUserDate(Toolbox::creerDateActuelle());
                         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
                         $user->setGuitare('Non renseigné');
                         $user->setVille('Non renseigné');
@@ -99,7 +99,12 @@ class RegisterController extends MainController
                             if (!file_exists($filePath)) {
                                 mkdir($filePath, 0777, true);
                             }
-                            //je copie l'avatar de base que je place dans le dossier du User. Je fais une copie pour éviter des problèmes que j'ai rencontré (problème d'affiche, et lorsqu'il fallait changer l'avatar pour un autre, problème de filepath...)
+                            //je copie l'avatar de base que je place dans le dossier du User. Je fais une copie pour éviter des problèmes  de filepath...)
+                            /**
+                             * Pourquoi ? parce que l'image avatarDefault.jpg se trouve dans images/profils/avatarDefault.jpg. Alors que les avatars personnalisé sont dans images/profils/id/avatarPerso.jpg. Nous somme à un cran en plus au niveau de l'arborescence pour les avatars perso. On pourrait trouver des solutions et determiner si oui ou non il a un avatar perso, pour adapter le filepath et le stocker en varaible de session par exemple. J'ai trouver qu'il été plus simple de copier l'avatarDefault dans le dossier du User (son id) ainsi uniformiser les filepaths.
+                             * !De plus
+                             * Si j'ai 20 000 membres sur le forum, qui n'ont pas personnalisés l'avatar cela fait 20 000 copies du avatarDefault ! mais comme ce fichier pèse 6ko, cela revient à environ 120mo de stockage à prendre en compte pour les 20 000 copies, ce qui n'est finalement pas grand chose dans ce cas bien précis du projets
+                             */
                             $source = 'images/profils/avatarDefault.jpg';
                             $destination = $filePath . '/avatarDefault.jpg';
                             copy($source, $destination);

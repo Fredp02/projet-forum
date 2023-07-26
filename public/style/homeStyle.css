@@ -141,3 +141,13 @@
 .lastActivityDate {
     font-size: 12px;
 }
+
+
+.filAriane a {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.filAriane a:hover {
+    text-decoration: underline;
+}

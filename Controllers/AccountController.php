@@ -32,7 +32,7 @@ class AccountController extends MainController
         $userDatas = [
             'userID' => $user->userID,
             'pseudo' => $user->pseudo,
-            'userDate' => $user->userDate,
+            'userDate' => Toolbox::convertDate($user->userDate, "EEEE dd MMMM yyyy"),
             'role' => $user->roleName,
             'email' => $user->email,
             'guitare' => $user->guitare,
@@ -367,20 +367,22 @@ class AccountController extends MainController
 
                 $anonymousID = 2;
                 $topic = new TopicsModel();
-
-                if ($topic->replaceTopicsByAnonymous($userID, $anonymousID)) {
-                    $user = $this->usersModel->getUserById($userID);
-                    $imageAvatar = 'images/profils/' . $userID . '/' . $user->avatar;
-                    unlink($imageAvatar);
-                    rmdir('images/profils/' . $userID);
-                    if ($this->usersModel->deleteAccount($userID)) {
-                        Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
-                        unset($_SESSION['profil']);
-                    } else {
-                        Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
+                if ($_SESSION['profil']['messagesCount'] > 0) {
+                    $action = $topic->anonymizeMessages($userID, $anonymousID);
+                    if (!$action) {
+                        Toolbox::ajouterMessageAlerte("Erreur inatendue", 'rouge');
+                        exit;
                     }
+                }
+                $user = $this->usersModel->getUserById($userID);
+                $imageAvatar = 'images/profils/' . $userID . '/' . $user->avatar;
+                unlink($imageAvatar);
+                rmdir('images/profils/' . $userID);
+                if ($this->usersModel->deleteAccount($userID)) {
+                    Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
+                    unset($_SESSION['profil']);
                 } else {
-                    Toolbox::ajouterMessageAlerte("Erreur inatendue", 'rouge');
+                    Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');

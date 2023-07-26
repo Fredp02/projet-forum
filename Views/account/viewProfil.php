@@ -22,7 +22,7 @@
     <h1><?= htmlspecialchars($userDatas['pseudo']); ?></h1>
     <div class="contentAvatar">
         <div class="divAvatar">
-            <img src="../images/profils/<?= $userDatas['filepathAvatar']; ?>" alt="photo de profil de l'utilisateur">
+            <img src="./images/profils/<?= $userDatas['filepathAvatar']; ?>" alt="photo de profil de l'utilisateur">
             <div>
                 <p>Modifier</p>
             </div>

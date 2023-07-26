@@ -25,6 +25,7 @@ class ForgotPassController extends MainController
     public function index()
     {
 
+        dd('héééééé');
         $data_page = [
             "pageDescription" => "Page : j'ai oublié mon de mot de passe",
             "pageTitle" => "Page pour réinitialiser le mot de passe",

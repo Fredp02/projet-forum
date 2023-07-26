@@ -7,7 +7,8 @@
                 Pour afficher le contenu de $sousCategory, il faire refaire un boucle dessus, donc deuxième foreach sur le second niveau du tableau d'origine. -->
             <?php
             // dump($allCategorys);
-            // exit; 
+            // dump($groupedCategories);
+            // exit;
             ?>
             <?php foreach ($groupedCategories as $category => $sousCategory) : ?>
             <li class="headerCategory">
@@ -16,7 +17,9 @@
                         <span></span>
                     </div>
                     <div class="categoryNameAndDesc">
-                        <h3 class="titreCat"><?= $category; ?></h3>
+                        <h3 class="titreCat"><a
+                                href="?controller=category&action=index&parentCatID=<?=$sousCategory[0]['ParentID'];?>"><?= $category; ?></a>
+                        </h3>
                     </div>
                     <div class="topicsNumber"><span>Sujets</span></div>
                     <div class="responsesNumber"><span>Messages</span></div>

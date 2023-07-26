@@ -8,6 +8,8 @@ const allBtnsQuote = document.querySelectorAll('.quoteMessage')
 const editor = document.querySelector('.ql-editor');
 
 
+// document.querySelector('.alertMessageTopic').innerHTML = `<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="https://www.youtube.com/embed/JVVeBiewhNg?showinfo=0"></iframe><p><br></p>`
+
 const toolbarOptions = {
     container: [
         ['bold', 'italic', 'underline', 'strike'],
@@ -23,7 +25,7 @@ const toolbarOptions = {
         // [{ 'align': [] }],
         ['clean'],
         ['emoji'],
-        ['link', 'image', 'video']
+        ['link', 'image']
     ],
     handlers: {
         'emoji': function () { }
@@ -61,11 +63,14 @@ formResponse.addEventListener('submit', async (e) => {
         }
     });
      */
+
     const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('img') ? match : '');
+
     // si la chaine n'est pas vide
     if (contenuDeVerification) {
         //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
         inputResponse.value = quill.root.innerHTML;
+
         // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
         const parser = new DOMParser();
         const doc = parser.parseFromString(inputResponse.value, 'text/html');
@@ -89,6 +94,7 @@ formResponse.addEventListener('submit', async (e) => {
                 image.src = imageUrl;
 
             }
+            //et on incorpore le contenu de Quill dans inputResponse
             inputResponse.value = doc.body.innerHTML;
             const formData = new FormData(formResponse);
             const response = await fetch('?controller=topics&action=validation', {
@@ -198,6 +204,7 @@ quill.on('text-change', () => {
 
 allBtnsQuote.forEach(btnQuote => {
     btnQuote.addEventListener('click', () => {
+
         //dans chaque message listé, il y a deux attributs, data-pseudo et data-date qui possèdent du pseudo et de la date du message. cela permet de donner des infos à la citation. 
         const pseudoMessageCite = btnQuote.getAttribute('data-pseudo')
         const dateMessageCite = btnQuote.getAttribute('data-date')
@@ -228,7 +235,7 @@ const formatDate = (date) => {
 }
 
 
-function updateDOM(resultat) {
+function updateDOM(resultat,) {
     const filePathAvatar = resultat.data.dataUser.filepathAvatar;
     const pseudo = resultat.data.dataUser.pseudo;
     const userGuitare = resultat.data.dataUser.userGuitare;
@@ -249,6 +256,7 @@ function updateDOM(resultat) {
     lastMessage.querySelector('.messageDate span').textContent = dateActuelle;
     lastMessage.querySelector('.quoteMessage').setAttribute('data-pseudo', pseudo);
     lastMessage.querySelector('.quoteMessage').setAttribute('data-date', dateActuelle);
+    // lastMessage.querySelector('.messageText span').innerHTML = content;
     lastMessage.querySelector('.messageText span').innerHTML = resultat.data.reponseTopic;
 
     messageList.append(lastMessage);

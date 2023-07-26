@@ -7,14 +7,18 @@ use Controllers\Services\Toolbox;
     <div class="headerPageTopic">
         <div class="filAriane">
             <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
-            <?= $parentCategoryName; ?> <i class="fa-solid fa-caret-right"></i>
-            <a href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $categoryName; ?></a> <i
-                class="fa-solid fa-caret-right"></i>
+            <a
+                href="?controller=category&action=index&parentCatID=<?= $infosTopic->parentCategoryID; ?>"><?= $infosTopic->parentCategoryName; ?></a>
+            <i class="fa-solid fa-caret-right"></i>
+            <a
+                href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $infosTopic->categoryName; ?></a>
+            <i class="fa-solid fa-caret-right"></i>
         </div>
 
         <h1><?= $infosTopic->topicTitle; ?></h1>
     </div>
     <div class="contentTopic">
+
         <div class="messageList">
 
             <?php foreach ($messagesTopics as $message) : ?>
@@ -28,14 +32,14 @@ use Controllers\Services\Toolbox;
                     </div>
                     <div class="guitare">
                         <span>
-                            <?php if ($message->pseudo !== 'Anonymous') : ?>
+                            <?php if ($message->pseudo !== 'Utilisateur') : ?>
                             Ma guitare : <?= html_entity_decode($message->guitare); ?>
                         </span>
                         <?php endif; ?>
                     </div>
                     <div class="totalMessagesUser">
                         <span>
-                            <?php if ($message->pseudo !== 'Anonymous') : ?>
+                            <?php if ($message->pseudo !== 'Utilisateur') : ?>
                             <?= $message->totalUserMessages; ?>
                             message<?= $message->totalUserMessages > 1 ? 's' : ''; ?>
                             <?php endif; ?>
@@ -93,7 +97,15 @@ use Controllers\Services\Toolbox;
             </div>
         </template>
     </div>
-
+    <div class="filAriane">
+        <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
+        <a
+            href="?controller=category&action=index&parentCatID=<?= $infosTopic->parentCategoryID; ?>"><?= $infosTopic->parentCategoryName; ?></a>
+        <i class="fa-solid fa-caret-right"></i>
+        <a
+            href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $infosTopic->categoryName; ?></a>
+        <i class="fa-solid fa-caret-right"></i>
+    </div>
 
 
 

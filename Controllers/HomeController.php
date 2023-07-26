@@ -33,6 +33,7 @@ class HomeController extends MainController
         $groupedCategories = [];
         $groupedCategories = array_reduce($allCategorys, function ($acc, $row) {
             $subCategory = [
+                'ParentID' => $row->parentCategoryID,
                 'name' => $row->subCategoryName,
                 'description' => $row->subCategoryDesc,
                 'id' => $row->subCategoryID,
@@ -81,7 +82,7 @@ class HomeController extends MainController
             "view" => "../Views/viewHome.php",
             "css" => "./style/homeStyle.css",
             "template" => "../Views/common/template.php",
-            'allCategorys' => $allCategorys,
+            // 'allCategorys' => $allCategorys,
             "groupedCategories" => $groupedCategories,
 
         ];

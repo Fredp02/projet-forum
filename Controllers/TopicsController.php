@@ -48,7 +48,9 @@ class TopicsController extends MainController
                 "categorySlug" => $infosCategory->categorySlug,
                 "categoryID" => $infosCategory->categoryID,
                 "listTopics" => $listTopics,
-                'categoryParentName' => $infosCategory->categoryParentName
+                'categoryParentName' => $infosCategory->categoryParentName,
+                'categoryParentID' => $infosCategory->CategoryParentID
+
             ];
 
 
@@ -71,6 +73,8 @@ class TopicsController extends MainController
                 "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",
                 "view" => "../Views/topics/viewThread.php",
                 "css" => "./style/topicStyle.css",
+                "script" => "./js/responseTopic.js",
+                "template" => "../Views/common/template.php",
                 //editor quill
                 "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
                 "quillEmojiCSS" => "./quill/dist/quill-emoji.css",
@@ -79,12 +83,7 @@ class TopicsController extends MainController
                 "quillImageJS" => "./quill/dist/quill.imageUploader.js",
                 "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
                 //----------
-                "script" => "./js/responseTopic.js",
-                "template" => "../Views/common/template.php",
                 "tokenCSRF" => $_SESSION["tokenCSRF"],
-                "categoryName" => $infosTopic->categoryName,
-                "parentCategoryName" => $infosTopic->parentCategoryName,
-                // "categoryID" => $infosTopic->categoryID,
                 "infosTopic" => $infosTopic,
                 'messagesTopics' => $messagesTopics
             ];
@@ -159,6 +158,7 @@ class TopicsController extends MainController
             exit;
         }
     }
+
     public function validation()
     {
 
@@ -173,42 +173,43 @@ class TopicsController extends MainController
                          */
 
                         $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            return str_contains($match[0], 'img') ? $match[0] : '';
+                            return str_contains($match[0], 'img')  ? $match[0] : '';
                         }, $_POST['topicID']);
                         if ($contenuDeVerification) {
-                            $escapedResponse = htmlspecialchars($_POST['inputResponse']);
+                            // $escapedResponse = htmlspecialchars($_POST['inputResponse']);
 
 
                             $topicID = htmlspecialchars($_POST['topicID']);
                             $userID = $_SESSION['profil']['userID'];
                             if (is_numeric($topicID)) {
+                                //on souhaite purifier le message :
+                                //!Les trois prochaines lignes de code utilisent la bibliothèque HTML Purifier pour nettoyer le contenu HTML. HTML Purifier est une solution de filtrage HTML qui utilise une combinaison unique de listes blanches robustes et d’analyse pour garantir que non seulement les attaques XSS sont contrecarrées, mais que le HTML résultant est conforme aux normes.
+                                //crée un objet de configuration par défaut pour HTML Purifier.
+                                $config = \HTMLPurifier_Config::createDefault();
+
+
+                                //crée une nouvelle instance de HTML Purifier en utilisant l’objet de configuration créé précédemment.
+                                $purifier = new \HTMLPurifier($config);
+
+                                //utilise la méthode purify() de l’instance de HTML Purifier pour nettoyer le contenu HTML contenu dans la variable $decodedResponse.
+                                $clean_html = $purifier->purify($_POST['inputResponse']);
+
                                 //j'initialise les setters :
-                                $this->message->setMessageText($escapedResponse);
+                                // $this->message->setMessageText($escapedResponse);
+                                $this->message->setMessageText($clean_html);
                                 $this->message->setUserID($userID);
                                 $this->message->setTopicID($topicID);
 
                                 //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
                                 if ($this->messagesModel->createMessage($this->message)) {
-                                    $decodedResponse = html_entity_decode($escapedResponse);
 
-                                    /**
-                                     * !Les trois prochaines lignes de code utilisent la bibliothèque HTML Purifier pour nettoyer le contenu HTML. HTML Purifier est une solution de filtrage HTML qui utilise une combinaison unique de listes blanches robustes et d’analyse pour garantir que non seulement les attaques XSS sont contrecarrées, mais que le HTML résultant est conforme aux normes.
-                                     * 
-                                     * $config = \HTMLPurifier_Config::createDefault(); crée un objet de configuration par défaut pour HTML Purifier.
-                                     * 
-                                     * $purifier = new \HTMLPurifier($config); crée une nouvelle instance de HTML Purifier en utilisant l’objet de configuration créé précédemment.
-                                     * 
-                                     * $clean_html = $purifier->purify($decodedResponse); utilise la méthode purify() de l’instance de HTML Purifier pour nettoyer le contenu HTML contenu dans la variable $decodedResponse. Le résultat est stocké dans la variable $clean_html.
-                                     */
-                                    $config = \HTMLPurifier_Config::createDefault();
-                                    $purifier = new \HTMLPurifier($config);
-                                    $clean_html = $purifier->purify($decodedResponse);
 
                                     $data = [
-                                        'reponseTopic' => html_entity_decode($clean_html),
+                                        'reponseTopic' => $clean_html,
                                         'topicID' => $topicID,
-                                        'dataUser' => $_SESSION['profil']
+                                        'dataUser' => $_SESSION['profil'],
                                     ];
+                                    $_SESSION['profil']['messagesCount']++;
                                     //et on envoie la réponse en json
                                     Toolbox::dataJson(true, "données reçues, ok !", $data);
                                     exit;

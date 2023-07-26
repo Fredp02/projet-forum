@@ -17,7 +17,7 @@ window.addEventListener("scroll", () => {
     headerHeight = document.querySelector('header').offsetHeight
     navHeight = document.querySelector('nav').offsetHeight
 
-    window.pageYOffset >= (headerHeight - navHeight) ?
+    window.scrollY >= (headerHeight - navHeight) ?
         nav.classList.replace('navPosition', 'fixed') : nav.classList.replace('fixed', 'navPosition');
 });
 
@@ -127,10 +127,24 @@ function updateDom(resultat) {
 
 }
 
-let i = 0;
-function hideMessage(i) {
+// let i = 0;
+// function hideMessage(i) {
 
-    let message = document.getElementById("message" + i); // sélection de la div avec JavaScript
+//     let message = document.getElementById("message" + i); // sélection de la div avec JavaScript
+//     if (message) { // vérification que l'élément existe
+//         message.classList.add("fade-out"); // ajout de la classe fade-out qui déclenche l'animation
+//         // ajout d'un écouteur d'événement qui se déclenche à la fin de l'animation
+//         message.addEventListener("animationend", function () {
+//             var parent = message.parentNode; // récupération de l'élément parent
+//             message.remove(); // suppression de l'élément enfant
+//         });
+//     }
+// }
+// // appel de la fonction avec un délai de 10 secondes
+// setTimeout(hideMessage, 5000, i); // utilisation de la fonction setTimeout qui exécute une fonction après un certain temps
+
+function hideMessage() {
+    let message = document.getElementById("message"); // sélection de la div avec JavaScript
     if (message) { // vérification que l'élément existe
         message.classList.add("fade-out"); // ajout de la classe fade-out qui déclenche l'animation
         // ajout d'un écouteur d'événement qui se déclenche à la fin de l'animation
@@ -141,8 +155,7 @@ function hideMessage(i) {
     }
 }
 // appel de la fonction avec un délai de 10 secondes
-setTimeout(hideMessage, 5000, i); // utilisation de la fonction setTimeout qui exécute une fonction après un certain temps
-
+setTimeout(hideMessage, 5000); // utilisation de la fonction setTimeout qui exécute une fonction après un certain temps
 
 function inputDefault() {
     elTextMessageAside.textContent = "";

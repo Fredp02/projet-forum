@@ -58,7 +58,7 @@ class TopicsModel extends DbConnect
     {
         // Je souhaite obtenir toutes les colonnes du topic, ainsi que les infos de la catégorie associée à ce topic
         // j'ajoute aussi la catégorie parente de sa catégorie grace à JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
-        $req = "SELECT topics.*,  categorys.categoryName, categorys.categoryID, categorys.categorySlug, parent.categoryName AS parentCategoryName   
+        $req = "SELECT topics.*,  categorys.categoryName, categorys.categoryID, categorys.categorySlug, parent.categoryName AS parentCategoryName, parent.categoryID AS parentCategoryID   
         FROM topics
         JOIN categorys ON topics.categoryID = categorys.categoryID
         JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
@@ -77,7 +77,7 @@ class TopicsModel extends DbConnect
         }
     }
 
-    public function replaceTopicsByAnonymous($userID, $anonymousID)
+    public function anonymizeMessages($userID, $anonymousID)
     {
         $req = "UPDATE messages SET userID = :anonymousID WHERE userID = :userID";
         $sql = $this->getBdd()->prepare($req);

@@ -85,17 +85,17 @@ class Users
         return $this->userDate;
     }
 
-    /**
-     * Set the value of userDate
-     *
-     * @return  self
-     */
-    public function setUserDate($userDate)
-    {
-        $this->userDate = $userDate;
+    // /**
+    //  * Set the value of userDate
+    //  *
+    //  * @return  self
+    //  */
+    // public function setUserDate($userDate)
+    // {
+    //     $this->userDate = $userDate;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * Get the value of password

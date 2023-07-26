@@ -30,7 +30,7 @@ class Toolbox
 
     public static function ajouterMessageAlerte($message, $couleur)
     {
-        $_SESSION['alert'][] = [
+        $_SESSION['alert'] = [
             "message" => $message,
             "couleur" => $couleur
         ];
