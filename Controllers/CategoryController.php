@@ -21,18 +21,18 @@ class CategoryController extends MainController
     {
 
         $getDetailsParentCat = $this->categorysModel->getDetailsParentCat($parentCatID);
-        $data_page = [
-            "pageDescription" => "Catégorie",
-            "pageTitle" => "Catégorie",
-            "view" => "../Views/viewCategory.php",
-            "css" => "./style/homeStyle.css",
-            "template" => "../Views/common/template.php",
-            'getDetailsParentCat' => $getDetailsParentCat,
-
-
-
-
-        ];
-        $this->render($data_page);
+        if ($getDetailsParentCat) {
+            $data_page = [
+                "pageDescription" => "Catégorie",
+                "pageTitle" => "Catégorie",
+                "view" => "../Views/viewCategory.php",
+                "css" => "./style/homeStyle.css",
+                "template" => "../Views/common/template.php",
+                'getDetailsParentCat' => $getDetailsParentCat,
+            ];
+            $this->render($data_page);
+        } else {
+            header('Location:index.php');
+        }
     }
 }

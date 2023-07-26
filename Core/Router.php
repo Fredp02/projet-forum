@@ -22,34 +22,26 @@ class Router
         // ];
         try {
 
-            //on intialise le controller
-            if (isset($_GET['controller'])) {
-
-                $controller = ucfirst(array_shift($_GET));
-            } else {
-                $controller = 'Home';
+            if (!empty($_GET) && !array_key_exists("controller", $_GET)) {
+                throw new Exception('Cette page n\'existe pas');
             }
+
+
+            //on intialise le controller
+
+            $controller = isset($_GET['controller']) ? ucfirst(array_shift($_GET)) : 'Home';
 
             $controllerName = 'Controllers\\' . $controller . 'Controller';
-            // dd('je suis ici ' . $controllerName);
             //on intialise l'action
-            if (isset($_GET['action'])) {
-
-                $action = array_shift($_GET);
-            } else {
-                $action = 'index';
-                // dd('je suis ici ');
+            $action = isset($_GET['action']) ? array_shift($_GET) : 'index';
+            if (!class_exists($controllerName)) {
+                throw new Exception('Cette page n\'existe pas');
             }
-
             $controller = new $controllerName();
-
-            // if (method_exists($controllerName, $page))
-            if (method_exists($controller, $action)) {
-                (isset($_GET)) ? call_user_func_array([$controller, $action], $_GET) : $controller->$action();
-            } else {
-                http_response_code(404);
-                echo "la page recherchée n'existe pas";
+            if (!method_exists($controller, $action)) {
+                throw new Exception('Cette page n\'existe pas');
             }
+            (isset($_GET)) ? call_user_func_array([$controller, $action], $_GET) : $controller->$action();
         } catch (Exception $e) {
             $homeController = new HomeController();
             $homeController->pageErreur($e->getMessage());
