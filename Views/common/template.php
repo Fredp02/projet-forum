@@ -32,16 +32,16 @@ use Controllers\Services\Securite; ?>
 <body>
     <header>
         <div class="banner"></div>
-        <nav class="navPosition">
-            <?php if (!empty($_SESSION['alert'])) : ?>
-            <div class="blocMessage <?= Securite::htmlPurifier($_SESSION['alert']['couleur']) ?>" id="message">
-                <div class="textMessageBanner">
-                    <p><?= Securite::htmlPurifier($_SESSION['alert']['message']) ?></p>
-                </div>
+        <?php if (!empty($_SESSION['alert'])) : ?>
+        <div class="blocMessage <?= Securite::htmlPurifier($_SESSION['alert']['couleur']) ?>" id="message">
+            <div class="textMessageBanner">
+                <p><?= Securite::htmlPurifier($_SESSION['alert']['message']) ?></p>
             </div>
-            <?php endif;
+        </div>
+        <?php endif;
             unset($_SESSION['alert']);
             ?>
+        <nav class="navPosition">
 
             <div class="conteneurNav">
                 <a href="index.php" class="headerTitle">

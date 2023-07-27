@@ -2,16 +2,16 @@
 
 
 use Controllers\Services\Toolbox;
+
+
 ?>
 <section>
     <div class="headerPageTopic">
         <div class="filAriane">
             <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
-            <a
-                href="?controller=category&action=index&parentCatID=<?= $infosTopic->parentCategoryID; ?>"><?= $infosTopic->parentCategoryName; ?></a>
+            <a href="?controller=category&action=index&parentCatID=<?= $infosTopic->parentCategoryID; ?>"><?= $infosTopic->parentCategoryName; ?></a>
             <i class="fa-solid fa-caret-right"></i>
-            <a
-                href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $infosTopic->categoryName; ?></a>
+            <a href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $infosTopic->categoryName; ?></a>
             <i class="fa-solid fa-caret-right"></i>
         </div>
 
@@ -22,46 +22,43 @@ use Controllers\Services\Toolbox;
         <div class="messageList">
 
             <?php foreach ($messagesTopics as $message) : ?>
-            <div class="messageBloc">
-                <div class="userInfos">
-                    <div class="avatar"><img
-                            src="./images/profils/<?= $message->userID . '/'; ?><?= $message->avatar; ?>"
-                            alt="photo de profil de l'utilisateur"></div>
-                    <div class="pseudo">
-                        <span><?= html_entity_decode($message->pseudo); ?></span>
-                    </div>
-                    <div class="guitare">
-                        <span>
-                            <?php if ($message->pseudo !== 'Utilisateur') : ?>
-                            Ma guitare : <?= html_entity_decode($message->guitare); ?>
-                        </span>
+                <div class="messageBloc">
+                    <div class="userInfos">
+                        <div class="avatar"><img src="./images/profils/<?= $message->userID . '/'; ?><?= $message->avatar; ?>" alt="photo de profil de l'utilisateur"></div>
+                        <div class="pseudo">
+                            <span><?= html_entity_decode($message->pseudo); ?></span>
+                        </div>
+                        <div class="guitare">
+                            <span>
+                                <?php if ($message->pseudo !== 'Utilisateur') : ?>
+                                    Ma guitare : <?= html_entity_decode($message->guitare); ?>
+                            </span>
                         <?php endif; ?>
-                    </div>
-                    <div class="totalMessagesUser">
-                        <span>
-                            <?php if ($message->pseudo !== 'Utilisateur') : ?>
-                            <?= $message->totalUserMessages; ?>
-                            message<?= $message->totalUserMessages > 1 ? 's' : ''; ?>
-                            <?php endif; ?>
-                        </span>
-                    </div>
-
-                </div>
-                <div class="userMessage">
-                    <div class="headerMessage">
-                        <div class="messageDate">
-                            <span><?= Toolbox::convertDate($message->messageDate); ?></span>
                         </div>
-                        <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>"
-                            data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
-                            <button><i class="fa-solid fa-quote-right"></i></button>
+                        <div class="totalMessagesUser">
+                            <span>
+                                <?php if ($message->pseudo !== 'Utilisateur') : ?>
+                                    <?= $message->totalUserMessages; ?>
+                                    message<?= $message->totalUserMessages > 1 ? 's' : ''; ?>
+                                <?php endif; ?>
+                            </span>
                         </div>
-                    </div>
 
-                    <!-- Les messages provenant de la base de données ont besoins d'être décodé avant l'affichage, car avant enregistrement, il y a eu un "htmlspecialchars" -->
-                    <div class="messageText"><span><?= html_entity_decode($message->messageText); ?></span></div>
+                    </div>
+                    <div class="userMessage">
+                        <div class="headerMessage">
+                            <div class="messageDate">
+                                <span><?= Toolbox::convertDate($message->messageDate); ?></span>
+                            </div>
+                            <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>" data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
+                                <button><i class="fa-solid fa-quote-right"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Les messages provenant de la base de données ont besoins d'être décodé avant l'affichage, car avant enregistrement, il y a eu un "htmlspecialchars" -->
+                        <div class="messageText"><span><?= html_entity_decode($message->messageText); ?></span></div>
+                    </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
         <div class="alertMessageTopic"></div>
@@ -99,11 +96,9 @@ use Controllers\Services\Toolbox;
     </div>
     <div class="filAriane">
         <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
-        <a
-            href="?controller=category&action=index&parentCatID=<?= $infosTopic->parentCategoryID; ?>"><?= $infosTopic->parentCategoryName; ?></a>
+        <a href="?controller=category&action=index&parentCatID=<?= $infosTopic->parentCategoryID; ?>"><?= $infosTopic->parentCategoryName; ?></a>
         <i class="fa-solid fa-caret-right"></i>
-        <a
-            href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $infosTopic->categoryName; ?></a>
+        <a href="?controller=topics&action=list&catID=<?= $infosTopic->categoryID; ?>"><?= $infosTopic->categoryName; ?></a>
         <i class="fa-solid fa-caret-right"></i>
     </div>
 

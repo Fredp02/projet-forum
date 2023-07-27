@@ -1,9 +1,6 @@
 <?php
 
 use Controllers\Services\Toolbox;
-
-
-
 ?>
 <section>
     <div class="forumListBloc">
@@ -14,8 +11,8 @@ use Controllers\Services\Toolbox;
                 <i class="fa-solid fa-caret-right"></i>
             </div>
             <div class="divBtnCreateTopic">
-                <a href="<?= URL; ?>createTopic/<?= $categoryID; ?>">
-                    <button class="btnCreateTopic">Créer</button>
+                <a href="?controller=topics&action=createTopicView&categoryID=<?= $categoryID; ?>">
+                    <button class="btnCreateTopic">Créer un topic</button>
                 </a>
             </div>
         </div>

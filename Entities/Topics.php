@@ -6,7 +6,6 @@ class Topics
 {
     private $topicID;
     private $topicTitle;
-    private $topicMessage;
     private $topicDate;
     private $topicCategoryID;
     private $topicUserID;
@@ -51,25 +50,7 @@ class Topics
         return $this;
     }
 
-    /**
-     * Get the value of topicMessage
-     */
-    public function getTopicMessage()
-    {
-        return $this->topicMessage;
-    }
 
-    /**
-     * Set the value of topicMessage
-     *
-     * @return  self
-     */
-    public function setTopicMessage($topicMessage)
-    {
-        $this->topicMessage = $topicMessage;
-
-        return $this;
-    }
 
     /**
      * Get the value of topicDate

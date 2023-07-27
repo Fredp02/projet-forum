@@ -9,6 +9,7 @@ use Models\CategorysModel;
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
+use Entities\Topics;
 
 class TopicsController extends MainController
 {
@@ -49,7 +50,7 @@ class TopicsController extends MainController
                 "categoryID" => $infosCategory->categoryID,
                 "listTopics" => $listTopics,
                 'categoryParentName' => $infosCategory->categoryParentName,
-                'categoryParentID' => $infosCategory->CategoryParentID
+                'categoryParentID' => $infosCategory->categoryParentID
 
             ];
 
@@ -194,13 +195,18 @@ class TopicsController extends MainController
                                 //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
                                 if ($this->messagesModel->createMessage($this->message)) {
 
-
+                                    $categoryID = $this->topicsModel->getTopicInfos($topicID)->categoryID;
                                     $data = [
                                         'reponseTopic' => $clean_html,
                                         'topicID' => $topicID,
+                                        'categoryID' => $categoryID,
                                         'dataUser' => $_SESSION['profil'],
                                     ];
                                     $_SESSION['profil']['messagesCount']++;
+
+                                    if (isset($_POST['titleTopic'])) {
+                                        Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
+                                    }
                                     //et on envoie la réponse en json
                                     Toolbox::dataJson(true, "données reçues, ok !", $data);
                                     exit;
@@ -233,6 +239,82 @@ class TopicsController extends MainController
             }
         } else {
             header("Location:index.php");
+            exit;
+        }
+    }
+
+    public function createTopicView($categoryID)
+    {
+        if (Securite::isConnected()) {
+            $infoCategory = $this->categorysModel->getInfoCategory($categoryID);
+            $data_page = [
+                "pageDescription" => "Page de création d'un topic sur Guitare-forum",
+                "pageTitle" => "Création topic | Guitare-forum",
+                "view" => "../Views/topics/viewCreatetopic.php",
+                "css" => "./style/createTopicStyle.css",
+                "script" => "./js/createTopic.js",
+                "template" => "../Views/common/template.php",
+                //editor quill
+                "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
+                "quillEmojiCSS" => "./quill/dist/quill-emoji.css",
+                "quillJS" => "//cdn.quilljs.com/1.3.6/quill.js",
+                "quillEmojiJS" => "./quill/dist/quill-emoji.js",
+                "quillImageJS" => "./quill/dist/quill.imageUploader.js",
+                "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
+                //----------
+                "infoCategory" => $infoCategory
+
+            ];
+            $this->render($data_page);
+        } else {
+            header("Location:index.php?controller=login");
+            exit;
+        }
+    }
+
+    public function createTitleTopic()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::isConnected()) {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+                if (!empty($_POST['titleTopic']) && !empty($_POST['categoryID'])) {
+                    $categoryID = htmlspecialchars($_POST['categoryID']);
+                    //ajouter un appel de requete pour savoir si on a un retour d'une catégorie qui à un parent différent de null, sinon on va créer un topic sur une catégorie "parente" générale.
+                    //OU BIEN vérifier que le champ "parent" soit différent de null directement depuis l'appel de  getInfoCategory
+                    if ($this->categorysModel->getInfoCategory($categoryID)) {
+                        //si la catgéorie existe, je créer le titre du topic
+                        $topic = new Topics;
+                        $topic->setTopicTitle(Securite::htmlPurifier($_POST['titleTopic']));
+                        $topic->setTopicCategoryID($categoryID);
+                        $topic->setTopicUserID($_SESSION['profil']['userID']);
+
+                        //si réponse du model ok
+                        if ($this->topicsModel->createTopic($topic)) {
+                            $topicID = $this->topicsModel->lastInsertId();
+                            Toolbox::dataJson(true, "createTopic ok", [
+                                'topicID' => $topicID,
+                            ]);
+                            exit;
+                        } else {
+                            Toolbox::dataJson(false, "erreur survenue lors de la création du topic");
+                            exit;
+                        }
+                    } else {
+                        Toolbox::dataJson(false, "Catégorie introuvable");
+                        exit;
+                    }
+                } else {
+                    Toolbox::dataJson(false, "Erreur : données manquante");
+                    exit;
+                }
+            } else {
+                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+                unset($_SESSION['profil']);
+                unset($_SESSION['tokenCSRF']);
+                Toolbox::dataJson(false, "expired token");
+                exit;
+            }
+        } else {
+            Toolbox::dataJson(false, "no-connected");
             exit;
         }
     }

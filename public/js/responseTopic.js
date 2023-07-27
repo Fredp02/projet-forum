@@ -85,6 +85,7 @@ formResponse.addEventListener('submit', async (e) => {
                 }
             }
             // si aucunes images n'est supérieur à 300ko le code continue...
+
             for (const image of images) {
                 const imageBase64 = image.src;
                 //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.

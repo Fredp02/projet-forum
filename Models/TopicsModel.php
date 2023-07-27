@@ -4,6 +4,7 @@ namespace Models;
 
 use Exception;
 use Core\DbConnect;
+use Entities\Topics;
 
 class TopicsModel extends DbConnect
 {
@@ -26,8 +27,10 @@ class TopicsModel extends DbConnect
         JOIN users u1 ON t.userID = u1.userID
         JOIN messages m ON t.topicID = m.topicID
         WHERE t.categoryID = :categoryID
-        GROUP BY t.topicID;               
+        GROUP BY t.topicID
+        ORDER BY latestMessageDate DESC;           
         ";
+
         // $req2 = "SELECT 
         // topics.*,
         // topicCreator.pseudo AS topicCreatorPseudo,
@@ -91,6 +94,32 @@ class TopicsModel extends DbConnect
         } catch (Exception $e) {
             die('Erreur : ' . $e->getMessage());
         }
+    }
+
+    public function createTopic(Topics $topic)
+    {
+        $topicTitle = $topic->getTopicTitle();
+        $topicCategoryID = $topic->getTopicCategoryID();
+        $topicUserID = $topic->getTopicUserID();
+
+        $req = "INSERT INTO topics (topicTitle, categoryID , userID) VALUES (:topicTitle, :topicCategoryID, :topicUserID)";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":topicTitle", $topicTitle);
+        $sql->bindValue(":topicCategoryID", $topicCategoryID);
+        $sql->bindValue(":topicUserID", $topicUserID);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+
+    public function lastInsertId()
+    {
+        return $this->getBdd()->lastInsertId();
     }
     // public function getMessagesByTopic($topicID)
     // {

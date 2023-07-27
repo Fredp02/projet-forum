@@ -80,10 +80,10 @@ class CategorysModel extends DbConnect
             MAX(m.messageDate) AS lastMessageDate,
             (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.messageID = MAX(m.messageID)) AS lastMessageUser
         FROM categorys p
-        JOIN categorys c ON p.categoryID = c.CategoryParentID
+        JOIN categorys c ON p.categoryID = c.categoryParentID
         JOIN topics t ON c.categoryID = t.categoryID
         JOIN messages m ON t.topicID = m.topicID
-        WHERE p.CategoryParentID IS NULL
+        WHERE p.categoryParentID IS NULL
         GROUP BY p.categoryID, c.categoryID        
         ";
 
@@ -167,7 +167,7 @@ class CategorysModel extends DbConnect
         MAX(m.messageDate) AS lastMessageDate,
         (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.messageID = MAX(m.messageID)) AS lastMessageUser
         FROM categorys p
-        JOIN categorys c ON p.categoryID = c.CategoryParentID
+        JOIN categorys c ON p.categoryID = c.categoryParentID
         JOIN topics t ON c.categoryID = t.categoryID
         JOIN messages m ON t.topicID = m.topicID
         WHERE p.categoryID = :parentID
@@ -191,7 +191,7 @@ class CategorysModel extends DbConnect
         //la requete est executée seulement pour les sous catégories, son elles auront toujours un parent. le LEFT est donc optionnel.
         $req = "SELECT categorys.*, parent.categoryName AS categoryParentName    
         FROM categorys
-        LEFT JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
+        LEFT JOIN categorys parent ON categorys.categoryParentID = parent.categoryID
         WHERE categorys.categoryID = :categoryID";
 
         $sql = $this->getBdd()->prepare($req);

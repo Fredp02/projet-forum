@@ -57,7 +57,7 @@ header {
     margin-left: auto;
     margin-right: auto;
     position: absolute;
-    top: 0;
+    top: 20px;
     left: 0;
     right: 0;
 
@@ -79,7 +79,7 @@ header {
 }
 
 .rouge {
-    background-color: #FF4242;
+    background-color: #e74c3c;
 
 }
 
