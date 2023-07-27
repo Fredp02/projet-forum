@@ -155,7 +155,7 @@ function hideMessage() {
     }
 }
 // appel de la fonction avec un délai de 10 secondes
-setTimeout(hideMessage, 5000); // utilisation de la fonction setTimeout qui exécute une fonction après un certain temps
+setTimeout(hideMessage, 10000); // utilisation de la fonction setTimeout qui exécute une fonction après un certain temps
 
 function inputDefault() {
     elTextMessageAside.textContent = "";

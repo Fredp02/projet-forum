@@ -81,4 +81,19 @@ class Securite
     {
         return password_verify($password, $userPassBDD);
     }
+
+    public static function htmlPurifier($html)
+    {
+        //on souhaite purifier le message :
+        //!Les trois prochaines lignes de code utilisent la bibliothèque HTML Purifier pour nettoyer le contenu HTML. HTML Purifier est une solution de filtrage HTML qui utilise une combinaison unique de listes blanches robustes et d’analyse pour garantir que non seulement les attaques XSS sont contrecarrées, mais que le HTML résultant est conforme aux normes.
+        //crée un objet de configuration par défaut pour HTML Purifier.
+        $config = \HTMLPurifier_Config::createDefault();
+
+
+        //crée une nouvelle instance de HTML Purifier en utilisant l’objet de configuration créé précédemment.
+        $purifier = new \HTMLPurifier($config);
+
+        //utilise la méthode purify() de l’instance de HTML Purifier pour nettoyer le contenu HTML contenu dans la variable $decodedResponse.
+        return $purifier->purify($html);
+    }
 }

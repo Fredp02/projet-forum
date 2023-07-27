@@ -25,10 +25,7 @@ class Router
             if (!empty($_GET) && !array_key_exists("controller", $_GET)) {
                 throw new Exception('Cette page n\'existe pas');
             }
-
-
             //on intialise le controller
-
             $controller = isset($_GET['controller']) ? ucfirst(array_shift($_GET)) : 'Home';
 
             $controllerName = 'Controllers\\' . $controller . 'Controller';

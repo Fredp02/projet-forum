@@ -95,7 +95,7 @@ class LoginController extends MainController
                                 exit;
                             } else {
                                 $userID =  $user->userID;
-                                $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail de validation.";
+                                $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
                                 Toolbox::dataJson(false, $message);
                                 exit;
                             }

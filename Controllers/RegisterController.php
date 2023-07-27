@@ -187,14 +187,20 @@ class RegisterController extends MainController
         // $url = explode("/", filter_var($_GET['page'], FILTER_SANITIZE_URL));
 
         $jwt = new JWTService();
-        if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, SECRET)) {
+        if ($jwt->isValid($token) && $jwt->check($token, SECRET)) {
             $payload = $jwt->getPayload($token);
-            $user = new Users;
-            $user->setUserId($payload['userID']);
-            if ($this->usersModel->accountActivation($user)) {
-                Toolbox::ajouterMessageAlerte("Votre compte a été validé avec succès, vous pouvez maintenant vous connecter", "vert");
+            if (!$jwt->isExpired($token)) {
+                $user = new Users;
+                $user->setUserId($payload['userID']);
+                if ($this->usersModel->accountActivation($user)) {
+                    Toolbox::ajouterMessageAlerte("Votre compte a été validé avec succès, vous pouvez maintenant vous connecter", "vert");
+                } else {
+                    Toolbox::ajouterMessageAlerte("Problème inatendue lors de l'activation de votre compte", "rouge");
+                }
             } else {
-                Toolbox::ajouterMessageAlerte("Problème inatendue lors de l'activation de votre compte", "rouge");
+                $userID =  $payload['userID'];
+                $message = "Token expiré ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
+                Toolbox::ajouterMessageAlerte($message, "rouge");
             }
         } else {
             Toolbox::ajouterMessageAlerte("token NON valide", "rouge");
