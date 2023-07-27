@@ -76,10 +76,10 @@ class LoginController extends MainController
                                 $filepathAvatar = $user->userID . '/' . $user->avatar;
                                 $_SESSION['profil'] = [
                                     'userID' => $user->userID,
-                                    'pseudo' => html_entity_decode($user->pseudo),
+                                    'pseudo' => $user->pseudo,
                                     'filepathAvatar' => $filepathAvatar,
-                                    'userGuitare' => html_entity_decode($user->guitare),
-                                    'messagesCount' => html_entity_decode($user->messagesCount),
+                                    'userGuitare' => $user->guitare,
+                                    'messagesCount' => $user->messagesCount,
                                 ];
 
                                 Toolbox::dataJson(

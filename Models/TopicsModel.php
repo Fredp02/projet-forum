@@ -143,4 +143,21 @@ class TopicsModel extends DbConnect
     //         die('Erreur : ' . $e->getMessage());
     //     }
     // }
+
+    public function addViewTopic(Topics $topic)
+    {
+        $topicID = $topic->getTopicID();
+
+        $req = "UPDATE topics SET views = views + 1 WHERE topicID = :topicID";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":topicID", $topicID);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
 }

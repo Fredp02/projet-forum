@@ -50,9 +50,15 @@ use Controllers\Services\Toolbox;
                             <div class="messageDate">
                                 <span><?= Toolbox::convertDate($message->messageDate); ?></span>
                             </div>
-                            <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>" data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
-                                <button><i class="fa-solid fa-quote-right"></i></button>
+                            <div class="iconThread">
+                                <div class="editMessage" data-pseudo="">
+                                    <button><i class="fa-solid fa-pen"></i></i></button>
+                                </div>
+                                <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>" data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
+                                    <button><i class="fa-solid fa-quote-right"></i></button>
+                                </div>
                             </div>
+
                         </div>
 
                         <!-- Les messages provenant de la base de données ont besoins d'être décodé avant l'affichage, car avant enregistrement, il y a eu un "htmlspecialchars" -->

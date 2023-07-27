@@ -4,7 +4,9 @@ use Controllers\Services\Toolbox;
 ?>
 <section>
     <div class="forumListBloc">
-
+        <?php
+        //  dump($listTopics); 
+        ?>
         <div class="topformList">
             <div class="filAriane"><a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
                 <a href="?controller=category&action=index&parentCatID=<?= $categoryParentID; ?>"><?= $categoryParentName; ?></a>
@@ -51,7 +53,7 @@ use Controllers\Services\Toolbox;
                                 <?= Toolbox::convertDate($topic->topicDate, 'd MMMM Y'); ?> </div>
                         </div>
                         <div class="responsesNumber"><?= $topic->totalMessages - 1; ?></div>
-                        <div class="viewNumber">215</div>
+                        <div class="viewNumber"><?= $topic->views; ?></div>
                         <div class="lastResponse">
 
                             <div class="lastActivityDate">

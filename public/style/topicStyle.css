@@ -69,6 +69,9 @@
     font-size: 14px;
 }
 
+
+
+
 /*********** REPONSE **********/
 
 
@@ -182,7 +185,12 @@
     justify-content: space-between;
 }
 
-.quoteMessage button {
+.iconThread {
+    display: flex;
+}
+
+.quoteMessage button,
+.editMessage button {
     border: none;
     border-radius: 2px;
     background-color: grey;
@@ -194,12 +202,20 @@
     height: 25px;
 }
 
-.quoteMessage button:hover {
+.editMessage,
+.quoteMessage {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.quoteMessage button:hover,
+.editMessage button:hover {
     background-color: var(--orange);
 
 }
 
-.quoteMessage button i {
+.quoteMessage button i,
+.editMessage button i {
     pointer-events: none;
 }
 

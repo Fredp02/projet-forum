@@ -18,6 +18,7 @@ class TopicsController extends MainController
     private $topicsModel;
     private $messagesModel;
     private $message;
+    private $topic;
 
     public function __construct()
     {
@@ -25,6 +26,7 @@ class TopicsController extends MainController
         $this->topicsModel = new TopicsModel();
         $this->messagesModel = new MessagesModel();
         $this->message = new Messages;
+        $this->topic = new Topics;;
     }
 
     public function list($catID)
@@ -68,7 +70,10 @@ class TopicsController extends MainController
         if ($infosTopic) {
             $messagesTopics = $this->messagesModel->getMessagesByTopic($threadID);
 
-            // dd($infosTopic);
+            //une "vue" en plus au compteur
+            $this->topic->setTopicID($threadID);
+            $this->topicsModel->addViewTopic($this->topic);
+
             $data_page = [
                 "pageDescription" => "Sujet : " . $infosTopic->topicTitle . " du site Guitare-forum",
                 "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",
@@ -282,13 +287,13 @@ class TopicsController extends MainController
                     //OU BIEN vérifier que le champ "parent" soit différent de null directement depuis l'appel de  getInfoCategory
                     if ($this->categorysModel->getInfoCategory($categoryID)) {
                         //si la catgéorie existe, je créer le titre du topic
-                        $topic = new Topics;
-                        $topic->setTopicTitle(Securite::htmlPurifier($_POST['titleTopic']));
-                        $topic->setTopicCategoryID($categoryID);
-                        $topic->setTopicUserID($_SESSION['profil']['userID']);
+
+                        $this->topic->setTopicTitle(Securite::htmlPurifier($_POST['titleTopic']));
+                        $this->topic->setTopicCategoryID($categoryID);
+                        $this->topic->setTopicUserID($_SESSION['profil']['userID']);
 
                         //si réponse du model ok
-                        if ($this->topicsModel->createTopic($topic)) {
+                        if ($this->topicsModel->createTopic($this->topic)) {
                             $topicID = $this->topicsModel->lastInsertId();
                             Toolbox::dataJson(true, "createTopic ok", [
                                 'topicID' => $topicID,
