@@ -103,7 +103,7 @@ formCreateTopic.addEventListener('submit', async (e) => {
         inputTextTopic.value = doc.body.innerHTML;
 
         const formText = new FormData(formCreateTopic);
-        const response2 = await fetch('?controller=topics&action=validation', {
+        const response2 = await fetch('?controller=message&action=validation', {
             method: 'POST',
             body: formText
         });
@@ -161,7 +161,7 @@ async function uploadImage(imageBase64) {
 
     // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
     // try {
-    const response = await fetch('?controller=topics&action=uploadImage', {
+    const response = await fetch('?controller=message&action=uploadImage', {
         method: 'POST',
         body: formData,
     });

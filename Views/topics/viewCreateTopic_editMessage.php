@@ -10,21 +10,23 @@
 
         <div class="titleCreateTopic">
             <div>
-                <h1>Création d'un topic dans la catégorie : </h1>
+                <h1><?= $title_a; ?></h1>
             </div>
             <div>
-                <h2><?= $infoCategory->categoryName; ?></h2>
+                <h2><?= $title_b; ?></h2>
             </div>
 
 
         </div>
         <div class="alertCreateTopic rouge"></div>
         <form class="formCreateTopic">
-            <div>
-                <label for="titleTopic" class="labelTitleTopic">Titre du topic</label>
-                <input type=text id="titleTopic" name="titleTopic" class="inputTitleCreateTopic">
-                <input id="topicID" name="topicID" class="topicID" type="hidden">
-            </div>
+            <?php if ($action === 'createTopic') : ?>
+                <div>
+                    <label for="titleTopic" class="labelTitleTopic">Titre du topic</label>
+                    <input type=text id="titleTopic" name="titleTopic" class="inputTitleCreateTopic">
+                    <input id="topicID" name="topicID" class="topicID" type="hidden">
+                </div>
+            <?php endif; ?>
 
             <!-- inputResponse : là ou va être injecté le contenur de Quill -->
             <input name="inputResponse" class="inputTextTopic" type="hidden">
@@ -34,7 +36,7 @@
             <div class="editor">
             </div>
 
-            <button type="submit" class="btnCreateTopic">Créer</button>
+            <button type="submit" class="btnCreateTopic"><?= $textAction; ?></button>
         </form>
 
     </div>
