@@ -7,8 +7,41 @@ const alertMessageTopic = document.querySelector('.alertMessageTopic');
 const allBtnsQuote = document.querySelectorAll('.quoteMessage')
 const editor = document.querySelector('.ql-editor');
 
+listennerBtnsQuote();
 
-// document.querySelector('.alertMessageTopic').innerHTML = `<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="https://www.youtube.com/embed/JVVeBiewhNg?showinfo=0"></iframe><p><br></p>`
+/**
+ * ********************************************************
+ */
+/**
+ * Ce code permet de régler un problème : 
+ * Si on a un message avec un ou de smiley, ces dernier sont affichées grace à des span qui ont une classe particuliere : ap ap-xxxxxx. Le problèle c'est que si je clique sur le bouton citation d'un de ces messages, l'objet quill récupère le contenu mais uniuement le text ! donc plus de balise span (+les classes) et donc plus d'émoticon ! Pourquoi ?
+ * Parce que seule quelque balise html son acceptées dans la zone de l'éditeur de quill. voir ce liens pour plus de détails : (https://quilljs.com/docs/formats/)
+ * Il faut donc spécifier à Quill quel autre format je souhaite intégrer dans l'éditeur, et donc des span. Ainsi les spans + leurs classe respectuives sont incorporée dans les blockquote et les emoticone apparaissent bien dans les citations
+ */
+const Inline = Quill.import('blots/inline');
+
+// Créer une nouvelle classe de format pour les éléments span
+class SpanBlot extends Inline {
+    static create(value) {
+        let node = super.create();
+        node.setAttribute('class', value);
+        return node;
+    }
+
+    static formats(node) {
+        return node.getAttribute('class');
+    }
+}
+SpanBlot.blotName = 'span';
+SpanBlot.tagName = 'span';
+// Enregistrer la nouvelle classe de format
+Quill.register(SpanBlot);
+
+/**
+ * ****************************************************
+ */
+
+
 
 const toolbarOptions = {
     container: [
@@ -16,13 +49,8 @@ const toolbarOptions = {
         ['blockquote'],
         [{ 'header': 1 }, { 'header': 2 }],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        // [{ 'script': 'sub' }, { 'script': 'super' }],
-        // [{ 'indent': '-1' }, { 'indent': '+1' }],
-        // [{ 'direction': 'rtl' }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
         [{ 'color': [] }, { 'background': [] }],
-        // [{ 'font': [] }],
-        // [{ 'align': [] }],
         ['clean'],
         ['emoji'],
         ['link', 'image']
@@ -41,6 +69,7 @@ const quill = new Quill('.editor', {
     },
     placeholder: 'Compose an epic...',
     theme: 'snow',
+
 });
 
 formResponse.addEventListener('submit', async (e) => {
@@ -96,6 +125,7 @@ formResponse.addEventListener('submit', async (e) => {
 
             }
             //et on incorpore le contenu de Quill dans inputResponse
+
             inputResponse.value = doc.body.innerHTML;
             const formData = new FormData(formResponse);
             const response = await fetch('?controller=topics&action=validation', {
@@ -117,7 +147,7 @@ formResponse.addEventListener('submit', async (e) => {
             }
             //Si true, on met à jour le DOM
             updateDOM(resultat);
-
+            listennerBtnsQuote();
 
         } catch (error) {
 
@@ -199,30 +229,39 @@ quill.on('text-change', () => {
 
 
 
+function listennerBtnsQuote() {
+    allBtnsQuote.forEach(btnQuote => {
+        btnQuote.addEventListener('click', () => {
+
+            //dans chaque message listé, il y a deux attributs, data-pseudo et data-date qui possèdent du pseudo et de la date du message. cela permet de donner des infos à la citation. 
+            const pseudoMessageCite = btnQuote.getAttribute('data-pseudo')
+            const dateMessageCite = btnQuote.getAttribute('data-date')
+
+            const messageQuote = btnQuote.parentNode.parentNode.nextElementSibling.innerHTML;
+            //Quill ne prend en compte que quelques balises html (https://quilljs.com/docs/formats/)
+            const insertDatas = `<blockquote><em><u>${pseudoMessageCite}</u> a écrit le ${dateMessageCite} : </em><br>${messageQuote}</blockquote>`;
+
+            // //*Cette ligne utilise la méthode dangerouslyPasteHTML de l’objet clipboard de Quill pour insérer du contenu HTML dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le contenu HTML doit être inséré. Dans ce cas, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le contenu HTML sera inséré à la fin du contenu existant. Le deuxième argument, insertDatas, est le contenu HTML à insérer.
+            quill.clipboard.dangerouslyPasteHTML(quill.getLength(), insertDatas);
+
+            // // Convertir le contenu HTML en un objet Delta
+            // const delta = quill.clipboard.convert(insertDatas);
+
+            // // Insérer le contenu dans l'éditeur QUILL
+            // quill.setContents(delta, 'silent');
+
+            //*Cette ligne utilise la méthode insertText pour insérer un caractère de saut de ligne (\n) dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le caractère de saut de ligne doit être inséré. Comme pour la ligne précédente, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le caractère de saut de ligne sera inséré à la fin du contenu existant. Le deuxième argument, '\n', est le caractère de saut de ligne à insérer.
+            quill.insertText(quill.getLength(), '\n');
+
+            //*Cette ligne utilise la méthode setSelection pour déplacer le curseur dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le curseur doit être placé. Comme pour les lignes précédentes, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le curseur sera placé à la fin du contenu existant. Le deuxième argument, 0, spécifie la longueur de la sélection. Dans ce cas, nous passons 0 pour indiquer que nous ne voulons pas sélectionner de texte, mais simplement déplacer le curseur.
+            quill.setSelection(quill.getLength(), 0);
+        })
+    });
+}
 
 
 
 
-allBtnsQuote.forEach(btnQuote => {
-    btnQuote.addEventListener('click', () => {
-
-        //dans chaque message listé, il y a deux attributs, data-pseudo et data-date qui possèdent du pseudo et de la date du message. cela permet de donner des infos à la citation. 
-        const pseudoMessageCite = btnQuote.getAttribute('data-pseudo')
-        const dateMessageCite = btnQuote.getAttribute('data-date')
-        const messageQuote = btnQuote.parentNode.nextElementSibling.innerHTML;
-        //Quill ne prend en compte que quelques balises html
-        const insertDatas = `<blockquote><em><u>${pseudoMessageCite}</u> a écrit le ${dateMessageCite} : </em><br>${messageQuote}</blockquote>`;
-
-        //*Cette ligne utilise la méthode dangerouslyPasteHTML de l’objet clipboard de Quill pour insérer du contenu HTML dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le contenu HTML doit être inséré. Dans ce cas, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le contenu HTML sera inséré à la fin du contenu existant. Le deuxième argument, insertDatas, est le contenu HTML à insérer.
-        quill.clipboard.dangerouslyPasteHTML(quill.getLength(), insertDatas);
-
-        //*Cette ligne utilise la méthode insertText pour insérer un caractère de saut de ligne (\n) dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le caractère de saut de ligne doit être inséré. Comme pour la ligne précédente, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le caractère de saut de ligne sera inséré à la fin du contenu existant. Le deuxième argument, '\n', est le caractère de saut de ligne à insérer.
-        quill.insertText(quill.getLength(), '\n');
-
-        //*Cette ligne utilise la méthode setSelection pour déplacer le curseur dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le curseur doit être placé. Comme pour les lignes précédentes, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le curseur sera placé à la fin du contenu existant. Le deuxième argument, 0, spécifie la longueur de la sélection. Dans ce cas, nous passons 0 pour indiquer que nous ne voulons pas sélectionner de texte, mais simplement déplacer le curseur.
-        quill.setSelection(quill.getLength(), 0);
-    })
-});
 
 
 
@@ -262,4 +301,5 @@ function updateDOM(resultat,) {
 
     messageList.append(lastMessage);
     quill.root.innerHTML = "";
+
 }

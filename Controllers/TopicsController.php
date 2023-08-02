@@ -29,10 +29,18 @@ class TopicsController extends MainController
         $this->topic = new Topics;;
     }
 
+
+
+    /**
+     * Affiche la liste des topics
+     *
+     * @param  mixed $catID
+     * @return void
+     */
     public function list($catID)
     {
 
-        //en cliquant sur le nom de la sous catégorie depuis la page d'acceuil, il faudra afficher la liste des topics en fonction de l'ID de la sous catégorie       
+        //en cliquant sur le nom de la sous catégorie depuis la page d'acceuil, il faudra afficher la liste des topics en fonction de l'ID de la sous catégorie      
 
 
 
@@ -63,6 +71,12 @@ class TopicsController extends MainController
         }
     }
 
+    /**
+     * Affiche le contenu d'un topic : son titre est les messages associés
+     *
+     * @param  mixed $threadID
+     * @return void
+     */
     public function thread($threadID)
     {
         $infosTopic = $this->topicsModel->getTopicInfos($threadID);
@@ -89,6 +103,7 @@ class TopicsController extends MainController
                 "quillImageJS" => "./quill/dist/quill.imageUploader.js",
                 "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
                 //----------
+                'userID' => $_SESSION['profil']["userID"],
                 "tokenCSRF" => $_SESSION["tokenCSRF"],
                 "infosTopic" => $infosTopic,
                 'messagesTopics' => $messagesTopics
@@ -100,6 +115,11 @@ class TopicsController extends MainController
         }
     }
 
+    /**
+     * Enregistre une image en tant que "fichier" sur le serveur
+     *
+     * @return void
+     */
     public function uploadImage()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -165,6 +185,11 @@ class TopicsController extends MainController
         }
     }
 
+    /**
+     * Valide et enregistre le message
+     *
+     * @return void
+     */
     public function validation()
     {
 
@@ -248,6 +273,12 @@ class TopicsController extends MainController
         }
     }
 
+    /**
+     * Affiche la vue qui permet de créer un topic. Le texte descriptif du premier topic est considéré comme message numéro 1 du topci  , donc géré par les méthodes uploadImage() si besoin et validation(). 
+     *
+     * @param  mixed $categoryID
+     * @return void
+     */
     public function createTopicView($categoryID)
     {
         if (Securite::isConnected()) {
@@ -277,6 +308,11 @@ class TopicsController extends MainController
         }
     }
 
+    /**
+     * Crée le titre du topic
+     *
+     * @return void
+     */
     public function createTitleTopic()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::isConnected()) {

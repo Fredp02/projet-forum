@@ -2,13 +2,13 @@
 
 namespace Controllers;
 
-use SplFileInfo;
-use Entities\Users;
-use Models\UsersModel;
-use Controllers\Services\Toolbox;
-use Controllers\Services\Securite;
 use Controllers\Services\JWTService\JWTService;
+use Controllers\Services\Securite;
+use Controllers\Services\Toolbox;
+use Entities\Users;
 use Models\TopicsModel;
+use Models\UsersModel;
+use SplFileInfo;
 
 include 'Services\JWTService\configJWT.php';
 
@@ -20,7 +20,6 @@ class AccountController extends MainController
     {
         $this->usersModel = new UsersModel();
     }
-
 
     public function index()
     {
@@ -38,7 +37,7 @@ class AccountController extends MainController
             'guitare' => $user->guitare,
             'ville' => $user->ville,
             'emploi' => $user->emploi,
-            'filepathAvatar' =>  $_SESSION['profil']['filepathAvatar']
+            'filepathAvatar' => $_SESSION['profil']['filepathAvatar'],
         ];
 
         $data_page = [
@@ -49,7 +48,7 @@ class AccountController extends MainController
             "css" => "./style/profilStyle.css",
             "script" => "./js/profil.js",
             'tokenCSRF' => $tokenCSRF,
-            "userDatas" => $userDatas
+            "userDatas" => $userDatas,
         ];
         $this->render($data_page);
     }
@@ -78,7 +77,7 @@ class AccountController extends MainController
                         "jpg" => "image/jpg",
                         "jpeg" => "image/jpeg",
                         "gif" => "image/gif",
-                        "png" => "image/png"
+                        "png" => "image/png",
                     ];
 
                     //on récupère les info de la photo
@@ -163,7 +162,7 @@ class AccountController extends MainController
 
                     //on créé les données que JS va récupérer
                     $data = [
-                        'filepathAvatar' => $_SESSION['profil']['filepathAvatar']
+                        'filepathAvatar' => $_SESSION['profil']['filepathAvatar'],
                     ];
                     //et on envoie la réponse en json
                     Toolbox::dataJson(true, "Avatar ok", $data);
@@ -201,7 +200,7 @@ class AccountController extends MainController
                     $userId = $user->userID;
                     $pseudo = $user->pseudo;
 
-                    //ici on peut récupérer son email "avant modification". Cela pourrait nous permettre d'envoyer un email à cette adresse en indiquant que si il n'est pas à l'origine de cette modification, il peut contacter l'administrateur du site :  
+                    //ici on peut récupérer son email "avant modification". Cela pourrait nous permettre d'envoyer un email à cette adresse en indiquant que si il n'est pas à l'origine de cette modification, il peut contacter l'administrateur du site :
                     // $userAncienEmail = $user->email;
 
                     $nouveauEmail = htmlspecialchars($_POST['email']);
@@ -255,8 +254,6 @@ class AccountController extends MainController
     public function editPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-
-
 
             if (!empty($_POST['ancienPassword']) && !empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
                 $ancienPassword = htmlspecialchars($_POST['ancienPassword']);
@@ -319,7 +316,7 @@ class AccountController extends MainController
                 $emploi = $purifier->purify($_POST['emploi']);
                 $ville = $purifier->purify($_POST['ville']);
 
-                //!pour vérifier que html purifier fonctionne bien, on pourrait insérer ce code : "<script>alert('salut')</script>" 
+                //!pour vérifier que html purifier fonctionne bien, on pourrait insérer ce code : "<script>alert('salut')</script>"
                 //!html purifier va automatiquement remplacer le tout par "";
 
                 $userData = $this->usersModel->getUserById($_SESSION['profil']['userID']);
@@ -336,7 +333,7 @@ class AccountController extends MainController
                     $data = [
                         'guitare' => $guitare,
                         'emploi' => $emploi,
-                        'ville' => $ville
+                        'ville' => $ville,
                     ];
                     $_SESSION['profil']['userGuitare'] = $guitare;
                     Toolbox::dataJson(true, $message, $data);
@@ -393,7 +390,6 @@ class AccountController extends MainController
             exit;
         }
 
-
         $tokenCSRF = $_SESSION["tokenCSRF"];
         $data_page = [
             "pageDescription" => "Page de suppression du compte",
@@ -401,7 +397,7 @@ class AccountController extends MainController
             "view" => "../Views/account/viewDeleteAccount.php",
             "template" => "../Views/common/template.php",
             "css" => "./style/deleteAccountStyle.css",
-            'tokenCSRF' => $tokenCSRF
+            'tokenCSRF' => $tokenCSRF,
 
         ];
         $this->render($data_page);

@@ -1,11 +1,9 @@
 <?php
 
-
 use Controllers\Services\Toolbox;
-
-
 ?>
 <section>
+
     <div class="headerPageTopic">
         <div class="filAriane">
             <a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
@@ -18,7 +16,7 @@ use Controllers\Services\Toolbox;
         <h1><?= $infosTopic->topicTitle; ?></h1>
     </div>
     <div class="contentTopic">
-
+        <!-- <?php dump($messagesTopics); ?> -->
         <div class="messageList">
 
             <?php foreach ($messagesTopics as $message) : ?>
@@ -51,9 +49,13 @@ use Controllers\Services\Toolbox;
                                 <span><?= Toolbox::convertDate($message->messageDate); ?></span>
                             </div>
                             <div class="iconThread">
-                                <div class="editMessage" data-pseudo="">
-                                    <button><i class="fa-solid fa-pen"></i></i></button>
-                                </div>
+
+                                <?php if ($message->userID === $userID) : ?>
+                                    <div class="editMessage" data-pseudo="">
+                                        <button><i class="fa-solid fa-pen"></i></i></button>
+                                    </div>
+                                <?php endif; ?>
+
                                 <div class="quoteMessage" data-pseudo="<?= $message->pseudo; ?>" data-date="<?= Toolbox::convertDate($message->messageDate); ?>">
                                     <button><i class="fa-solid fa-quote-right"></i></button>
                                 </div>
@@ -91,9 +93,17 @@ use Controllers\Services\Toolbox;
                 <div class="userMessage">
                     <div class="headerMessage">
                         <div class="messageDate"><span></span></div>
-                        <div class="quoteMessage" data-pseudo="" data-date="">
-                            <button><i class="fa-solid fa-quote-right"></i></button>
+                        <div class="iconThread">
+                            <div class="editMessage" data-pseudo="">
+                                <button><i class="fa-solid fa-pen"></i></button>
+                            </div>
+                            <div class="quoteMessage" data-pseudo="" data-date="">
+                                <button><i class="fa-solid fa-quote-right"></i></button>
+                            </div>
                         </div>
+                        <!-- <div class="quoteMessage" data-pseudo="" data-date="">
+                            <button><i class="fa-solid fa-quote-right"></i></button>
+                        </div> -->
                     </div>
                     <div class="messageText"><span></span></div>
                 </div>
