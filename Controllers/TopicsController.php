@@ -103,7 +103,7 @@ class TopicsController extends MainController
                 "quillImageJS" => "./quill/dist/quill.imageUploader.js",
                 "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
                 //----------
-                'userID' => $_SESSION['profil']["userID"] ?? "",
+                'userID' => $_SESSION['profil']["userID"],
                 "tokenCSRF" => $_SESSION["tokenCSRF"],
                 "infosTopic" => $infosTopic,
                 'messagesTopics' => $messagesTopics

@@ -30,7 +30,75 @@ class MessageController extends MainController
     }
 
 
+    /**
+     * Enregistre une image en tant que "fichier" sur le serveur
+     *
+     * @return void
+     */
+    public function uploadImage()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0 && !empty($_POST['topicID'])) {
+                $datasImage = $_FILES['image'];
+                $topicID = htmlspecialchars($_POST['topicID']);
+                //je crée un tableau avec les types mime autorisés
+                $typeMime = [
+                    "jpg" => "image/jpg",
+                    "jpeg" => "image/jpeg",
+                    "gif" => "image/gif",
+                    "png" => "image/png"
+                ];
 
+
+                //on verifie le type mime du fichier
+                if (!in_array($datasImage['type'], $typeMime)) {
+                    Toolbox::dataJson(false, "Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", $topicID);
+                    exit;
+                }
+
+                //on vérifie sa taille
+                if ($datasImage['size'] > 307200) {
+                    Toolbox::dataJson(false, "Le poids de l'image doit être inférieure à 300ko");
+                    exit;
+                }
+
+
+                $filePath = './images/topics/' . $topicID;
+                // $filePath = 'images/topics/' . $topicID;
+                //Si ce dossier n'existe pas, il faut le créer
+                if (!file_exists($filePath)) {
+                    mkdir($filePath, 0777, true);
+                }
+
+                // $datasImage['type'] = image/xxx
+                // $array = explode("/", $datasImage['type'])[1];
+                $extension = explode("/", $datasImage['type'])[1];
+                $imageRename = uniqid($topicID, true) . '.' . $extension;
+
+                //on déplace l'image des "temporaire" dans le dossier du user
+                $moveImage = move_uploaded_file($datasImage['tmp_name'], $filePath . '/' . $imageRename);
+                if ($moveImage) {
+
+                    $imageURL = $filePath . '/' . $imageRename;
+                    // $imageURL = './' . $filePath . '/' . $imageRename;
+                    $dataImage = [
+                        'url' => $imageURL
+                    ];
+                    Toolbox::dataJson(true, "Image enregistrée avec succès", $dataImage);
+                    exit;
+                } else {
+                    Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement");
+                    exit;
+                }
+            } else {
+                Toolbox::dataJson(false, "Erreur d'upload d'image");
+                exit;
+            }
+        } else {
+            header("Location:index.php");
+            exit;
+        }
+    }
 
     /**
      * Valide et enregistre le message
@@ -51,38 +119,11 @@ class MessageController extends MainController
                          */
 
                         $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            return str_contains($match[0], '<img src="data:image/')  ? $match[0] : '';
-                        }, $_POST['inputResponse']);
+                            return str_contains($match[0], 'img')  ? $match[0] : '';
+                        }, $_POST['topicID']);
                         if ($contenuDeVerification) {
+                            // $escapedResponse = htmlspecialchars($_POST['inputResponse']);
 
-                            // et on procède aux vérification du fichier : 
-                            preg_match_all('/src="data:([^;]+);base64,([^"]+)"/', $_POST['topicID'], $matches);
-                            $mimeTypes = $matches[1];
-                            $TableauBase64 = $matches[2];
-
-                            //tableau type mime autorisés
-                            $TypeMimeAuthorized = [
-                                "jpg" => "image/jpg",
-                                "jpeg" => "image/jpeg",
-                                "gif" => "image/gif",
-                                "png" => "image/png"
-                            ];
-                            foreach ($TableauBase64 as $index => $base64Chaine) {
-                                $mimeType = $mimeTypes[$index];
-                                if (!in_array($mimeType, $TypeMimeAuthorized)) {
-                                    Toolbox::dataJson(false, "Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)");
-                                    exit;
-                                }
-
-                                $base64ChaineDecode = base64_decode($base64Chaine);
-                                $tailleImage = strlen($base64ChaineDecode);
-                                if ($tailleImage > 307200) {
-                                    Toolbox::dataJson(false, "Le poids de l'image doit être inférieure à 300ko");
-                                    exit;
-                                }
-                            }
-
-                            //si type et poids ok, le code continu ...
 
                             $topicID = htmlspecialchars($_POST['topicID']);
                             $userID = $_SESSION['profil']['userID'];
@@ -91,6 +132,7 @@ class MessageController extends MainController
                                 $clean_html = Securite::htmlPurifier($_POST['inputResponse']);
 
                                 //j'initialise les setters :
+                                // $this->message->setMessageText($escapedResponse);
                                 $this->message->setMessageText($clean_html);
                                 $this->message->setUserID($userID);
                                 $this->message->setTopicID($topicID);
@@ -122,7 +164,7 @@ class MessageController extends MainController
                                 exit;
                             }
                         } else {
-                            Toolbox::dataJson(false, "PHP : Veuillez entrer un contenu valide avant de poster votre réponse", $_POST['inputResponse']);
+                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputResponse']);
                             exit;
                         }
                     } else {

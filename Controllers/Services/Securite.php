@@ -89,7 +89,7 @@ class Securite
         //crée un objet de configuration par défaut pour HTML Purifier.
         $config = \HTMLPurifier_Config::createDefault();
 
-        $config->set('URI.AllowedSchemes', array('data' => true));
+
         //crée une nouvelle instance de HTML Purifier en utilisant l’objet de configuration créé précédemment.
         $purifier = new \HTMLPurifier($config);
 
