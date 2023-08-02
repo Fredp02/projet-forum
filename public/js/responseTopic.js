@@ -93,6 +93,7 @@ formResponse.addEventListener('submit', async (e) => {
     });
      */
 
+    // const contenuDeVerification = true;
     const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('img') ? match : '');
 
     // si la chaine n'est pas vide
@@ -100,33 +101,9 @@ formResponse.addEventListener('submit', async (e) => {
         //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
         inputResponse.value = quill.root.innerHTML;
 
-        // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(inputResponse.value, 'text/html');
-        const images = doc.querySelectorAll('img[src^="data:image/"]');
+
         try {
-            //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko
-            for (const image of images) {
-                const imageBase64 = image.src;
-                const blob = await fetch(imageBase64).then(res => res.blob());
-                if (blob.size > 307200) {
-                    throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
-                }
-            }
-            // si aucunes images n'est supérieur à 300ko le code continue...
 
-            for (const image of images) {
-                const imageBase64 = image.src;
-                //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.
-                const imageUrl = await uploadImage(imageBase64);
-                // * Une fois l'url récupérer, on remplace la représentation en base64 par l'URL de l'image.
-                //! ainsi le contenu de l'editeur qui sera envoyer en base de données ne va pas contenir le text + image base64 mais bien le text + les urls d'images
-                image.src = imageUrl;
-
-            }
-            //et on incorpore le contenu de Quill dans inputResponse
-
-            inputResponse.value = doc.body.innerHTML;
             const formData = new FormData(formResponse);
             const response = await fetch('?controller=message&action=validation', {
                 method: 'POST',
@@ -146,8 +123,9 @@ formResponse.addEventListener('submit', async (e) => {
                 throw new Error(resultat.message);
             }
             //Si true, on met à jour le DOM
+            console.log(resultat)
             updateDOM(resultat);
-            listennerBtnsQuote();
+            // listennerBtnsQuote();
 
         } catch (error) {
 
@@ -170,46 +148,7 @@ formResponse.addEventListener('submit', async (e) => {
 
 
 });
-async function uploadImage(imageBase64) {
-    // * imageBase64 correspond à l'image en base64.
-    // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
-    //* Blob contient les données binaires brutes de l’image
-    const blob = await fetch(imageBase64).then(res => res.blob());
 
-    if (blob.size > 307200) {
-        throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
-    }
-    const topicID = document.querySelector('.topicID').value;
-    // *créer un objet FormData pour envoyer les données de l'image au serveur via la constante "blob"
-    const formData = new FormData();
-    formData.append('image', blob);
-    formData.append('topicID', topicID);
-
-    // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
-    // try {
-    const response = await fetch('?controller=message&action=uploadImage', {
-        method: 'POST',
-        body: formData,
-    });
-
-    // vérifier si la requête a réussi
-    if (!response.ok) {
-        throw new Error(`Une erreur est survenue lors du téléchargement de l'image: ${response.status}`);
-    }
-
-    //si la communication c'est bien déroulée , on traite les donnée json
-    const resultat = await response.json();
-
-    if (!resultat.boolean) {
-        // dataTypeError = resultat.data;
-        throw new Error(resultat.message);
-    }
-
-    return resultat.data.url
-
-
-
-}
 
 /**
  * !écouteur sur quill pour supprimer les éventuels message d'alerte
@@ -303,3 +242,5 @@ function updateDOM(resultat,) {
     quill.root.innerHTML = "";
 
 }
+
+
