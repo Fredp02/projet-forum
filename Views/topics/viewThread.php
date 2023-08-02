@@ -16,7 +16,7 @@ use Controllers\Services\Toolbox;
         <h1><?= $infosTopic->topicTitle; ?></h1>
     </div>
     <div class="contentTopic">
-        <!-- <?php dump($messagesTopics); ?> -->
+        <?php dump($messagesTopics); ?>
         <div class="messageList">
 
             <?php foreach ($messagesTopics as $message) : ?>

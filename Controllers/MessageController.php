@@ -189,10 +189,13 @@ class MessageController extends MainController
     }
 
 
-    public function createEditMessageView($topicID)
+    public function createEditMessageView($messageID)
     {
+        /**
+         * Quand je clique sur le bouton éditer, c'est un lien, ., Je suis redirifer vers une méthode avec en paramètre get un message ID
+         * Je va
+         */
         if (Securite::isConnected()) {
-            $infoCategory = $this->categorysModel->getInfoCategory($topicID);
             $data_page = [
                 "pageDescription" => "Page d'édition d'un message' sur Guitare-forum",
                 "pageTitle" => "Modifier son message | Guitare-forum",
@@ -201,7 +204,7 @@ class MessageController extends MainController
                 "script" => "./js/createTopic.js",
                 "template" => "../Views/common/template.php",
                 'title_a' => "Modifier son message dans : ",
-                'title_b' => $infoCategory->categoryName,
+                'title_b' => "nom du topic",
                 'action' => "createTopic",
                 'textAction' => "Créer",
                 //editor quill
@@ -212,7 +215,7 @@ class MessageController extends MainController
                 "quillImageJS" => "./quill/dist/quill.imageUploader.js",
                 "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
                 //----------
-                "infoCategory" => $infoCategory
+                // "infoCategory" => $infoCategory
 
             ];
             $this->render($data_page);
