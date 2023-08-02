@@ -71,6 +71,15 @@ const quill = new Quill('.editor', {
     theme: 'snow',
 
 });
+// const inputString = '<p><img src="data:image/jpeg;base64,/9j/4AA...FGZ"></p><p><img src="data:application/pdf;base64,/9j/4Ahk...FGZ"></p><p><img src="data:image/jpeg;base64,/9j/4Ag...FGZ"></p>';
+// const outputString = inputString.replace(/<img[^>]*>/g, function (match) {
+//     if (match.includes('src="data:image/')) {
+//         return match;
+//     } else {
+//         return '';
+//     }
+// });
+// console.log(outputString);
 
 formResponse.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -84,6 +93,7 @@ formResponse.addEventListener('submit', async (e) => {
      * Autre version plus "lisible" :
      * Dans cet exemple, nous utilisons une fonction de rappel pour vérifier si chaque correspondance de la regex contient la chaîne 'img'. Si c’est le cas, nous renvoyons la correspondance elle-même (c’est-à-dire que nous ne remplaçons rien), sinon nous renvoyons une chaîne vide pour remplacer la balise par rien du tout :
      *  
+     * 
      * const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, function(match) {
         if (match.includes('img')) {
             return match;
@@ -93,123 +103,80 @@ formResponse.addEventListener('submit', async (e) => {
     });
      */
 
-    const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('img') ? match : '');
+    try {
 
-    // si la chaine n'est pas vide
-    if (contenuDeVerification) {
-        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
-        inputResponse.value = quill.root.innerHTML;
+        // si la chaine n'est pas vide ou si il y a une balise img du type "<img src="data:image/"
+        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
+            throw new Error(`Veuillez entrer un contenu valide.`);
+        }
 
+        //Vérif du type MIME
         // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
         const parser = new DOMParser();
-        const doc = parser.parseFromString(inputResponse.value, 'text/html');
+        const doc = parser.parseFromString(quill.root.innerHTML, 'text/html');
         const images = doc.querySelectorAll('img[src^="data:image/"]');
-        try {
-            //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko
-            for (const image of images) {
-                const imageBase64 = image.src;
-                const blob = await fetch(imageBase64).then(res => res.blob());
-                if (blob.size > 307200) {
-                    throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
-                }
+
+        //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko et que le type mime correspond aux contenu du tableau de type autorisé
+        const TypeMimeAuthorized = [
+            "image/jpg",
+            "image/jpeg",
+            "image/gif",
+            "image/png"
+        ];
+
+        for (const image of images) {
+            const imageBase64 = image.src;
+            const blob = await fetch(imageBase64).then(res => res.blob());
+            if (blob.size > 307200) {
+                throw new Error(`Le poids de l'image doit être inférieure à 300ko !`);
             }
-            // si aucunes images n'est supérieur à 300ko le code continue...
-
-            for (const image of images) {
-                const imageBase64 = image.src;
-                //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.
-                const imageUrl = await uploadImage(imageBase64);
-                // * Une fois l'url récupérer, on remplace la représentation en base64 par l'URL de l'image.
-                //! ainsi le contenu de l'editeur qui sera envoyer en base de données ne va pas contenir le text + image base64 mais bien le text + les urls d'images
-                image.src = imageUrl;
-
-            }
-            //et on incorpore le contenu de Quill dans inputResponse
-
-            inputResponse.value = doc.body.innerHTML;
-            const formData = new FormData(formResponse);
-            const response = await fetch('?controller=message&action=validation', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                //si erreur detecté, on génère un nouveau message d'erreur.
-                // le "catch" va le récupérer.
-                throw new Error(`Une erreur est survenue: ${response.status}`);
-            }
-
-            const resultat = await response.json();
-
-            //si le boolen est à false
-            if (!resultat.boolean) {
-                throw new Error(resultat.message);
-            }
-            //Si true, on met à jour le DOM
-            updateDOM(resultat);
-            listennerBtnsQuote();
-
-        } catch (error) {
-
-            if (error.message === 'noConnected') {
-                //je le redirige en haut de la page pour qu'il se conecte, ensuite il sera redirigé vers la zone d'édition (voir code dans app.js)
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
-            } else if (error.message === 'expired token') {
-                window.location = "?controller=login";
-            } else {
-                alertMessageTopic.textContent = error.message;
-                alertMessageTopic.style.display = "block";
+            if (!TypeMimeAuthorized.includes(blob.type)) {
+                throw new Error(`Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg) !`);
             }
         }
-    } else {
-        alertMessageTopic.textContent = "Veuillez entrer du contenu avant de poster votre réponse";
-        alertMessageTopic.style.display = "block";
+        //si type et poids ok, le code continu ...
+        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
+        inputResponse.value = quill.root.innerHTML;
+        const formData = new FormData(formResponse);
+        const response = await fetch('?controller=message&action=validation', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            //si erreur detecté, on génère un nouveau message d'erreur.
+            // le "catch" va le récupérer.
+            throw new Error(`Une erreur est survenue: ${response.status}`);
+        }
+
+        const resultat = await response.json();
+
+        //si le boolen est à false
+        if (!resultat.boolean) {
+            throw new Error(resultat.message);
+        }
+        updateDOM(resultat);
+        // listennerBtnsQuote();
+
+    } catch (error) {
+
+        if (error.message === 'noConnected') {
+            //je le redirige en haut de la page pour qu'il se conecte, ensuite il sera redirigé vers la zone d'édition (voir code dans app.js)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
+        } else if (error.message === 'expired token') {
+            window.location = "?controller=login";
+        } else {
+            alertMessageTopic.textContent = error.message;
+            alertMessageTopic.style.display = "block";
+        }
     }
+
 
 
 
 });
-async function uploadImage(imageBase64) {
-    // * imageBase64 correspond à l'image en base64.
-    // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
-    //* Blob contient les données binaires brutes de l’image
-    const blob = await fetch(imageBase64).then(res => res.blob());
 
-    if (blob.size > 307200) {
-        throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
-    }
-    const topicID = document.querySelector('.topicID').value;
-    // *créer un objet FormData pour envoyer les données de l'image au serveur via la constante "blob"
-    const formData = new FormData();
-    formData.append('image', blob);
-    formData.append('topicID', topicID);
-
-    // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
-    // try {
-    const response = await fetch('?controller=message&action=uploadImage', {
-        method: 'POST',
-        body: formData,
-    });
-
-    // vérifier si la requête a réussi
-    if (!response.ok) {
-        throw new Error(`Une erreur est survenue lors du téléchargement de l'image: ${response.status}`);
-    }
-
-    //si la communication c'est bien déroulée , on traite les donnée json
-    const resultat = await response.json();
-
-    if (!resultat.boolean) {
-        // dataTypeError = resultat.data;
-        throw new Error(resultat.message);
-    }
-
-    return resultat.data.url
-
-
-
-}
 
 /**
  * !écouteur sur quill pour supprimer les éventuels message d'alerte
@@ -303,3 +270,5 @@ function updateDOM(resultat,) {
     quill.root.innerHTML = "";
 
 }
+
+
