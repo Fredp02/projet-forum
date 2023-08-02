@@ -51,9 +51,38 @@ class MessageController extends MainController
                          */
 
                         $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            return str_contains($match[0], 'img')  ? $match[0] : '';
-                        }, $_POST['topicID']);
+                            return str_contains($match[0], '<img src="data:image/')  ? $match[0] : '';
+                        }, $_POST['inputResponse']);
                         if ($contenuDeVerification) {
+
+                            // et on procède aux vérification du fichier : 
+                            preg_match_all('/src="data:([^;]+);base64,([^"]+)"/', $_POST['topicID'], $matches);
+                            $mimeTypes = $matches[1];
+                            $TableauBase64 = $matches[2];
+
+                            //tableau type mime autorisés
+                            $TypeMimeAuthorized = [
+                                "jpg" => "image/jpg",
+                                "jpeg" => "image/jpeg",
+                                "gif" => "image/gif",
+                                "png" => "image/png"
+                            ];
+                            foreach ($TableauBase64 as $index => $base64Chaine) {
+                                $mimeType = $mimeTypes[$index];
+                                if (!in_array($mimeType, $TypeMimeAuthorized)) {
+                                    Toolbox::dataJson(false, "Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)");
+                                    exit;
+                                }
+
+                                $base64ChaineDecode = base64_decode($base64Chaine);
+                                $tailleImage = strlen($base64ChaineDecode);
+                                if ($tailleImage > 307200) {
+                                    Toolbox::dataJson(false, "Le poids de l'image doit être inférieure à 300ko");
+                                    exit;
+                                }
+                            }
+
+                            //si type et poids ok, le code continu ...
 
                             $topicID = htmlspecialchars($_POST['topicID']);
                             $userID = $_SESSION['profil']['userID'];
@@ -93,7 +122,7 @@ class MessageController extends MainController
                                 exit;
                             }
                         } else {
-                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputResponse']);
+                            Toolbox::dataJson(false, "PHP : Veuillez entrer un contenu valide avant de poster votre réponse", $_POST['inputResponse']);
                             exit;
                         }
                     } else {

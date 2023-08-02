@@ -31,6 +31,8 @@ class LoginController extends MainController
     }
     public function index()
     {
+
+
         if (!Securite::isConnected()) {
             $data_page = [
                 "pageDescription" => "Page de connexion au site Guitare Forum",

@@ -71,6 +71,15 @@ const quill = new Quill('.editor', {
     theme: 'snow',
 
 });
+// const inputString = '<p><img src="data:image/jpeg;base64,/9j/4AA...FGZ"></p><p><img src="data:application/pdf;base64,/9j/4Ahk...FGZ"></p><p><img src="data:image/jpeg;base64,/9j/4Ag...FGZ"></p>';
+// const outputString = inputString.replace(/<img[^>]*>/g, function (match) {
+//     if (match.includes('src="data:image/')) {
+//         return match;
+//     } else {
+//         return '';
+//     }
+// });
+// console.log(outputString);
 
 formResponse.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -84,6 +93,7 @@ formResponse.addEventListener('submit', async (e) => {
      * Autre version plus "lisible" :
      * Dans cet exemple, nous utilisons une fonction de rappel pour vérifier si chaque correspondance de la regex contient la chaîne 'img'. Si c’est le cas, nous renvoyons la correspondance elle-même (c’est-à-dire que nous ne remplaçons rien), sinon nous renvoyons une chaîne vide pour remplacer la balise par rien du tout :
      *  
+     * 
      * const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, function(match) {
         if (match.includes('img')) {
             return match;
@@ -93,57 +103,75 @@ formResponse.addEventListener('submit', async (e) => {
     });
      */
 
-    // const contenuDeVerification = true;
-    const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('img') ? match : '');
+    try {
 
-    // si la chaine n'est pas vide
-    if (contenuDeVerification) {
-        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
-        inputResponse.value = quill.root.innerHTML;
+        // si la chaine n'est pas vide ou si il y a une balise img du type "<img src="data:image/"
+        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
+            throw new Error(`Veuillez entrer un contenu valide.`);
+        }
 
+        //Vérif du type MIME
+        // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(quill.root.innerHTML, 'text/html');
+        const images = doc.querySelectorAll('img[src^="data:image/"]');
 
-        try {
+        //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko et que le type mime correspond aux contenu du tableau de type autorisé
+        const TypeMimeAuthorized = [
+            "image/jpg",
+            "image/jpeg",
+            "image/gif",
+            "image/png"
+        ];
 
-            const formData = new FormData(formResponse);
-            const response = await fetch('?controller=message&action=validation', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                //si erreur detecté, on génère un nouveau message d'erreur.
-                // le "catch" va le récupérer.
-                throw new Error(`Une erreur est survenue: ${response.status}`);
+        for (const image of images) {
+            const imageBase64 = image.src;
+            const blob = await fetch(imageBase64).then(res => res.blob());
+            if (blob.size > 307200) {
+                throw new Error(`Le poids de l'image doit être inférieure à 300ko !`);
             }
-
-            const resultat = await response.json();
-
-            //si le boolen est à false
-            if (!resultat.boolean) {
-                throw new Error(resultat.message);
-            }
-            //Si true, on met à jour le DOM
-            console.log(resultat)
-            updateDOM(resultat);
-            // listennerBtnsQuote();
-
-        } catch (error) {
-
-            if (error.message === 'noConnected') {
-                //je le redirige en haut de la page pour qu'il se conecte, ensuite il sera redirigé vers la zone d'édition (voir code dans app.js)
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
-            } else if (error.message === 'expired token') {
-                window.location = "?controller=login";
-            } else {
-                alertMessageTopic.textContent = error.message;
-                alertMessageTopic.style.display = "block";
+            if (!TypeMimeAuthorized.includes(blob.type)) {
+                throw new Error(`Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg) !`);
             }
         }
-    } else {
-        alertMessageTopic.textContent = "Veuillez entrer du contenu avant de poster votre réponse";
-        alertMessageTopic.style.display = "block";
+        //si type et poids ok, le code continu ...
+        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
+        inputResponse.value = quill.root.innerHTML;
+        const formData = new FormData(formResponse);
+        const response = await fetch('?controller=message&action=validation', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            //si erreur detecté, on génère un nouveau message d'erreur.
+            // le "catch" va le récupérer.
+            throw new Error(`Une erreur est survenue: ${response.status}`);
+        }
+
+        const resultat = await response.json();
+
+        //si le boolen est à false
+        if (!resultat.boolean) {
+            throw new Error(resultat.message);
+        }
+        updateDOM(resultat);
+        // listennerBtnsQuote();
+
+    } catch (error) {
+
+        if (error.message === 'noConnected') {
+            //je le redirige en haut de la page pour qu'il se conecte, ensuite il sera redirigé vers la zone d'édition (voir code dans app.js)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
+        } else if (error.message === 'expired token') {
+            window.location = "?controller=login";
+        } else {
+            alertMessageTopic.textContent = error.message;
+            alertMessageTopic.style.display = "block";
+        }
     }
+
 
 
 
