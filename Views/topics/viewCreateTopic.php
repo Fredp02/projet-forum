@@ -10,33 +10,31 @@
 
         <div class="titleCreateTopic">
             <div>
-                <h1><?= $title_a; ?></h1>
+                <h1>Création d'un topic dans la catégorie : </h1>
             </div>
             <div>
-                <h2><?= $title_b; ?></h2>
+                <h2><?= $infoCategory->categoryName; ?></h2>
             </div>
 
 
         </div>
         <div class="alertCreateTopic rouge"></div>
         <form class="formCreateTopic">
-            <?php if ($action === 'createTopic') : ?>
-                <div>
-                    <label for="titleTopic" class="labelTitleTopic">Titre du topic</label>
-                    <input type=text id="titleTopic" name="titleTopic" class="inputTitleCreateTopic">
-                    <input id="topicID" name="topicID" class="topicID" type="hidden">
-                </div>
-            <?php endif; ?>
+            <div>
+                <label for="titleTopic" class="labelTitleTopic">Titre du topic</label>
+                <input type=text id="titleTopic" name="titleTopic" class="inputTitleCreateTopic">
+                <input name="categoryID" type="hidden" value="<?= $infoCategory->categoryID; ?>">
+            </div>
 
             <!-- inputResponse : là ou va être injecté le contenur de Quill -->
-            <input name="inputResponse" class="inputTextTopic" type="hidden">
-
-            <input name="categoryID" class="categoryID" type="hidden" value="<?= $infoCategory->categoryID; ?>">
+            <input name="inputMessage" class="inputMessage" type="hidden">
+            <input name="action" type="hidden" value="create">
+            <input name="targetID" class="targetID" type="hidden">
             <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
             <div class="editor">
             </div>
 
-            <button type="submit" class="btnCreateTopic"><?= $textAction; ?></button>
+            <button type="submit" class="btnCreateTopic">Créer</button>
         </form>
 
     </div>

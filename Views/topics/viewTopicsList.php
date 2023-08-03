@@ -5,7 +5,7 @@ use Controllers\Services\Toolbox;
 <section>
     <div class="forumListBloc">
         <?php
-        //  dump($listTopics); 
+        // dump($listTopics);
         ?>
         <div class="topformList">
             <div class="filAriane"><a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>

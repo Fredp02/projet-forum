@@ -51,8 +51,9 @@ use Controllers\Services\Toolbox;
                             <div class="iconThread">
 
                                 <?php if ($message->userID === $userID) : ?>
-                                    <div class="editMessage" data-pseudo="">
-                                        <button><i class="fa-solid fa-pen"></i></i></button>
+                                    <div class="editMessage" data-message="">
+                                        <a href="?controller=message&action=viewEdit&messageID=<?= $message->messageID; ?>"><button><i class="fa-solid fa-pen"></i></i></button></a>
+
                                     </div>
                                 <?php endif; ?>
 
@@ -64,16 +65,17 @@ use Controllers\Services\Toolbox;
                         </div>
 
                         <!-- Les messages provenant de la base de données ont besoins d'être décodé avant l'affichage, car avant enregistrement, il y a eu un "htmlspecialchars" -->
-                        <div class="messageText"><span><?= html_entity_decode($message->messageText); ?></span></div>
+                        <div class="messageText"><span><?= $message->messageText; ?></span></div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
         <div class="alertMessageTopic"></div>
         <div class="divReponse">
-            <form class="formResponse">
-                <input name="inputResponse" class="inputResponse" type="hidden">
-                <input name="topicID" class="topicID" type="hidden" value="<?= $infosTopic->topicID; ?>">
+            <form class="formMessage">
+                <input name="inputMessage" class="inputMessage" type="hidden">
+                <input name="action" type="hidden" value="create">
+                <input name="targetID" class="targetID" type="hidden" value="<?= $infosTopic->topicID; ?>">
                 <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
                 <div class="editor">
                 </div>
@@ -94,7 +96,7 @@ use Controllers\Services\Toolbox;
                     <div class="headerMessage">
                         <div class="messageDate"><span></span></div>
                         <div class="iconThread">
-                            <div class="editMessage" data-pseudo="">
+                            <div class="editMessage" data-message="">
                                 <button><i class="fa-solid fa-pen"></i></button>
                             </div>
                             <div class="quoteMessage" data-pseudo="" data-date="">

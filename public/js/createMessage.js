@@ -1,7 +1,17 @@
+/**
+ * !Important : Le textarea que le user voit à l'écran, n'est pas le inputMessage qui va contenir le message (et transiter en POST par la suite)
+ * !tout se passe dans : 
+ * *<div class="editor">
+ * *</div>
+ * !C'est dans cette div que Quill est initialisé et que la zone de saisie de Quill va s'afficher. 
+ * !Avant d'envoyer des données en POST, tout le contenu de cette zone de saisie sera envoyé à l'input "inputMessage", qui fait bien partie du formulaire et donc sa "value" sera traité en POST
+ * 
+ */
+
 
 const preview = document.querySelector('.preview');
-const formResponse = document.querySelector('.formResponse');
-const inputResponse = document.querySelector('.inputResponse');
+const formMessage = document.querySelector('.formMessage');
+const inputMessage = document.querySelector('.inputMessage');
 const alertMessageTopic = document.querySelector('.alertMessageTopic');
 
 const allBtnsQuote = document.querySelectorAll('.quoteMessage')
@@ -42,7 +52,7 @@ Quill.register(SpanBlot);
  */
 
 
-
+//on initialise les options, et ensuite Quill
 const toolbarOptions = {
     container: [
         ['bold', 'italic', 'underline', 'strike'],
@@ -71,17 +81,14 @@ const quill = new Quill('.editor', {
     theme: 'snow',
 
 });
-// const inputString = '<p><img src="data:image/jpeg;base64,/9j/4AA...FGZ"></p><p><img src="data:application/pdf;base64,/9j/4Ahk...FGZ"></p><p><img src="data:image/jpeg;base64,/9j/4Ag...FGZ"></p>';
-// const outputString = inputString.replace(/<img[^>]*>/g, function (match) {
-//     if (match.includes('src="data:image/')) {
-//         return match;
-//     } else {
-//         return '';
-//     }
-// });
-// console.log(outputString);
+/**
+ * 
+ * Ce script gère aussi la modification de message. Dans la page viewEditMessage.php, le contenu du message à modifier est stocké dans inputMessage (hidden). Pour que le User ai un visuel de son message à modifier, on va incorporer le contenu de inputMessage dans quill.root.innerHTML qui correspond au textArea de Quill
+ */
+quill.root.innerHTML = inputMessage.value;
 
-formResponse.addEventListener('submit', async (e) => {
+//Ecouteur Formulaire
+formMessage.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     /**
@@ -135,9 +142,9 @@ formResponse.addEventListener('submit', async (e) => {
             }
         }
         //si type et poids ok, le code continu ...
-        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputResponse"
-        inputResponse.value = quill.root.innerHTML;
-        const formData = new FormData(formResponse);
+        //tout le contenu de l'editeur Quill est enregistré dans le champs "inputMessage"
+        inputMessage.value = quill.root.innerHTML;
+        const formData = new FormData(formMessage);
         const response = await fetch('?controller=message&action=validation', {
             method: 'POST',
             body: formData
@@ -155,8 +162,16 @@ formResponse.addEventListener('submit', async (e) => {
         if (!resultat.boolean) {
             throw new Error(resultat.message);
         }
-        updateDOM(resultat);
-        // listennerBtnsQuote();
+
+        //si dans la réponse du serveur c'est "édit", c'est qu'il s'agit de l'édition d'un message. donc on redirige vers le topicID concerné
+        //sinon c'est une réponse simple dans le fil de discussion
+        if (resultat.data.action === 'edit') {
+            window.location.href = `index.php?controller=topics&action=thread&threadID=${resultat.data.topicID}`;
+        } else {
+            updateDOM(resultat);
+            // listennerBtnsQuote();
+        }
+
 
     } catch (error) {
 

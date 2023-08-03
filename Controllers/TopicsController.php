@@ -93,7 +93,7 @@ class TopicsController extends MainController
                 "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",
                 "view" => "../Views/topics/viewThread.php",
                 "css" => "./style/topicStyle.css",
-                "script" => "./js/responseTopic.js",
+                "script" => "./js/createMessage.js",
                 "template" => "../Views/common/template.php",
                 //editor quill
                 "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
@@ -103,7 +103,7 @@ class TopicsController extends MainController
                 "quillImageJS" => "./quill/dist/quill.imageUploader.js",
                 "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
                 //----------
-                'userID' => $_SESSION['profil']["userID"],
+                'userID' => $_SESSION['profil']["userID"] ?? "",
                 "tokenCSRF" => $_SESSION["tokenCSRF"],
                 "infosTopic" => $infosTopic,
                 'messagesTopics' => $messagesTopics
@@ -130,14 +130,10 @@ class TopicsController extends MainController
             $data_page = [
                 "pageDescription" => "Page de création d'un topic sur Guitare-forum",
                 "pageTitle" => "Création topic | Guitare-forum",
-                "view" => "../Views/topics/viewCreateTopic_editMessage.php",
+                "view" => "../Views/topics/viewCreateTopic.php",
                 "css" => "./style/createTopicStyle.css",
                 "script" => "./js/createTopic.js",
                 "template" => "../Views/common/template.php",
-                'title_a' => "Création d'un topic dans la catégorie : ",
-                'title_b' => $infoCategory->categoryName,
-                'action' => "createTopic",
-                'textAction' => "Créer",
                 //editor quill
                 "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
                 "quillEmojiCSS" => "./quill/dist/quill-emoji.css",
@@ -167,7 +163,7 @@ class TopicsController extends MainController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::isConnected()) {
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                if (!empty($_POST['titleTopic']) && !empty($_POST['categoryID'])) {
+                if (!empty($_POST['titleTopic'])) {
                     $categoryID = htmlspecialchars($_POST['categoryID']);
                     //ajouter un appel de requete pour savoir si on a un retour d'une catégorie qui à un parent différent de null, sinon on va créer un topic sur une catégorie "parente" générale.
                     //OU BIEN vérifier que le champ "parent" soit différent de null directement depuis l'appel de  getInfoCategory

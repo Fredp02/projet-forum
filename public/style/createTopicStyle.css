@@ -177,6 +177,7 @@
 
 /************************************/
 
-.btnCreateTopic {
+.btnCreateTopic,
+.btnEditMessage {
     margin-top: 20px;
 }

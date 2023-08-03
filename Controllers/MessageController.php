@@ -111,44 +111,56 @@ class MessageController extends MainController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
                 if (Securite::isConnected()) {
-                    if (!empty($_POST['inputResponse']) && !empty($_POST['topicID'])) {
+                    if (!empty($_POST['inputMessage']) && !empty($_POST['targetID']) && !empty($_POST['action'])) {
 
                         /**
                          * !on fait la même vérif ici que celle de JS pour les réponses vides :
-                         * Voir explication détaillée dans le cas particulier du fichier responseTopics
+                         * Voir explication détaillée dans le cas particulier du fichier createMessage.js
                          */
 
                         $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            return str_contains($match[0], 'img')  ? $match[0] : '';
-                        }, $_POST['topicID']);
+                            return str_contains($match[0], '<img src="data:image/')  ? $match[0] : '';
+                        }, $_POST['inputMessage']);
                         if ($contenuDeVerification) {
-                            // $escapedResponse = htmlspecialchars($_POST['inputResponse']);
+
+                            /**
+                             * $_POST['action'] = edit OU create
+                             * 
+                             * $_POST['targetID'] prend une clé étrangère:
+                             * le topicID si création de message
+                             * le MessageID si edition de message
+                             */
+                            $action = htmlspecialchars($_POST['action']);
+                            $targetID = htmlspecialchars($_POST['targetID']);
 
 
-                            $topicID = htmlspecialchars($_POST['topicID']);
-                            $userID = $_SESSION['profil']['userID'];
-                            if (is_numeric($topicID)) {
-                                //On nettoie l'html
-                                $clean_html = Securite::htmlPurifier($_POST['inputResponse']);
+                            //On nettoie l'html
+                            $clean_html = Securite::htmlPurifier($_POST['inputMessage']);
 
-                                //j'initialise les setters :
-                                // $this->message->setMessageText($escapedResponse);
+                            /**
+                             * !Créer un message : 
+                             * * soit par une réponse à un topic
+                             * * soit par la création d'un topic et donc d'un 1er message
+                             */
+                            if ($action === 'create') {
                                 $this->message->setMessageText($clean_html);
-                                $this->message->setUserID($userID);
-                                $this->message->setTopicID($topicID);
+                                $this->message->setUserID($_SESSION['profil']['userID']);
+                                $this->message->setTopicID($targetID);
 
                                 //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
                                 if ($this->messagesModel->createMessage($this->message)) {
 
-                                    $categoryID = $this->topicsModel->getTopicInfos($topicID)->categoryID;
+
                                     $data = [
                                         'reponseTopic' => $clean_html,
-                                        'topicID' => $topicID,
-                                        'categoryID' => $categoryID,
+                                        'action' => 'create',
+                                        // la catégorie sert uniquemment pour la redirection du script CreateTopic.js
+                                        'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
                                         'dataUser' => $_SESSION['profil'],
                                     ];
                                     $_SESSION['profil']['messagesCount']++;
 
+                                    //si cette variable est déclarée c'est la création d'un topic.
                                     if (isset($_POST['titleTopic'])) {
                                         Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
                                     }
@@ -159,16 +171,44 @@ class MessageController extends MainController
                                     Toolbox::dataJson(false, "Une erreur s'est produite");
                                     exit;
                                 }
+
+                                //!edit un message
+                            } elseif ($action === 'edit') {
+                                //on récupère les info du message pour vérifier ensuite si le userID du message correspond bien à $_SESSION['profil']['userID']
+                                $infoMessage = $this->messagesModel->getInfoMessage($targetID);
+
+                                $this->message->setMessageText($clean_html);
+                                $this->message->setMessageID($targetID);
+
+                                //je fais appel à mon messageModel pour EDITER les données:
+                                if (
+                                    $infoMessage->messageUserID === $_SESSION['profil']['userID'] &&
+                                    $this->messagesModel->editMessage($this->message)
+                                ) {
+                                    $data = [
+                                        'reponseTopic' => $clean_html,
+                                        'action' => 'edit',
+                                        'topicID' => $infoMessage->messageTopicID,
+                                        'dataUser' => $_SESSION['profil'],
+                                    ];
+                                    Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
+                                    //et on envoie la réponse en json
+                                    Toolbox::dataJson(true, "données reçues, ok !", $data);
+                                    exit;
+                                } else {
+                                    Toolbox::dataJson(false, "Une erreur s'est produite !!!");
+                                    exit;
+                                }
                             } else {
                                 Toolbox::dataJson(false, "Une erreur s'est produite");
                                 exit;
                             }
                         } else {
-                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputResponse']);
+                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
                             exit;
                         }
                     } else {
-                        Toolbox::dataJson(false, "Erreur transmission POST inputResponse");
+                        Toolbox::dataJson(false, "Erreur transmission POST inputMessage");
                         exit;
                     }
                 } else {
@@ -189,24 +229,24 @@ class MessageController extends MainController
     }
 
 
-    public function createEditMessageView($messageID)
+    public function viewEdit($messageID)
     {
         /**
          * Quand je clique sur le bouton éditer, c'est un lien, ., Je suis redirifer vers une méthode avec en paramètre get un message ID
          * Je va
          */
-        if (Securite::isConnected()) {
+
+
+        $infoMessage = $this->messagesModel->getInfoMessage($messageID);
+        // dump($infoMessage);
+        if (Securite::isConnected() && $infoMessage->messageUserID === $_SESSION['profil']['userID']) {
             $data_page = [
                 "pageDescription" => "Page d'édition d'un message' sur Guitare-forum",
                 "pageTitle" => "Modifier son message | Guitare-forum",
-                "view" => "../Views/topics/viewCreateTopic_editMessage.php",
+                "view" => "../Views/messages/viewEditMessage.php",
                 "css" => "./style/createTopicStyle.css",
-                "script" => "./js/createTopic.js",
+                "script" => "./js/createMessage.js",
                 "template" => "../Views/common/template.php",
-                'title_a' => "Modifier son message dans : ",
-                'title_b' => "nom du topic",
-                'action' => "createTopic",
-                'textAction' => "Créer",
                 //editor quill
                 "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",
                 "quillEmojiCSS" => "./quill/dist/quill-emoji.css",
@@ -215,7 +255,7 @@ class MessageController extends MainController
                 "quillImageJS" => "./quill/dist/quill.imageUploader.js",
                 "quillImageCSS" => "./quill/dist/quill.imageUploader.css",
                 //----------
-                // "infoCategory" => $infoCategory
+                "infoMessage" => $infoMessage
 
             ];
             $this->render($data_page);

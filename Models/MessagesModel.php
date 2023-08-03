@@ -66,4 +66,54 @@ class MessagesModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
+
+
+    /**
+     * Toutes les colonnes du "message", ainsi que celles de son topic, de sa catégorie et de la catégorie parente
+     *
+     * @param  mixed $messageID
+     * @return object
+     */
+    public function getInfoMessage($messageID)
+    {
+
+        $req = "SELECT messages.messageID as messageID, messages.messageText AS messageText, messages.userID AS messageUserID, messages.topicID AS messageTopicID, topics.topicTitle, categorys.*, parent.categoryID AS parentID, parent.categoryName AS parentName 
+        FROM messages 
+        JOIN topics ON messages.topicID = topics.topicID 
+        JOIN categorys ON topics.categoryID = categorys.categoryID 
+        JOIN categorys parent ON categorys.categoryParentID = parent.categoryID 
+        WHERE messages.messageID = :messageID;
+        ";
+
+
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":messageID", $messageID);
+        try {
+            $sql->execute();
+            $resultat = $sql->fetch();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+
+    public function editMessage(Messages $message)
+    {
+
+        $messageId = $message->getMessageID();
+        $messageText = $message->getMessageText();
+        $req = "UPDATE messages set messageText = :messageText WHERE messageId = :messageId";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":messageId", $messageId, \PDO::PARAM_INT);
+        $sql->bindValue(":messageText", $messageText);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
 }
