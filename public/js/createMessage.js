@@ -17,7 +17,7 @@ const alertMessageTopic = document.querySelector('.alertMessageTopic');
 const allBtnsQuote = document.querySelectorAll('.quoteMessage')
 const editor = document.querySelector('.ql-editor');
 
-listennerBtnsQuote();
+
 
 /**
  * ********************************************************
@@ -169,7 +169,7 @@ formMessage.addEventListener('submit', async (e) => {
             window.location.href = `index.php?controller=topics&action=thread&threadID=${resultat.data.topicID}`;
         } else {
             updateDOM(resultat);
-            // listennerBtnsQuote();
+            listenerBtnsQuote();
         }
 
 
@@ -210,40 +210,38 @@ quill.on('text-change', () => {
 });
 
 
+/**
+ * La fonction listenerQuote() devra être réutilisée dans la fonction updateDOM lorsqu'un nouveau message est crée par l'utilisateur. Ainsi, lorsqu'il créer un nouveau message, le user n'est pas obligé de recharger la page pour modifier son "citer" son message s'il le souhaite.
+ */
+allBtnsQuote.forEach(btnQuote => {
+    btnQuote.addEventListener('click', () => listenerQuote(btnQuote));
+});
 
-function listennerBtnsQuote() {
-    allBtnsQuote.forEach(btnQuote => {
-        btnQuote.addEventListener('click', () => {
 
-            //dans chaque message listé, il y a deux attributs, data-pseudo et data-date qui possèdent du pseudo et de la date du message. cela permet de donner des infos à la citation. 
-            const pseudoMessageCite = btnQuote.getAttribute('data-pseudo')
-            const dateMessageCite = btnQuote.getAttribute('data-date')
+function listenerQuote(btnQuote) {
+    //dans chaque message listé, il y a deux attributs, data-pseudo et data-date qui possèdent du pseudo et de la date du message. cela permet de donner des infos à la citation. 
+    const pseudoMessageCite = btnQuote.getAttribute('data-pseudo')
+    const dateMessageCite = btnQuote.getAttribute('data-date')
 
-            const messageQuote = btnQuote.parentNode.parentNode.nextElementSibling.innerHTML;
-            //Quill ne prend en compte que quelques balises html (https://quilljs.com/docs/formats/)
-            const insertDatas = `<blockquote><em><u>${pseudoMessageCite}</u> a écrit le ${dateMessageCite} : </em><br>${messageQuote}</blockquote>`;
+    const messageQuote = btnQuote.parentNode.parentNode.nextElementSibling.innerHTML;
+    //Quill ne prend en compte que quelques balises html (https://quilljs.com/docs/formats/)
+    const insertDatas = `<blockquote><em><u>${pseudoMessageCite}</u> a écrit le ${dateMessageCite} : </em><br>${messageQuote}</blockquote>`;
 
-            // //*Cette ligne utilise la méthode dangerouslyPasteHTML de l’objet clipboard de Quill pour insérer du contenu HTML dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le contenu HTML doit être inséré. Dans ce cas, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le contenu HTML sera inséré à la fin du contenu existant. Le deuxième argument, insertDatas, est le contenu HTML à insérer.
-            quill.clipboard.dangerouslyPasteHTML(quill.getLength(), insertDatas);
+    // //*Cette ligne utilise la méthode dangerouslyPasteHTML de l’objet clipboard de Quill pour insérer du contenu HTML dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le contenu HTML doit être inséré. Dans ce cas, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le contenu HTML sera inséré à la fin du contenu existant. Le deuxième argument, insertDatas, est le contenu HTML à insérer.
+    quill.clipboard.dangerouslyPasteHTML(quill.getLength(), insertDatas);
 
-            // // Convertir le contenu HTML en un objet Delta
-            // const delta = quill.clipboard.convert(insertDatas);
+    // // Convertir le contenu HTML en un objet Delta
+    // const delta = quill.clipboard.convert(insertDatas);
 
-            // // Insérer le contenu dans l'éditeur QUILL
-            // quill.setContents(delta, 'silent');
+    // // Insérer le contenu dans l'éditeur QUILL
+    // quill.setContents(delta, 'silent');
 
-            //*Cette ligne utilise la méthode insertText pour insérer un caractère de saut de ligne (\n) dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le caractère de saut de ligne doit être inséré. Comme pour la ligne précédente, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le caractère de saut de ligne sera inséré à la fin du contenu existant. Le deuxième argument, '\n', est le caractère de saut de ligne à insérer.
-            quill.insertText(quill.getLength(), '\n');
+    //*Cette ligne utilise la méthode insertText pour insérer un caractère de saut de ligne (\n) dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le caractère de saut de ligne doit être inséré. Comme pour la ligne précédente, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le caractère de saut de ligne sera inséré à la fin du contenu existant. Le deuxième argument, '\n', est le caractère de saut de ligne à insérer.
+    quill.insertText(quill.getLength(), '\n');
 
-            //*Cette ligne utilise la méthode setSelection pour déplacer le curseur dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le curseur doit être placé. Comme pour les lignes précédentes, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le curseur sera placé à la fin du contenu existant. Le deuxième argument, 0, spécifie la longueur de la sélection. Dans ce cas, nous passons 0 pour indiquer que nous ne voulons pas sélectionner de texte, mais simplement déplacer le curseur.
-            quill.setSelection(quill.getLength(), 0);
-        })
-    });
+    //*Cette ligne utilise la méthode setSelection pour déplacer le curseur dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le curseur doit être placé. Comme pour les lignes précédentes, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le curseur sera placé à la fin du contenu existant. Le deuxième argument, 0, spécifie la longueur de la sélection. Dans ce cas, nous passons 0 pour indiquer que nous ne voulons pas sélectionner de texte, mais simplement déplacer le curseur.
+    quill.setSelection(quill.getLength(), 0);
 }
-
-
-
-
 
 
 
@@ -257,7 +255,7 @@ const formatDate = (date) => {
 }
 
 
-function updateDOM(resultat,) {
+function updateDOM(resultat) {
     const filePathAvatar = resultat.data.dataUser.filepathAvatar;
     const pseudo = resultat.data.dataUser.pseudo;
     const userGuitare = resultat.data.dataUser.userGuitare;
@@ -276,9 +274,15 @@ function updateDOM(resultat,) {
     const dateActuelle = formatDate(date);
 
     lastMessage.querySelector('.messageDate span').textContent = dateActuelle;
-    lastMessage.querySelector('.quoteMessage').setAttribute('data-pseudo', pseudo);
-    lastMessage.querySelector('.quoteMessage').setAttribute('data-date', dateActuelle);
-    // lastMessage.querySelector('.messageText span').innerHTML = content;
+
+    //editMessage
+    lastMessage.querySelector('.editMessage a').setAttribute('href', `?controller=message&action=viewEdit&messageID=${resultat.data.messageID}`);
+    //quoteMessage
+    const btnQuote = lastMessage.querySelector('.quoteMessage');
+    btnQuote.setAttribute('data-pseudo', pseudo);
+    btnQuote.setAttribute('data-date', dateActuelle);
+    btnQuote.addEventListener('click', () => listenerQuote(btnQuote));
+
     lastMessage.querySelector('.messageText span').innerHTML = resultat.data.reponseTopic;
 
     messageList.append(lastMessage);

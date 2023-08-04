@@ -8,6 +8,10 @@ use Entities\Messages;
 
 class MessagesModel extends DbConnect
 {
+    public function lastInsertId()
+    {
+        return $this->getBdd()->lastInsertId();
+    }
     public function createMessage(Messages $message)
     {
         $messageText = $message->getMessageText();

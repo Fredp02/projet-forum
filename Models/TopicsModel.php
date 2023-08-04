@@ -8,6 +8,7 @@ use Entities\Topics;
 
 class TopicsModel extends DbConnect
 {
+
     public function getListTopicsByCat($categoryID)
     {
 

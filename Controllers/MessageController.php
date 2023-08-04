@@ -150,10 +150,11 @@ class MessageController extends MainController
                                 //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
                                 if ($this->messagesModel->createMessage($this->message)) {
 
-
+                                    $messageID = $this->messagesModel->lastInsertId();
                                     $data = [
                                         'reponseTopic' => $clean_html,
                                         'action' => 'create',
+                                        'messageID' => $messageID,
                                         // la catégorie sert uniquemment pour la redirection du script CreateTopic.js
                                         'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
                                         'dataUser' => $_SESSION['profil'],

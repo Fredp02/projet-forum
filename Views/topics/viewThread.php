@@ -30,8 +30,9 @@ use Controllers\Services\Toolbox;
                             <span>
                                 <?php if ($message->pseudo !== 'Utilisateur') : ?>
                                     Ma guitare : <?= html_entity_decode($message->guitare); ?>
+                                <?php endif; ?>
                             </span>
-                        <?php endif; ?>
+
                         </div>
                         <div class="totalMessagesUser">
                             <span>
@@ -51,7 +52,7 @@ use Controllers\Services\Toolbox;
                             <div class="iconThread">
 
                                 <?php if ($message->userID === $userID) : ?>
-                                    <div class="editMessage" data-message="">
+                                    <div class="editMessage">
                                         <a href="?controller=message&action=viewEdit&messageID=<?= $message->messageID; ?>"><button><i class="fa-solid fa-pen"></i></i></button></a>
 
                                     </div>
@@ -64,7 +65,6 @@ use Controllers\Services\Toolbox;
 
                         </div>
 
-                        <!-- Les messages provenant de la base de données ont besoins d'être décodé avant l'affichage, car avant enregistrement, il y a eu un "htmlspecialchars" -->
                         <div class="messageText"><span><?= $message->messageText; ?></span></div>
                     </div>
                 </div>
@@ -96,16 +96,14 @@ use Controllers\Services\Toolbox;
                     <div class="headerMessage">
                         <div class="messageDate"><span></span></div>
                         <div class="iconThread">
-                            <div class="editMessage" data-message="">
-                                <button><i class="fa-solid fa-pen"></i></button>
+                            <div class="editMessage">
+                                <a href=""><button><i class="fa-solid fa-pen"></i></i></button></a>
                             </div>
                             <div class="quoteMessage" data-pseudo="" data-date="">
                                 <button><i class="fa-solid fa-quote-right"></i></button>
                             </div>
                         </div>
-                        <!-- <div class="quoteMessage" data-pseudo="" data-date="">
-                            <button><i class="fa-solid fa-quote-right"></i></button>
-                        </div> -->
+
                     </div>
                     <div class="messageText"><span></span></div>
                 </div>
