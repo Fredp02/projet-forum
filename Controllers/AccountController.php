@@ -69,7 +69,7 @@ class AccountController extends MainController
     public function editAvatar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+            if (Securite::verifCSRF()) {
                 if (isset($_FILES['avatarPhoto']) && $_FILES['avatarPhoto']['error'] == 0) {
                     $dataPhoto = $_FILES['avatarPhoto'];
                     //je crée un tableau avec les types mime autorisés
@@ -192,7 +192,7 @@ class AccountController extends MainController
 
         //!Si requete POST : envoie du mail avec tokenJWT
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+            if (Securite::verifCSRF()) {
                 // Le jeton anti-CSRF est valide, traiter les données du formulaire
                 if (!empty($_POST['email']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
 
@@ -253,7 +253,7 @@ class AccountController extends MainController
     }
     public function editPassword()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::verifCSRF()) {
 
             if (!empty($_POST['ancienPassword']) && !empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
                 $ancienPassword = htmlspecialchars($_POST['ancienPassword']);
@@ -306,7 +306,7 @@ class AccountController extends MainController
     //section a propos
     public function editAbout()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::verifCSRF()) {
             if (!empty($_POST['guitare']) && !empty($_POST['emploi']) && !empty($_POST['ville'])) {
 
                 $config = \HTMLPurifier_Config::createDefault();
@@ -359,7 +359,7 @@ class AccountController extends MainController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+            if (Securite::verifCSRF()) {
                 $userID = $_SESSION['profil']['userID'];
 
                 $anonymousID = 2;

@@ -84,6 +84,7 @@ class HomeController extends MainController
             "template" => "../Views/common/template.php",
             // 'allCategorys' => $allCategorys,
             "groupedCategories" => $groupedCategories,
+            'tokenCSRF' => $_SESSION['tokenCSRF']
 
         ];
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79280f2436574cb588a5264dbc4ad700",
+    "content-hash": "09b42f58dc0e38c68f4c28d0ec2de036",
     "packages": [
         {
             "name": "ezyang/htmlpurifier",
@@ -66,6 +66,35 @@
                 "source": "https://github.com/ezyang/htmlpurifier/tree/v4.16.0"
             },
             "time": "2022-09-18T07:06:19+00:00"
+        },
+        {
+            "name": "mrfakename/phpsearch",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpsearch/library.git",
+                "reference": "4c13bdf4a6e55d374ec1329f372a48c7cd0ea125"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpsearch/library/zipball/4c13bdf4a6e55d374ec1329f372a48c7cd0ea125",
+                "reference": "4c13bdf4a6e55d374ec1329f372a48c7cd0ea125",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mrfakename\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "A PHP-based search engine library that's super simple and doesn't depend on anything.",
+            "support": {
+                "issues": "https://github.com/phpsearch/library/issues",
+                "source": "https://github.com/phpsearch/library/tree/main"
+            },
+            "time": "2023-07-07T20:41:11+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -322,7 +351,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,

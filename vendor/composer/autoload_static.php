@@ -13,6 +13,14 @@ class ComposerStaticInit11f621ce1c12c1b0501fdbb956224972
     );
 
     public static $prefixLengthsPsr4 = array (
+        'm' => 
+        array (
+            'mrfakename\\' => 11,
+        ),
+        'V' => 
+        array (
+            'Vendor\\' => 7,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -38,6 +46,14 @@ class ComposerStaticInit11f621ce1c12c1b0501fdbb956224972
     );
 
     public static $prefixDirsPsr4 = array (
+        'mrfakename\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mrfakename/phpsearch/src',
+        ),
+        'Vendor\\' => 
+        array (
+            0 => 'D:\\Developpement\\www\\projet-forum\\vendor',
+        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',

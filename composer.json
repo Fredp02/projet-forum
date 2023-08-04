@@ -7,11 +7,14 @@
             "Controllers\\": "Controllers/",
             "Models\\": "Models/",
             "Core\\": "Core/",
-            "Entities\\": "Entities/"
+            "Entities\\": "Entities/",
+            "Vendor\\": "vendor/"
         }
     },
     "require": {
         "phpmailer/phpmailer": "^6.8",
-        "ezyang/htmlpurifier": "^4.16"
-    }
+        "ezyang/htmlpurifier": "^4.16",
+        "mrfakename/phpsearch": "dev-main"
+    },
+    "minimum-stability": "dev"
 }

@@ -12,6 +12,7 @@
     --gris1: #858585;
     --blanc: #FFFFFF;
     --orange: #FFA500;
+    --orange1: #c88406;
     --orange2: #ffb429;
     --text-primary: #eeeeee;
     --text-primaryOpacity: #eeeeee7e;
@@ -175,6 +176,24 @@ nav {
 .search {
     width: 40%;
 }
+.search form{
+    display: flex;
+}
+.search form button{
+    padding: 0.5rem;
+    font-size: 22px;
+    border: none;
+    color: var(--orange1);
+    cursor: pointer;
+    transition : all 0.3s ease;
+    
+    /* background: white; */
+}
+.search form button:hover{
+    background: var(--orange1);
+    color:white;
+}
+
 
 .inputSearch {
     background-color: var(--text-primary);

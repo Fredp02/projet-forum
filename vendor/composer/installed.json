@@ -65,6 +65,38 @@
             "install-path": "../ezyang/htmlpurifier"
         },
         {
+            "name": "mrfakename/phpsearch",
+            "version": "dev-main",
+            "version_normalized": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpsearch/library.git",
+                "reference": "4c13bdf4a6e55d374ec1329f372a48c7cd0ea125"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpsearch/library/zipball/4c13bdf4a6e55d374ec1329f372a48c7cd0ea125",
+                "reference": "4c13bdf4a6e55d374ec1329f372a48c7cd0ea125",
+                "shasum": ""
+            },
+            "time": "2023-07-07T20:41:11+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "mrfakename\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "A PHP-based search engine library that's super simple and doesn't depend on anything.",
+            "support": {
+                "issues": "https://github.com/phpsearch/library/issues",
+                "source": "https://github.com/phpsearch/library/tree/main"
+            },
+            "install-path": "../mrfakename/phpsearch"
+        },
+        {
             "name": "phpmailer/phpmailer",
             "version": "v6.8.0",
             "version_normalized": "6.8.0.0",
