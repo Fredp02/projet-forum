@@ -7,8 +7,7 @@
             "Controllers\\": "Controllers/",
             "Models\\": "Models/",
             "Core\\": "Core/",
-            "Entities\\": "Entities/",
-            "Vendor\\": "vendor/"
+            "Entities\\": "Entities/"
         }
     },
     "require": {

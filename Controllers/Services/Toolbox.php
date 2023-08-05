@@ -13,6 +13,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Controllers\Services\HtmlTemplateMail\HtmlTemplateMail;
 
 require '../vendor/autoload.php';
+include './stopword.php';
 
 class Toolbox
 {
@@ -95,6 +96,23 @@ class Toolbox
         } catch (Exception $e) {
             echo "Une erreur est survenue: {$mail->ErrorInfo}";
         }
+    }
+
+    public static function cleanSearch($string)
+    {
+
+        $string = strtolower($string);
+        $string = trim($string);
+
+        $string = str_replace(' ', '_', $string);
+        $string = preg_replace('/[^a-z0-9\_]/', '', $string);
+        $string = preg_replace('/_+/', '_', $string);
+        $string = str_replace('_', ' ', $string);
+
+        foreach (STOPWORD as $stopword) {
+            $string = str_replace($stopword, ' ', $string);
+        }
+        $string = '%' . str_replace(' ', '%', $string) . '%';
     }
 
 

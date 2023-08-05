@@ -7,6 +7,9 @@ use Exception;
 use Core\DbConnect;
 
 
-class CategorysModel extends DbConnect
+class SearchModel extends DbConnect
 {
+    public function __construct()
+    {
+    }
 }

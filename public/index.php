@@ -10,7 +10,6 @@ define("URL", str_replace("index.php", "", (isset($_SERVER['HTTPS']) ? "https" :
 require '../vendor/autoload.php';
 
 
-
 use Controllers\Services\Securite;
 use Core\Router;
 

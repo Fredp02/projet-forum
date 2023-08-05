@@ -36,6 +36,10 @@ abstract class DbConnect
         }
         return $this->pdo;
     }
+    // protected function setMysqli()
+    // {
+    //     return mysqli_connect('localhost', 'root', '', 'guitareforum');
+    // }
 
     //!OVH CEFII
     // private function setBdd()

@@ -17,10 +17,6 @@ class ComposerStaticInit11f621ce1c12c1b0501fdbb956224972
         array (
             'mrfakename\\' => 11,
         ),
-        'V' => 
-        array (
-            'Vendor\\' => 7,
-        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -49,10 +45,6 @@ class ComposerStaticInit11f621ce1c12c1b0501fdbb956224972
         'mrfakename\\' => 
         array (
             0 => __DIR__ . '/..' . '/mrfakename/phpsearch/src',
-        ),
-        'Vendor\\' => 
-        array (
-            0 => 'D:\\Developpement\\www\\projet-forum\\vendor',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
