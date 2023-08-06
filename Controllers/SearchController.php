@@ -9,7 +9,6 @@ use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
 
 
-
 class SearchController extends MainController
 {
     private $searchModel;
@@ -19,13 +18,19 @@ class SearchController extends MainController
         $this->searchModel = new SearchModel();
     }
 
+
     public function index()
     {
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             if (Securite::verifCSRF()) {
+
                 if (!empty($_POST['inputSearch'])) {
 
-                    dd($_POST['inputSearch']);
+                    $string = Toolbox::cleanSearch(htmlspecialchars($_POST['inputSearch']));
+                    $result = $this->searchModel->findByTitle($string);
+                    dd($result);
                 }
             } else {
                 Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');

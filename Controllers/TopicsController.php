@@ -88,6 +88,7 @@ class TopicsController extends MainController
             $this->topic->setTopicID($threadID);
             $this->topicsModel->addViewTopic($this->topic);
 
+
             $data_page = [
                 "pageDescription" => "Sujet : " . $infosTopic->topicTitle . " du site Guitare-forum",
                 "pageTitle" => $infosTopic->topicTitle . " | Guitare-forum",

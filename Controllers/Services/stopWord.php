@@ -1,5 +1,5 @@
 <?php
-define('STOPWORD', array(
+const STOPWORD = array(
     " a ",
     " à ",
     " â ",
@@ -492,4 +492,4 @@ define('STOPWORD', array(
     " voient ",
     " état ",
     " étions "
-));
+);

@@ -13,11 +13,12 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Controllers\Services\HtmlTemplateMail\HtmlTemplateMail;
 
 require '../vendor/autoload.php';
-include './stopword.php';
+include "../Controllers/Services/stopWord.php";
+
 
 class Toolbox
 {
-    public static function dataJson($bool, $message = null, $data = null)
+    public static function dataJson($bool, $message = null, $data = null): void
     {
         $Data = [
             'boolean' => $bool,
@@ -29,14 +30,14 @@ class Toolbox
     }
 
 
-    public static function ajouterMessageAlerte($message, $couleur)
+    public static function ajouterMessageAlerte($message, $couleur): void
     {
         $_SESSION['alert'] = [
             "message" => $message,
             "couleur" => $couleur
         ];
     }
-    public static function convertDate($dateTime, $pattern = "EEEE dd MMMM yyyy à HH'h'mm")
+    public static function convertDate($dateTime, $pattern = "EEEE dd MMMM yyyy à HH'h'mm"): string
     {
         //d MMMM Y
         $formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::SHORT, IntlDateFormatter::SHORT);
@@ -46,7 +47,7 @@ class Toolbox
         return ucfirst($formattedDate);
     }
 
-    public static function creerDateActuelle()
+    public static function creerDateActuelle(): string
     {
         // Obtient la date et l'heure actuelles
         $dateActuelle = new DateTime();
@@ -62,7 +63,7 @@ class Toolbox
         return ucfirst($dateFormatee);
     }
 
-    public static function createEmailContent($template, $pseudo, $route)
+    public static function createEmailContent($template, $pseudo, $route): array|false|string
     {
         $contentMail = file_get_contents($template);
         $contentMail = str_replace('{name}', $pseudo, $contentMail);
@@ -98,21 +99,21 @@ class Toolbox
         }
     }
 
-    public static function cleanSearch($string)
+    public static function cleanSearch($string): string
     {
 
         $string = strtolower($string);
         $string = trim($string);
 
         $string = str_replace(' ', '_', $string);
-        $string = preg_replace('/[^a-z0-9\_]/', '', $string);
+        $string = preg_replace('/[^a-z0-9_]/', '', $string);
         $string = preg_replace('/_+/', '_', $string);
         $string = str_replace('_', ' ', $string);
 
-        foreach (STOPWORD as $stopword) {
-            $string = str_replace($stopword, ' ', $string);
+        foreach (STOPWORD as $stopWord) {
+            $string = str_replace($stopWord, ' ', $string);
         }
-        $string = '%' . str_replace(' ', '%', $string) . '%';
+        return '%' . str_replace(' ', '%', $string) . '%';
     }
 
 

@@ -46,14 +46,19 @@ use Controllers\Services\Securite; ?>
                         <span>Guitare</span><span>forum</span>
                     </div>
                 </a>
-
                 <div class="search">
                     <form action="?controller=search" method="POST">
                         <input type="text" name="inputSearch" class="inputSearch" placeholder="Rechercher..." />
                         <button class="button" type="submit">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
-                        <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF;  ?>" />
+
+                        <a href="#">
+                            <button class="button">
+                                <i class="fa-solid fa-gear"></i>
+                            </button>
+                        </a>
+                        <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF; ?>" />
                     </form>
                 </div>
 
