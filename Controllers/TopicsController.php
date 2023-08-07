@@ -191,7 +191,7 @@ class TopicsController extends MainController
                         exit;
                     }
                 } else {
-                    Toolbox::dataJson(false, "Erreur : données manquante");
+                    Toolbox::dataJson(false, "Erreur : données manquantes");
                     exit;
                 }
             } else {

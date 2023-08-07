@@ -1,17 +1,34 @@
 
-// const preview = document.querySelector('.preview');
-const formCreateTopic = document.querySelector('.formCreateTopic');
-const inputTitleCreateTopic = document.querySelector('.inputTitleCreateTopic');
-const topicID = document.querySelector('.topicID');
+const formMessage = document.querySelector('.formMessage');
 const inputMessage = document.querySelector('.inputMessage');
-const alertCreateTopic = document.querySelector('.alertCreateTopic');
+const alertMessageTopic = document.querySelector('.alertMessageTopic');
 const editor = document.querySelector('.ql-editor');
 
-inputTitleCreateTopic.addEventListener("keyup", () => {
-    alertCreateTopic.textContent = "";
-    alertCreateTopic.style.display = "none";
-});
+const Inline = Quill.import('blots/inline');
 
+// Créer une nouvelle classe de format pour les éléments span
+class SpanBlot extends Inline {
+    static create(value) {
+        let node = super.create();
+        node.setAttribute('class', value);
+        return node;
+    }
+
+    static formats(node) {
+        return node.getAttribute('class');
+    }
+}
+SpanBlot.blotName = 'span';
+SpanBlot.tagName = 'span';
+// Enregistrer la nouvelle classe de format
+Quill.register(SpanBlot);
+
+/**
+ * ****************************************************
+ */
+
+
+//on initialise les options, et ensuite Quill
 const toolbarOptions = {
     container: [
         ['bold', 'italic', 'underline', 'strike'],
@@ -38,35 +55,22 @@ const quill = new Quill('.editor', {
     },
     placeholder: 'Compose an epic...',
     theme: 'snow',
+
 });
+/**
+ * 
+ * Ce script gère la modification de message. Dans la page viewEditMessage.php, le contenu du message à modifier est stocké dans inputMessage (hidden). Pour que le User ai un visuel de son message à modifier, on va incorporer le contenu de inputMessage dans quill.root.innerHTML qui correspond au textArea de Quill
+ */
+quill.root.innerHTML = inputMessage.value;
 
-
-formCreateTopic.addEventListener('submit', async (e) => {
+//Ecouteur Formulaire
+formMessage.addEventListener('submit', async (e) => {
     e.preventDefault();
 
 
     try {
-        //si titre vide, erreur
-        if (inputTitleCreateTopic.value === "") {
-            throw new Error("Le titre du topic ne doit pas être vide !");
-        }
 
-        //CRéER LE TITRE DU TOPIC
-        const formData = new FormData(formCreateTopic);
-        let response = await fetch('?controller=topics&action=createTitleTopic', {
-            method: 'POST',
-            body: formData
-        });
-        //si erreur de communication avec le serveur
-        if (!response.ok) throw new Error(`Une erreur est survenue: ${response.status}`);
-        let resultat = await response.json();
-        //si le boolen est à false
-        if (!resultat.boolean) throw new Error(resultat.message);
-
-        //on stock l'id du topic fraichement crée qui nous servira à relier le message
-        topicID.value = resultat.data.topicID;
-
-        //insertion du premier message, celui du créateur du topic
+        // si la chaine n'est pas vide ou si il y a une balise img du type "<img src="data:image/"
         if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
             throw new Error(`Veuillez entrer un contenu valide.`);
         }
@@ -109,50 +113,45 @@ formCreateTopic.addEventListener('submit', async (e) => {
 
         }
         inputMessage.value = doc.body.innerHTML;
-        const formText = new FormData(formCreateTopic);
-        response = await fetch('?controller=message&action=create', {
+
+        const formData = new FormData(formMessage);
+        const response = await fetch('?controller=message&action=edit', {
             method: 'POST',
-            body: formText
+            body: formData
         });
 
         if (!response.ok) {
             throw new Error(`Une erreur est survenue: ${response.status}`);
         }
 
-        resultat = await response.json();
+        const resultat = await response.json();
 
         //si le boolen est à false
         if (!resultat.boolean) {
             throw new Error(resultat.message);
         }
 
-        //si pas d'erreur,
-        inputMessage.value = "";
-        quill.root.innerHTML = "";
-        inputTitleCreateTopic.value = "";
-        //le topic est créer dans son intégralité;On peu rediriger.
-        window.location.href = `index.php?controller=topics&action=list&catID=${resultat.data.categoryID}`;
-        // window.location.href = `index.php`;
+        window.location.href = `index.php?controller=topics&action=thread&threadID=${resultat.data.topicID}`;
 
 
     } catch (error) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (error.message === 'expired token') {
-            window.location.href = "index.php";
-        } else if (error.message === 'no-connected') {
-            window.location.href = "index.php?controller=login";
+
+        if (error.message === 'noConnected') {
+            //je le redirige en haut de la page pour qu'il se conecte, ensuite il sera redirigé vers la zone d'édition (voir code dans app.js)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('.btnLogin').classList.add('btnLoginAnimate')
+        } else if (error.message === 'expired token') {
+            window.location = "?controller=login";
         } else {
-            alertCreateTopic.textContent = error.message;
-            alertCreateTopic.style.display = "block";
+            alertMessageTopic.textContent = error.message;
+            alertMessageTopic.style.display = "block";
         }
     }
 
 
 
 
-
 });
-
 async function uploadImage(imageBase64) {
     // * imageBase64 correspond à l'image en base64.
     // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
@@ -193,6 +192,7 @@ async function uploadImage(imageBase64) {
 
 
 }
+
 /**
  * !écouteur sur quill pour supprimer les éventuels message d'alerte
  * 
@@ -204,9 +204,7 @@ quill.on('text-change', () => {
     // Vérifier si du texte a été entré dans l'éditeur
     if (quill.getText()) {
         //supprime les éventuels messages d'alerte
-        alertCreateTopic.textContent = "";
-        alertCreateTopic.style.display = "none";
+        alertMessageTopic.textContent = "";
+        alertMessageTopic.style.display = "none";
     }
 });
-
-

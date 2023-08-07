@@ -156,18 +156,13 @@ formMessage.addEventListener('submit', async (e) => {
         }
         inputMessage.value = doc.body.innerHTML;
 
-
-
-        // inputMessage.value = quill.root.innerHTML; ?????
         const formData = new FormData(formMessage);
-        const response = await fetch('?controller=message&action=validation', {
+        const response = await fetch('?controller=message&action=create', {
             method: 'POST',
             body: formData
         });
 
         if (!response.ok) {
-            //si erreur detecté, on génère un nouveau message d'erreur.
-            // le "catch" va le récupérer.
             throw new Error(`Une erreur est survenue: ${response.status}`);
         }
 
@@ -178,13 +173,7 @@ formMessage.addEventListener('submit', async (e) => {
             throw new Error(resultat.message);
         }
 
-        //si dans la réponse du serveur c'est "édit", c'est qu'il s'agit de l'édition d'un message. donc on redirige vers le topicID concerné
-        //sinon c'est une réponse simple dans le fil de discussion alors on mettra a jour le DOM
-        if (resultat.data.action === 'edit') {
-            window.location.href = `index.php?controller=topics&action=thread&threadID=${resultat.data.topicID}`;
-        } else {
-            updateDOM(resultat);
-        }
+        updateDOM(resultat);
 
 
     } catch (error) {
@@ -214,7 +203,7 @@ async function uploadImage(imageBase64) {
     if (blob.size > 307200) {
         throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
     }
-    const topicID = document.querySelector('.targetID').value;
+    const topicID = document.querySelector('.topicID').value;
     // *créer un objet FormData pour envoyer les données de l'image au serveur via la constante "blob"
     const formData = new FormData();
     formData.append('image', blob);

@@ -74,8 +74,7 @@ use Controllers\Services\Toolbox;
         <div class="divReponse">
             <form class="formMessage">
                 <input name="inputMessage" class="inputMessage" type="hidden">
-                <input name="action" type="hidden" value="create">
-                <input name="targetID" class="targetID" type="hidden" value="<?= $infosTopic->topicID; ?>">
+                <input name="topicID" class="topicID" type="hidden" value="<?= $infosTopic->topicID; ?>">
                 <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
                 <div class="editor">
                 </div>

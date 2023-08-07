@@ -105,7 +105,165 @@ class MessageController extends MainController
      *
      * @return void
      */
-    public function validation()
+    public function create()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+                if (Securite::isConnected()) {
+                    if (!empty($_POST['inputMessage']) && !empty($_POST['topicID'])) {
+
+                        /**
+                         * !on fait la même vérif ici que celle de JS pour les réponses vides :
+                         * Voir explication détaillée dans le cas particulier du fichier createMessage.js
+                         */
+
+                        $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
+                            if (strpos($match[0], 'img') !== false) {
+                                return $match[0];
+                            } else {
+                                return '';
+                            }
+                        }, $_POST['inputMessage']);
+
+                        if ($contenuDeVerification) {
+
+                            $topicID = htmlspecialchars($_POST['topicID']);
+                            //On nettoie l'html
+                            $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
+
+                            $this->message->setMessageText($cleanHTML);
+                            $this->message->setUserID($_SESSION['profil']['userID']);
+                            $this->message->setTopicID($topicID);
+
+                            //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
+                            if ($this->messagesModel->createMessage($this->message)) {
+
+                                $messageID = $this->messagesModel->lastInsertId();
+                                $data = [
+                                    'reponseTopic' => $cleanHTML,
+                                    'messageID' => $messageID,
+                                    // la catégorie sert uniquemment pour la redirection du script CreateTopic.js
+                                    'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
+                                    'dataUser' => $_SESSION['profil'],
+                                ];
+                                $_SESSION['profil']['messagesCount']++;
+
+                                //si cette variable est déclarée c'est la création d'un topic.
+                                if (isset($_POST['titleTopic'])) {
+                                    Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
+                                }
+                                //et on envoie la réponse en json
+                                Toolbox::dataJson(true, "données reçues, ok !", $data);
+                                exit;
+                            } else {
+                                Toolbox::dataJson(false, "Une erreur s'est produite");
+                                exit;
+                            }
+                        } else {
+                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
+                            exit;
+                        }
+                    } else {
+                        Toolbox::dataJson(false, "Erreur transmission POST inputMessage");
+                        exit;
+                    }
+                } else {
+                    Toolbox::dataJson(false, "noConnected");
+                    exit;
+                }
+            } else {
+                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+                unset($_SESSION['profil']);
+                unset($_SESSION['tokenCSRF']);
+                Toolbox::dataJson(false, "expired token");
+                exit;
+            }
+        } else {
+            header("Location:index.php");
+            exit;
+        }
+    }
+    /**
+     * Valide et enregistre le message
+     *
+     * @return void
+     */
+    public function edit()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+                if (Securite::isConnected()) {
+                    if (!empty($_POST['inputMessage']) && !empty($_POST['messageID'])) {
+
+                        /**
+                         * !on fait la même vérif ici que celle de JS pour les réponses vides :
+                         * Voir explication détaillée dans le cas particulier du fichier createMessage.js
+                         */
+
+                        $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
+                            if (strpos($match[0], 'img') !== false) {
+                                return $match[0];
+                            } else {
+                                return '';
+                            }
+                        }, $_POST['inputMessage']);
+
+                        if ($contenuDeVerification) {
+
+                            $messageID = htmlspecialchars($_POST['messageID']);
+                            //On nettoie l'html
+                            $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
+
+                            $infoMessage = $this->messagesModel->getInfoMessage($messageID);
+
+                            $this->message->setMessageText($cleanHTML);
+                            // $this->message->setUserID($_SESSION['profil']['userID']);
+                            $this->message->setMessageID($messageID);
+
+                            //je fais appel à mon messageModel pour EDITER les données:
+                            if (
+                                $infoMessage->messageUserID === $_SESSION['profil']['userID'] &&
+                                $this->messagesModel->editMessage($this->message)
+                            ) {
+                                $data = [
+                                    'reponseTopic' => $cleanHTML,
+                                    'action' => 'edit',
+                                    'topicID' => $infoMessage->messageTopicID,
+                                    'dataUser' => $_SESSION['profil'],
+                                ];
+                                Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
+                                //et on envoie la réponse en json
+                                Toolbox::dataJson(true, "données reçues, ok !", $data);
+                                exit;
+                            } else {
+                                Toolbox::dataJson(false, "Une erreur s'est produite !!!");
+                                exit;
+                            }
+                        } else {
+                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
+                            exit;
+                        }
+                    } else {
+                        Toolbox::dataJson(false, "PHP : Erreur transmission POST inputMessage");
+                        exit;
+                    }
+                } else {
+                    Toolbox::dataJson(false, "noConnected");
+                    exit;
+                }
+            } else {
+                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+                unset($_SESSION['profil']);
+                unset($_SESSION['tokenCSRF']);
+                Toolbox::dataJson(false, "expired token");
+                exit;
+            }
+        } else {
+            header("Location:index.php");
+            exit;
+        }
+    }
+    public function validation2()
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -250,7 +408,7 @@ class MessageController extends MainController
                 "pageTitle" => "Modifier son message | Guitare-forum",
                 "view" => "../Views/messages/viewEditMessage.php",
                 "css" => "./style/createTopicStyle.css",
-                "script" => "./js/createMessage.js",
+                "script" => "./js/editMessage.js",
                 "template" => "../Views/common/template.php",
                 //editor quill
                 "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",

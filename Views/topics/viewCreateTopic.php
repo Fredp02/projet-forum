@@ -28,8 +28,7 @@
 
             <!-- inputResponse : là ou va être injecté le contenur de Quill -->
             <input name="inputMessage" class="inputMessage" type="hidden">
-            <input name="action" type="hidden" value="create">
-            <input name="targetID" class="targetID" type="hidden">
+            <input name="topicID" class="topicID" type="hidden">
             <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
             <div class="editor">
             </div>
