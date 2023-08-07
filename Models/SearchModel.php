@@ -13,9 +13,10 @@ class SearchModel extends DbConnect
     {
     }
 
-
+    //recherche basique
     public function findByTitle($searchString)
     {
+
         $req = "SELECT topics.*, messages.* FROM topics
         JOIN messages ON messages.topicID = topics.topicID
         WHERE topics.topicTitle LIKE :searchString OR messages.messageText LIKE :searchString";
