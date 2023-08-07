@@ -67,17 +67,15 @@ formCreateTopic.addEventListener('submit', async (e) => {
         targetID.value = resultat.data.topicID;
 
         //insertion du premier message, celui du créateur du topic
-        const contenuDeVerification = quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '');
-
-        //si zone texte vide : erreur
-        if (!contenuDeVerification) {
-            throw new Error("Veuillez entrer un contenu valide");
+        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
+            throw new Error(`Veuillez entrer un contenu valide.`);
         }
 
         //Vérif du type MIME
         // parcourir le contenu de l'éditeur pour trouver les images encodées en base64
+        inputMessage.value = quill.root.innerHTML;
         const parser = new DOMParser();
-        const doc = parser.parseFromString(quill.root.innerHTML, 'text/html');
+        const doc = parser.parseFromString(inputMessage.value, 'text/html');
         const images = doc.querySelectorAll('img[src^="data:image/"]');
 
         //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko et que le type mime correspond aux contenu du tableau de type autorisé
@@ -101,7 +99,16 @@ formCreateTopic.addEventListener('submit', async (e) => {
         //si type et poids ok, le code continu ...
         //tout le contenu de l'editeur Quill est enregistré dans le champs "inputMessage"
 
-        inputMessage.value = quill.root.innerHTML;
+        for (const image of images) {
+            const imageBase64 = image.src;
+            //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.
+            const imageUrl = await uploadImage(imageBase64);
+            // * Une fois l'url récupérer, on remplace la représentation en base64 par l'URL de l'image.
+            //! ainsi le contenu de l'editeur qui sera envoyer en base de données ne va pas contenir le text + image base64 mais bien le text + les urls d'images
+            image.src = imageUrl;
+
+        }
+        inputMessage.value = doc.body.innerHTML;
         const formText = new FormData(formCreateTopic);
         const response2 = await fetch('?controller=message&action=validation', {
             method: 'POST',
@@ -146,7 +153,46 @@ formCreateTopic.addEventListener('submit', async (e) => {
 
 });
 
+async function uploadImage(imageBase64) {
+    // * imageBase64 correspond à l'image en base64.
+    // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
+    //* Blob contient les données binaires brutes de l’image
+    const blob = await fetch(imageBase64).then(res => res.blob());
 
+    if (blob.size > 307200) {
+        throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
+    }
+    const topicID = document.querySelector('.targetID').value;
+    // *créer un objet FormData pour envoyer les données de l'image au serveur via la constante "blob"
+    const formData = new FormData();
+    formData.append('image', blob);
+    formData.append('topicID', topicID);
+
+    // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
+    // try {
+    const response = await fetch('index.php?controller=message&action=uploadImage', {
+        method: 'POST',
+        body: formData,
+    });
+
+    // vérifier si la requête a réussi
+    if (!response.ok) {
+        throw new Error(`Une erreur est survenue lors du téléchargement de l'image: ${response.status}`);
+    }
+
+    //si la communication c'est bien déroulée , on traite les donnée json
+    const resultat = await response.json();
+
+    if (!resultat.boolean) {
+        // dataTypeError = resultat.data;
+        throw new Error(resultat.message);
+    }
+
+    return resultat.data.url
+
+
+
+}
 /**
  * !écouteur sur quill pour supprimer les éventuels message d'alerte
  * 

@@ -119,7 +119,11 @@ class MessageController extends MainController
                          */
 
                         $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            return str_contains($match[0], '<img src="data:image/')  ? $match[0] : '';
+                            if (strpos($match[0], 'img') !== false) {
+                                return $match[0];
+                            } else {
+                                return '';
+                            }
                         }, $_POST['inputMessage']);
                         if ($contenuDeVerification) {
 
