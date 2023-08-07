@@ -16,9 +16,10 @@ class SearchModel extends DbConnect
 
     public function findByTitle($searchString)
     {
-        $req = "SELECT topics.* FROM topics
-        WHERE topicTitle LIKE :searchString
-        GROUP BY topics.topicID";
+        $req = "SELECT topics.*, messages.* FROM topics
+        JOIN messages ON messages.topicID = topics.topicID
+        WHERE topics.topicTitle LIKE :searchString OR messages.messageText LIKE :searchString";
+
         $sql = $this->getBdd()->prepare($req);
 
         try {

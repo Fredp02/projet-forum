@@ -7,6 +7,7 @@ use Models\PHPSearch;
 use Models\SearchModel;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
+use Wamania\Snowball\StemmerManager;
 
 
 class SearchController extends MainController
@@ -28,7 +29,13 @@ class SearchController extends MainController
 
                 if (!empty($_POST['inputSearch'])) {
 
+                    //on nettoie la chaine en supprimant les "mots vides" et en utilisant un stemmer
                     $string = Toolbox::cleanSearch(htmlspecialchars($_POST['inputSearch']));
+                    // dd('laaa ! : ' . $string);
+
+
+
+
                     $result = $this->searchModel->findByTitle($string);
                     dd($result);
                 }
