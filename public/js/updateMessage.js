@@ -2,7 +2,7 @@ const formMessage = document.querySelector('.formMessage');
 const inputMessage = document.querySelector('.inputMessage');
 const messageID = document.querySelector('.messageID');
 const alertMessageTopic = document.querySelector('.alertMessageTopic');
-const editor = document.querySelector('.ql-editor');
+// const editor = document.querySelector('.ql-editor');
 import { quill } from './common/initQuill.js';
 
 

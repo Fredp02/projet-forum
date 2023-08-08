@@ -5,7 +5,7 @@ const inputTitleCreateTopic = document.querySelector('.inputTitleCreateTopic');
 const topicID = document.querySelector('.topicID');
 const inputMessage = document.querySelector('.inputMessage');
 const alertCreateTopic = document.querySelector('.alertCreateTopic');
-const editor = document.querySelector('.ql-editor');
+// const editor = document.querySelector('.ql-editor');
 
 inputTitleCreateTopic.addEventListener("keyup", () => {
     alertCreateTopic.textContent = "";
