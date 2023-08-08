@@ -35,7 +35,7 @@ class MessageController extends MainController
      *
      * @return void
      */
-    public function uploadImage()
+    public function uploadImage($messageID)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0 && !empty($_POST['topicID'])) {
@@ -63,7 +63,7 @@ class MessageController extends MainController
                 }
 
 
-                $filePath = './images/topics/' . $topicID;
+                $filePath = './images/topics/' . $topicID . '/' . $messageID;
                 // $filePath = 'images/topics/' . $topicID;
                 //Si ce dossier n'existe pas, il faut le créer
                 if (!file_exists($filePath)) {
@@ -188,12 +188,12 @@ class MessageController extends MainController
      *
      * @return void
      */
-    public function edit()
+    public function update($messageID)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
                 if (Securite::isConnected()) {
-                    if (!empty($_POST['inputMessage']) && !empty($_POST['messageID'])) {
+                    if (!empty($_POST['inputMessage'])) {
 
                         /**
                          * !on fait la même vérif ici que celle de JS pour les réponses vides :
@@ -210,11 +210,16 @@ class MessageController extends MainController
 
                         if ($contenuDeVerification) {
 
-                            $messageID = htmlspecialchars($_POST['messageID']);
+                            //!est ce que l'on vérifie l'intégrité de messageID ????
                             //On nettoie l'html
                             $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
 
                             $infoMessage = $this->messagesModel->getInfoMessage($messageID);
+                            $messageInBDD = $infoMessage->messageText;
+                            $topicID = $infoMessage->messageTopicID;
+
+                            //on supprime les éventuelles images que le user à supprimé de son message
+                            $this->deleteImage($messageInBDD, $cleanHTML);
 
                             $this->message->setMessageText($cleanHTML);
                             // $this->message->setUserID($_SESSION['profil']['userID']);
@@ -228,7 +233,7 @@ class MessageController extends MainController
                                 $data = [
                                     'reponseTopic' => $cleanHTML,
                                     'action' => 'edit',
-                                    'topicID' => $infoMessage->messageTopicID,
+                                    'topicID' => $topicID,
                                     'dataUser' => $_SESSION['profil'],
                                 ];
                                 Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
@@ -264,16 +269,28 @@ class MessageController extends MainController
         }
     }
 
+    private function deleteImage($messageInBDD, $cleanHTML): void
+    {
+        preg_match_all('/<img[^>]+src="([^">]+)"/', $messageInBDD, $tab1);
+        preg_match_all('/<img[^>]+src="([^">]+)"/', $cleanHTML, $tab2);
+        /**
+         * $tab[0] = tableau contenant les balises img
+         * $tab[1] = tableau contenant les attributs src de chaque 'img'
+         */
+        $imagesOldMsg = $tab1[1];
+        $imagesNewMsg = $tab2[1];
 
+        //je boucle sur imagesOldMsg, et pour chaque itération je vérifie si le contenu de l'index de imagesOldMsg se trouve dans le tableau imagesNewMsg. Si c'est le cas, l'image n'a pas été supprimée. Si elle n'est pas présente, on peux supprimer cette image du serveur.
+
+        foreach ($imagesOldMsg as $image) {
+            if (!in_array($image, $imagesNewMsg, true) && file_exists($image)) {
+                unlink($image);
+            }
+        }
+    }
 
     public function viewEdit($messageID)
     {
-        /**
-         * Quand je clique sur le bouton éditer, c'est un lien, ., Je suis redirifer vers une méthode avec en paramètre get un message ID
-         * Je va
-         */
-
-
         $infoMessage = $this->messagesModel->getInfoMessage($messageID);
         // dump($infoMessage);
         if (Securite::isConnected() && $infoMessage->messageUserID === $_SESSION['profil']['userID']) {

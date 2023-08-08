@@ -27,6 +27,7 @@
             <!-- inputMessage : là ou va être injecté le contenur de Quill -->
             <input name="inputMessage" class="inputMessage" type="hidden" value="<?= htmlspecialchars($infoMessage->messageText); ?>">
             <input name="messageID" class="messageID" type="hidden" value="<?= $infoMessage->messageID; ?>">
+            <input name="topicID" class="topicID" type="hidden" value="<?= $infoMessage->topicID; ?>">
             <input name="tokenCSRF" class="tokenCSRF" type="hidden" value="<?= $_SESSION['tokenCSRF']; ?>">
             <div class="editor">
             </div>

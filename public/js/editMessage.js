@@ -1,6 +1,7 @@
 
 const formMessage = document.querySelector('.formMessage');
 const inputMessage = document.querySelector('.inputMessage');
+const messageID = document.querySelector('.messageID');
 const alertMessageTopic = document.querySelector('.alertMessageTopic');
 const editor = document.querySelector('.ql-editor');
 
@@ -59,14 +60,16 @@ const quill = new Quill('.editor', {
 });
 /**
  * 
- * Ce script gère la modification de message. Dans la page viewEditMessage.php, le contenu du message à modifier est stocké dans inputMessage (hidden). Pour que le User ai un visuel de son message à modifier, on va incorporer le contenu de inputMessage dans quill.root.innerHTML qui correspond au textArea de Quill
+ * Ce script gère la modification de message. Dans la page viewEditMessage.php, le contenu du message à modifier est stocké dans inputMessage (hidden). Pour que le User ait un visuel de son message à modifier, on va incorporer le contenu de inputMessage dans quill.root.innerHTML qui correspond au textArea de Quill
  */
 quill.root.innerHTML = inputMessage.value;
+
+//contrairement à createMessage, quand il y a une image, pas besoin de créer le message en premier pour obtenir l'id du message (afin de stocker les images dans un dossier portant le nom messageID) (voir createMessage pour plus d'info) 
+//Dans le cas d'un update on à déjà le messageID placé dans un input. On va le récupérer et le renvoyer en GET, c'est comme ça que la méthode UploadImage sur le serveur est paramètré. Au final, 1 seule requête est nécéssaire
 
 //Ecouteur Formulaire
 formMessage.addEventListener('submit', async (e) => {
     e.preventDefault();
-
 
     try {
 
@@ -103,10 +106,11 @@ formMessage.addEventListener('submit', async (e) => {
         //si type et poids ok, le code continu ...
         //tout le contenu de l'editeur Quill est enregistré dans le champs "inputMessage"
 
+
         for (const image of images) {
             const imageBase64 = image.src;
             //*la fonction uploadImage renvoi l'adresse de l'image stocker sur le serveur.
-            const imageUrl = await uploadImage(imageBase64);
+            const imageUrl = await uploadImage(imageBase64, messageID.value);
             // * Une fois l'url récupérer, on remplace la représentation en base64 par l'URL de l'image.
             //! ainsi le contenu de l'editeur qui sera envoyer en base de données ne va pas contenir le text + image base64 mais bien le text + les urls d'images
             image.src = imageUrl;
@@ -115,7 +119,7 @@ formMessage.addEventListener('submit', async (e) => {
         inputMessage.value = doc.body.innerHTML;
 
         const formData = new FormData(formMessage);
-        const response = await fetch('?controller=message&action=edit', {
+        const response = await fetch(`index.php?controller=message&action=update&messageID=${messageID.value}`, {
             method: 'POST',
             body: formData
         });
@@ -152,7 +156,7 @@ formMessage.addEventListener('submit', async (e) => {
 
 
 });
-async function uploadImage(imageBase64) {
+async function uploadImage(imageBase64, messageID) {
     // * imageBase64 correspond à l'image en base64.
     // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
     //* Blob contient les données binaires brutes de l’image
@@ -169,7 +173,7 @@ async function uploadImage(imageBase64) {
 
     // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
     // try {
-    const response = await fetch('index.php?controller=message&action=uploadImage', {
+    const response = await fetch(`index.php?controller=message&action=uploadImage&messageID=${messageID}`, {
         method: 'POST',
         body: formData,
     });

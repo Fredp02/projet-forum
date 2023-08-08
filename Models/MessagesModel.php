@@ -81,7 +81,7 @@ class MessagesModel extends DbConnect
     public function getInfoMessage($messageID)
     {
 
-        $req = "SELECT messages.messageID as messageID, messages.messageText AS messageText, messages.userID AS messageUserID, messages.topicID AS messageTopicID, topics.topicTitle, categorys.*, parent.categoryID AS parentID, parent.categoryName AS parentName 
+        $req = "SELECT messages.messageID as messageID, messages.messageText AS messageText, messages.userID AS messageUserID, messages.topicID AS messageTopicID, topics.topicTitle, topics.topicID, categorys.*, parent.categoryID AS parentID, parent.categoryName AS parentName 
         FROM messages 
         JOIN topics ON messages.topicID = topics.topicID 
         JOIN categorys ON topics.categoryID = categorys.categoryID 
