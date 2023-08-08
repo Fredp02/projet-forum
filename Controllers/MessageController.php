@@ -232,7 +232,6 @@ class MessageController extends MainController
                             ) {
                                 $data = [
                                     'reponseTopic' => $cleanHTML,
-                                    'action' => 'edit',
                                     'topicID' => $topicID,
                                     'dataUser' => $_SESSION['profil'],
                                 ];
@@ -299,7 +298,7 @@ class MessageController extends MainController
                 "pageTitle" => "Modifier son message | Guitare-forum",
                 "view" => "../Views/messages/viewEditMessage.php",
                 "css" => "./style/createTopicStyle.css",
-                "script" => "./js/editMessage.js",
+                "script" => "./js/updateMessage.js",
                 "template" => "../Views/common/template.php",
                 //editor quill
                 "quillSnowCSS" => "//cdn.quilljs.com/1.3.6/quill.snow.css",

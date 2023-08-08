@@ -12,33 +12,9 @@ inputTitleCreateTopic.addEventListener("keyup", () => {
     alertCreateTopic.style.display = "none";
 });
 
-const toolbarOptions = {
-    container: [
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote'],
-        [{ 'header': 1 }, { 'header': 2 }],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'color': [] }, { 'background': [] }],
-        ['clean'],
-        ['emoji'],
-        ['link', 'image']
-    ],
-    handlers: {
-        'emoji': function () { }
-    }
-}
 
-const quill = new Quill('.editor', {
-    modules: {
-        "toolbar": toolbarOptions,
-        "emoji-toolbar": true,
-        "emoji-shortname": true,
-        "emoji-textarea": false
-    },
-    placeholder: 'Compose an epic...',
-    theme: 'snow',
-});
+
+import { quill } from './common/initQuill.js';
 
 
 formCreateTopic.addEventListener('submit', async (e) => {

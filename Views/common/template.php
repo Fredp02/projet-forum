@@ -22,7 +22,7 @@ use Controllers\Services\Securite; ?>
     <script src="<?= $quillJS ?? ''; ?>" defer></script>
     <script src="<?= $quillImageJS ?? ''; ?>" defer></script>
     <script src="<?= $quillEmojiJS ?? ''; ?>" defer></script>
-    <script src="<?= $script ?? ''; ?>" defer></script>
+    <script type="module" src="<?= $script ?? ''; ?>" defer></script>
     <title><?= htmlspecialchars($pageTitle); ?></title>
 </head>
 
