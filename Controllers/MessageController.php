@@ -91,7 +91,7 @@ class MessageController extends MainController
                     exit;
                 }
             } else {
-                Toolbox::dataJson(false, "Erreur d'upload d'image");
+                Toolbox::dataJson(false, "Erreur d'upload d'image", $_POST);
                 exit;
             }
         } else {
@@ -233,14 +233,28 @@ class MessageController extends MainController
                                 $data = [
                                     'reponseTopic' => $cleanHTML,
                                     'topicID' => $topicID,
+                                    'messageID' => $messageID,
+                                    'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
                                     'dataUser' => $_SESSION['profil'],
                                 ];
-                                Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
+                                /**
+                                 * Pas de message en session dans le cas d'une création car l'ajout se fait en ajax sans redirection. Le message s'affichera via JS dans le DOM 
+                                 */
+                                if (isset($_POST['action'])) {
+                                    switch ($_POST['action']) {
+                                        case 'createTopic':
+                                            Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
+                                            break;
+                                        case 'updateMessage':
+                                            Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
+                                            break;
+                                    }
+                                }
                                 //et on envoie la réponse en json
                                 Toolbox::dataJson(true, "données reçues, ok !", $data);
                                 exit;
                             } else {
-                                Toolbox::dataJson(false, "Une erreur s'est produite !!!");
+                                Toolbox::dataJson(false, "Une erreur s'est produite !");
                                 exit;
                             }
                         } else {
