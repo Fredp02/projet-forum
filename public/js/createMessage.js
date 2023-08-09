@@ -9,7 +9,7 @@
  */
 
 
-const preview = document.querySelector('.preview');
+
 const formMessage = document.querySelector('.formMessage');
 const inputMessage = document.querySelector('.inputMessage');
 const alertMessageTopic = document.querySelector('.alertMessageTopic');
@@ -22,7 +22,9 @@ import {
     verifImageBase64,
     addMessageWithTempContent,
     convertImageBase64,
-    updateMessage
+    updateMessage,
+    addMessage,
+    listenerContentQuill
 } from './common/functions.js';
 
 
@@ -64,84 +66,29 @@ formMessage.addEventListener('submit', async (e) => {
         const doc = parser.parseFromString(inputMessage.value, 'text/html');
         const images = doc.querySelectorAll('img[src^="data:image/"]');
 
-        //si il y a des images on procede au vérification d'usage et à l'enregistrement du message avec contenu temporaire pour obtenir son ID
+        //si il y a des images 
         let resultat;
         if (images.length > 0) {
-            //on boucle sur toutes les images pour s'assurer que le message du User ne comporte pas d'image supérieur à 300ko et que le type mime correspond aux contenu du tableau de type autorisé
-
-            //Vérif du type MIME
-            // const TypeMimeAuthorized = [
-            //     "image/jpg",
-            //     "image/jpeg",
-            //     "image/gif",
-            //     "image/png"
-            // ];
+            //on procede à la vérification des images        
             verifImageBase64(images);
-            // for (const image of images) {
-            //     const imageBase64 = image.src;
-            //     const blob = await fetch(imageBase64).then(res => res.blob());
-            //     if (blob.size > 307200) {
-            //         throw new Error(`Le poids de l'image doit être inférieure à 300ko !`);
-            //     }
-            //     if (!typeMimeAuthorized.includes(blob.type)) {
-            //         throw new Error(`Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg) !`);
-            //     }
-            // }
+
             //si type et poids ok, le code continu : 
-            //! on créé un message avec contenu temporaire POUR obtenir son ID: 
-            const messageID = await addMessageWithTempContent(inputMessage, formMessage)
-            // inputMessage.value = 'Contenu temporaire';
-
-            // let formData = new FormData(formMessage);
-            // let response = await fetch('?controller=message&action=create', {
-            //     method: 'POST',
-            //     body: formData
-            // });
-            // if (!response.ok) throw new Error(`Une erreur est survenue: ${response.status}`);
-
-            // resultat = await response.json();
-
-            // if (!resultat.boolean) throw new Error(resultat.message);
-
-            // //!ID
-            // const messageID = resultat.data.messageID;
+            //on créé un message avec contenu temporaire POUR obtenir son ID: 
+            const messageID = await addMessageWithTempContent(inputMessage, formMessage);
 
             //on boucle pour enregistrer les images sur le serveur
-
             for (const image of images) {
-                image.src = await convertImageBase64(image, messageID, topicID.value)
+                image.src = await convertImageBase64(image, messageID, topicID.value);
             }
-
-
             //on incorpore le nouveau contenu dans l'input
             inputMessage.value = doc.body.innerHTML;
 
-            //! J EN SUIS LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-            //et on enregistre le message
-            resultat = await updateMessage(formMessage, messageID)
-            // const formData = new FormData(formMessage);
-            // const response = await fetch(`?controller=message&action=update&messageID=${messageID}`, {
-            //     method: 'POST',
-            //     body: formData
-            // });
+            //et on met à jour le message
+            resultat = await updateMessage(formMessage, messageID);
 
-            // if (!response.ok) throw new Error(`Une erreur est survenue: ${response.status}`);
-
-            // resultat = await response.json();
-            // //si le boolen est à false
-            // if (!resultat.boolean) throw new Error(resultat.message);
 
         } else {
-            const formData = new FormData(formMessage);
-            const response = await fetch('?controller=message&action=create', {
-                method: 'POST',
-                body: formData
-            });
-            if (!response.ok) throw new Error(`Une erreur est survenue: ${response.status}`);
-
-            resultat = await response.json();
-
-            if (!resultat.boolean) throw new Error(resultat.message);
+            resultat = await addMessage(formMessage);
         }
 
         updateDOM(resultat);
@@ -169,66 +116,14 @@ formMessage.addEventListener('submit', async (e) => {
 
 
 });
-// async function uploadImage(imageBase64, messageID) {
-//     // * imageBase64 correspond à l'image en base64.
-//     // * la ligne ci dessous converti la représentation en base64 de l’image en un objet Blob.
-//     //* Blob contient les données binaires brutes de l’image
-//     const blob = await fetch(imageBase64).then(res => res.blob());
 
-//     if (blob.size > 307200) {
-//         throw new Error(`Le poids de l'image doit être inférieure à 300ko`);
-//     }
-//     const topicID = document.querySelector('.topicID').value;
-//     // *créer un objet FormData pour envoyer les données de l'image au serveur via la constante "blob"
-//     const formData = new FormData();
-//     formData.append('image', blob);
-//     formData.append('topicID', topicID);
-
-//     // * envoi d'une requête POST au serveur avec les données de l'image. Ce dernier l'interpretera avec un $_file
-//     // try {
-//     const response = await fetch(`index.php?controller=message&action=uploadImage&messageID=${messageID}`, {
-//         method: 'POST',
-//         body: formData,
-//     });
-
-//     // vérifier si la requête a réussi
-//     if (!response.ok) {
-//         throw new Error(`Une erreur est survenue lors du téléchargement de l'image: ${response.status}`);
-//     }
-
-//     //si la communication c'est bien déroulée , on traite les donnée json
-//     const resultat = await response.json();
-
-//     if (!resultat.boolean) {
-//         // dataTypeError = resultat.data;
-//         throw new Error(resultat.message);
-//     }
-
-//     return resultat.data.url
-
-
-
-// }
-
-/**
- * !écouteur sur quill pour supprimer les éventuels message d'alerte
- * 
- * !On ne peux pas utiliser addEventListener directement avec l’éditeur Quill. L’éditeur Quill est une instance d’un objet JavaScript qui fournit sa propre API pour gérer les événements. Pour ajouter un écouteur d’événement à l’éditeur Quill, on doit utiliser la méthode "on" de l’éditeur Quill,
- */
 
 // Ajouter un écouteur d'événement pour l'événement "text-change" de l'éditeur Quill
-quill.on('text-change', () => {
-    // Vérifier si du texte a été entré dans l'éditeur
-    if (quill.getText()) {
-        //supprime les éventuels messages d'alerte
-        alertMessageTopic.textContent = "";
-        alertMessageTopic.style.display = "none";
-    }
-});
+listenerContentQuill(quill, alertMessageTopic);
 
 
 /**
- * La fonction listenerQuote() devra être réutilisée dans la fonction updateDOM lorsqu'un nouveau message est crée par l'utilisateur. Ainsi, lorsqu'il créer un nouveau message, le user n'est pas obligé de recharger la page pour modifier son "citer" son message s'il le souhaite.
+ * La fonction listenerQuote() devra être réutilisée dans la fonction updateDOM lorsqu'un nouveau message est crée par l'utilisateur. Ainsi, lorsqu'il créer un nouveau message, le user n'est pas obligé de recharger la page pour son "citer" son message s'il le souhaite.
  */
 allBtnsQuote.forEach(btnQuote => {
     btnQuote.addEventListener('click', () => listenerQuote(btnQuote));
@@ -247,11 +142,7 @@ function listenerQuote(btnQuote) {
     // //*Cette ligne utilise la méthode dangerouslyPasteHTML de l’objet clipboard de Quill pour insérer du contenu HTML dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le contenu HTML doit être inséré. Dans ce cas, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le contenu HTML sera inséré à la fin du contenu existant. Le deuxième argument, insertDatas, est le contenu HTML à insérer.
     quill.clipboard.dangerouslyPasteHTML(quill.getLength(), insertDatas);
 
-    // // Convertir le contenu HTML en un objet Delta
-    // const delta = quill.clipboard.convert(insertDatas);
 
-    // // Insérer le contenu dans l'éditeur QUILL
-    // quill.setContents(delta, 'silent');
 
     //*Cette ligne utilise la méthode insertText pour insérer un caractère de saut de ligne (\n) dans l’éditeur Quill. Le premier argument, quill.getLength(), spécifie l’index où le caractère de saut de ligne doit être inséré. Comme pour la ligne précédente, nous utilisons la méthode getLength pour obtenir la longueur actuelle du contenu de l’éditeur, ce qui signifie que le caractère de saut de ligne sera inséré à la fin du contenu existant. Le deuxième argument, '\n', est le caractère de saut de ligne à insérer.
     quill.insertText(quill.getLength(), '\n');
@@ -306,7 +197,6 @@ function updateDOM(resultat) {
 
     messageList.append(lastMessage);
     quill.root.innerHTML = "";
-
 
 
 }
