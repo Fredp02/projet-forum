@@ -8,6 +8,7 @@ use Models\UsersModel;
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
+use Controllers\Traits\VerifPostTrait;
 // use Entities\Messages;
 
 // include '../Controllers\Services\JWTService\configJWT.php';
@@ -16,7 +17,7 @@ use Controllers\Services\Securite;
 class LoginController extends MainController
 {
 
-
+    use VerifPostTrait;
     private $usersModel;
     private $message; //getter-setter de l'entité messages
     private $messageModel;
@@ -50,80 +51,59 @@ class LoginController extends MainController
     }
     public function validationlogin()
     {
+        if ($this->VerifPostTrait()) {
+            if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
+                $pseudo = htmlspecialchars($_POST['pseudo']);
+                $password = htmlspecialchars($_POST['password']);
 
-        if (!Securite::isConnected()) {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
+                //j'ai placé un input hidden qui contient l'url précédent. 
+                $previousURL = filter_var($_POST['previousURL'] ?? "index.php", FILTER_SANITIZE_URL);
+                $userPassBDD = $this->usersModel->getUserByPseudo($pseudo)->password;
 
-                    if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
-                        $pseudo = htmlspecialchars($_POST['pseudo']);
-                        $password = htmlspecialchars($_POST['password']);
+                if (Securite::verifPassword($password, $userPassBDD)) {
 
-                        //j'ai placé un input hidden qui contient l'url précédent. 
-                        $previousURL = filter_var($_POST['previousURL'] ?? "index.php", FILTER_SANITIZE_URL);
-                        $userPassBDD = $this->usersModel->getUserByPseudo($pseudo)->password;
+                    $user = $this->usersModel->getUserinfo($pseudo);
 
-                        if (Securite::verifPassword($password, $userPassBDD)) {
+                    // Toolbox::dataJson(false, 'hahahhala',  $user);
+                    // die;
+                    if ($user->isValid) {
 
+                        //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur ????, avec des sessions qui pourrait contenir trop d'info ???. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
+                        $filepathAvatar = $user->userID . '/' . $user->avatar;
+                        $_SESSION['profil'] = [
+                            'userID' => $user->userID,
+                            'pseudo' => $user->pseudo,
+                            'filepathAvatar' => $filepathAvatar,
+                            'userGuitare' => $user->guitare,
+                            'messagesCount' => $user->messagesCount,
+                        ];
 
-                            $user = $this->usersModel->getUserinfo($pseudo);
-
-                            // Toolbox::dataJson(false, 'hahahhala',  $user);
-                            // die;
-                            if ($user->isValid) {
-
-                                //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur ????, avec des sessions qui pourrait contenir trop d'info ???. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
-                                $filepathAvatar = $user->userID . '/' . $user->avatar;
-                                $_SESSION['profil'] = [
-                                    'userID' => $user->userID,
-                                    'pseudo' => $user->pseudo,
-                                    'filepathAvatar' => $filepathAvatar,
-                                    'userGuitare' => $user->guitare,
-                                    'messagesCount' => $user->messagesCount,
-                                ];
-
-                                Toolbox::dataJson(
-                                    true,
-                                    "Connexion OK",
-                                    $data = [
-                                        'pseudo' => $user->pseudo,
-                                        'filepathAvatar' => $filepathAvatar,
-                                        'id' => $user->userID,
-                                        'previousURL' => $previousURL
-                                    ]
-                                );
-                                exit;
-                            } else {
-                                $userID =  $user->userID;
-                                $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
-                                Toolbox::dataJson(false, $message);
-                                exit;
-                            }
-                        } else {
-                            Toolbox::dataJson(false, "Identifiants incorrects");
-                            exit;
-                        }
+                        Toolbox::dataJson(
+                            true,
+                            "Connexion OK",
+                            $data = [
+                                'pseudo' => $user->pseudo,
+                                'filepathAvatar' => $filepathAvatar,
+                                'id' => $user->userID,
+                                'previousURL' => $previousURL
+                            ]
+                        );
+                        exit;
                     } else {
-                        Toolbox::dataJson(false, "Erreur champs de saisie");
-                        header("Location:index.php");
+                        $userID =  $user->userID;
+                        $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
+                        Toolbox::dataJson(false, $message);
                         exit;
                     }
                 } else {
-                    Toolbox::ajouterMessageAlerte("Erreur token, veuillez recommencer", 'rouge');
-                    unset($_SESSION['profil']);
-                    unset($_SESSION['tokenCSRF']);
-                    Toolbox::dataJson(false, "expired token");
-                    header("Location:index.php");
+                    Toolbox::dataJson(false, "Identifiants incorrects");
                     exit;
                 }
             } else {
-                Toolbox::dataJson(false, "Erreur");
+                Toolbox::dataJson(false, "Erreur champs de saisie");
                 header("Location:index.php");
                 exit;
             }
-        } else {
-            header("Location:index.php");
-            exit;
         }
     }
 }

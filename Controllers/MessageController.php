@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Entities\Topics;
 use Entities\Messages;
 use Models\TopicsModel;
 use Models\MessagesModel;
@@ -9,16 +10,18 @@ use Models\CategorysModel;
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
-use Entities\Topics;
+use Controllers\Traits\VerifPostTrait;
+
 
 class MessageController extends MainController
 {
-
+    use VerifPostTrait;
     private $categorysModel;
     private $topicsModel;
     private $messagesModel;
     private $message;
     private $topic;
+
 
     public function __construct()
     {
@@ -107,80 +110,57 @@ class MessageController extends MainController
      */
     public function create()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                if (Securite::isConnected()) {
-                    if (!empty($_POST['inputMessage']) && !empty($_POST['topicID'])) {
+        if ($this->VerifPostTrait()) {
+            if (!empty($_POST['inputMessage']) && !empty($_POST['topicID'])) {
 
-                        /**
-                         * !on fait la même vérif ici que celle de JS pour les réponses vides :
-                         * Voir explication détaillée dans le cas particulier du fichier createMessage.js
-                         */
+                /**
+                 * !on fait la même vérif ici que celle de JS pour les réponses vides :
+                 * Voir explication détaillée dans le cas particulier du fichier createMessage.js
+                 */
 
-                        $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            if (strpos($match[0], 'img') !== false) {
-                                return $match[0];
-                            } else {
-                                return '';
-                            }
-                        }, $_POST['inputMessage']);
 
-                        if ($contenuDeVerification) {
+                if ($this->verifContent($_POST['inputMessage'])) {
 
-                            $topicID = htmlspecialchars($_POST['topicID']);
-                            //On nettoie l'html
-                            $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
+                    $topicID = htmlspecialchars($_POST['topicID']);
+                    //On nettoie l'html
+                    $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
 
-                            $this->message->setMessageText($cleanHTML);
-                            $this->message->setUserID($_SESSION['profil']['userID']);
-                            $this->message->setTopicID($topicID);
+                    $this->message->setMessageText($cleanHTML);
+                    $this->message->setUserID($_SESSION['profil']['userID']);
+                    $this->message->setTopicID($topicID);
 
-                            //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
-                            if ($this->messagesModel->createMessage($this->message)) {
+                    //je fais appel à mon messageModel pour enregistrer les données en lui injectant "$this->message" qui correspond à l'instance de "new Message()" :
+                    if ($this->messagesModel->createMessage($this->message)) {
 
-                                $messageID = $this->messagesModel->lastInsertId();
-                                $data = [
-                                    'reponseTopic' => $cleanHTML,
-                                    'messageID' => $messageID,
-                                    // la catégorie sert uniquemment pour la redirection du script CreateTopic.js
-                                    'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
-                                    'dataUser' => $_SESSION['profil'],
-                                ];
-                                $_SESSION['profil']['messagesCount']++;
+                        $messageID = $this->messagesModel->lastInsertId();
+                        $data = [
+                            'reponseTopic' => $cleanHTML,
+                            'messageID' => $messageID,
+                            // la catégorie sert uniquemment pour la redirection du script CreateTopic.js
+                            'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
+                            'dataUser' => $_SESSION['profil'],
+                        ];
+                        $_SESSION['profil']['messagesCount']++;
 
-                                //si cette variable est déclarée c'est la création d'un topic.
-                                if (isset($_POST['titleTopic'])) {
-                                    Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
-                                }
-                                //et on envoie la réponse en json
-                                Toolbox::dataJson(true, "données reçues, ok !", $data);
-                                exit;
-                            } else {
-                                Toolbox::dataJson(false, "Une erreur s'est produite");
-                                exit;
-                            }
-                        } else {
-                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
-                            exit;
+                        //si cette variable est déclarée c'est la création d'un topic.
+                        if (isset($_POST['titleTopic'])) {
+                            Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
                         }
+                        //et on envoie la réponse en json
+                        Toolbox::dataJson(true, "données reçues, ok !", $data);
+                        exit;
                     } else {
-                        Toolbox::dataJson(false, "Erreur transmission POST inputMessage");
+                        Toolbox::dataJson(false, "Une erreur s'est produite");
                         exit;
                     }
                 } else {
-                    Toolbox::dataJson(false, "noConnected");
+                    Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
                     exit;
                 }
             } else {
-                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                unset($_SESSION['profil']);
-                unset($_SESSION['tokenCSRF']);
-                Toolbox::dataJson(false, "expired token");
+                Toolbox::dataJson(false, "Erreur transmission POST inputMessage");
                 exit;
             }
-        } else {
-            header("Location:index.php");
-            exit;
         }
     }
     /**
@@ -190,95 +170,72 @@ class MessageController extends MainController
      */
     public function update($messageID)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                if (Securite::isConnected()) {
-                    if (!empty($_POST['inputMessage'])) {
 
+        if ($this->VerifPostTrait()) {
+            if (!empty($_POST['inputMessage'])) {
+
+                /**
+                 * !on fait la même vérif ici que celle de JS pour les réponses vides :
+                 * Voir explication détaillée dans le cas particulier du fichier createMessage.js
+                 */
+
+                if ($this->verifContent($_POST['inputMessage'])) {
+
+                    //!est ce que l'on vérifie l'intégrité de messageID ????
+                    //On nettoie l'html
+                    $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
+
+                    $infoMessage = $this->messagesModel->getInfoMessage($messageID);
+                    $messageInBDD = $infoMessage->messageText;
+                    $topicID = $infoMessage->messageTopicID;
+
+                    //on supprime les éventuelles images que le user à supprimé de son message
+                    $this->deleteImage($messageInBDD, $cleanHTML);
+
+                    $this->message->setMessageText($cleanHTML);
+                    // $this->message->setUserID($_SESSION['profil']['userID']);
+                    $this->message->setMessageID($messageID);
+
+                    //je fais appel à mon messageModel pour EDITER les données:
+                    if (
+                        $infoMessage->messageUserID === $_SESSION['profil']['userID'] &&
+                        $this->messagesModel->editMessage($this->message)
+                    ) {
+                        $data = [
+                            'reponseTopic' => $cleanHTML,
+                            'topicID' => $topicID,
+                            'messageID' => $messageID,
+                            'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
+                            'dataUser' => $_SESSION['profil'],
+                        ];
                         /**
-                         * !on fait la même vérif ici que celle de JS pour les réponses vides :
-                         * Voir explication détaillée dans le cas particulier du fichier createMessage.js
+                         * Pas de message en session dans le cas d'une création car l'ajout se fait en ajax sans redirection. Le message s'affichera via JS dans le DOM 
                          */
-
-                        $contenuDeVerification = preg_replace_callback('/<[^>]*>/', function ($match) {
-                            if (strpos($match[0], 'img') !== false) {
-                                return $match[0];
-                            } else {
-                                return '';
+                        if (isset($_POST['action'])) {
+                            switch ($_POST['action']) {
+                                case 'createTopic':
+                                    Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
+                                    break;
+                                case 'updateMessage':
+                                    Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
+                                    break;
                             }
-                        }, $_POST['inputMessage']);
-
-                        if ($contenuDeVerification) {
-
-                            //!est ce que l'on vérifie l'intégrité de messageID ????
-                            //On nettoie l'html
-                            $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
-
-                            $infoMessage = $this->messagesModel->getInfoMessage($messageID);
-                            $messageInBDD = $infoMessage->messageText;
-                            $topicID = $infoMessage->messageTopicID;
-
-                            //on supprime les éventuelles images que le user à supprimé de son message
-                            $this->deleteImage($messageInBDD, $cleanHTML);
-
-                            $this->message->setMessageText($cleanHTML);
-                            // $this->message->setUserID($_SESSION['profil']['userID']);
-                            $this->message->setMessageID($messageID);
-
-                            //je fais appel à mon messageModel pour EDITER les données:
-                            if (
-                                $infoMessage->messageUserID === $_SESSION['profil']['userID'] &&
-                                $this->messagesModel->editMessage($this->message)
-                            ) {
-                                $data = [
-                                    'reponseTopic' => $cleanHTML,
-                                    'topicID' => $topicID,
-                                    'messageID' => $messageID,
-                                    'categoryID' => isset($_POST['categoryID']) ? htmlspecialchars($_POST['categoryID']) : "",
-                                    'dataUser' => $_SESSION['profil'],
-                                ];
-                                /**
-                                 * Pas de message en session dans le cas d'une création car l'ajout se fait en ajax sans redirection. Le message s'affichera via JS dans le DOM 
-                                 */
-                                if (isset($_POST['action'])) {
-                                    switch ($_POST['action']) {
-                                        case 'createTopic':
-                                            Toolbox::ajouterMessageAlerte('Topic créé avec succès', 'vert');
-                                            break;
-                                        case 'updateMessage':
-                                            Toolbox::ajouterMessageAlerte('Message modifié avec succès', 'vert');
-                                            break;
-                                    }
-                                }
-                                //et on envoie la réponse en json
-                                Toolbox::dataJson(true, "données reçues, ok !", $data);
-                                exit;
-                            } else {
-                                Toolbox::dataJson(false, "Une erreur s'est produite !");
-                                exit;
-                            }
-                        } else {
-                            Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
-                            exit;
                         }
+                        //et on envoie la réponse en json
+                        Toolbox::dataJson(true, "données reçues, ok !", $data);
+                        exit;
                     } else {
-                        Toolbox::dataJson(false, "PHP : Erreur transmission POST inputMessage");
+                        Toolbox::dataJson(false, "Une erreur s'est produite !");
                         exit;
                     }
                 } else {
-                    Toolbox::dataJson(false, "noConnected");
+                    Toolbox::dataJson(false, "PHP : Veuillez entrer du contenu avant de poster votre réponse", $_POST['inputMessage']);
                     exit;
                 }
             } else {
-                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                unset($_SESSION['profil']);
-                unset($_SESSION['tokenCSRF']);
-                Toolbox::dataJson(false, "expired token");
+                Toolbox::dataJson(false, "PHP : Erreur transmission POST inputMessage");
                 exit;
             }
-        } else {
-            header("Location:index.php");
-            exit;
         }
     }
 
@@ -300,6 +257,17 @@ class MessageController extends MainController
                 unlink($image);
             }
         }
+    }
+
+    private function verifContent($content)
+    {
+        return preg_replace_callback('/<[^>]*>/', function ($match) {
+            if (strpos($match[0], 'img') !== false) {
+                return $match[0];
+            } else {
+                return '';
+            }
+        }, $content);
     }
 
     public function viewEdit($messageID)

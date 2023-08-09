@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Entities\Topics;
 use Entities\Messages;
 use Models\TopicsModel;
 use Models\MessagesModel;
@@ -9,7 +10,7 @@ use Models\CategorysModel;
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
-use Entities\Topics;
+use Controllers\Traits\VerifPostTrait;
 
 class TopicsController extends MainController
 {
@@ -19,6 +20,7 @@ class TopicsController extends MainController
     private $messagesModel;
     private $message;
     private $topic;
+    use VerifPostTrait;
 
     public function __construct()
     {
@@ -162,48 +164,38 @@ class TopicsController extends MainController
      */
     public function createTitleTopic()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::isConnected()) {
-            if (!empty($_POST['tokenCSRF']) && hash_equals($_SESSION['tokenCSRF'], $_POST['tokenCSRF'])) {
-                if (!empty($_POST['titleTopic'])) {
-                    $categoryID = htmlspecialchars($_POST['categoryID']);
-                    //ajouter un appel de requete pour savoir si on a un retour d'une catégorie qui à un parent différent de null, sinon on va créer un topic sur une catégorie "parente" générale.
-                    //OU BIEN vérifier que le champ "parent" soit différent de null directement depuis l'appel de  getInfoCategory
-                    if ($this->categorysModel->getInfoCategory($categoryID)) {
-                        //si la catgéorie existe, je créer le titre du topic
 
-                        $this->topic->setTopicTitle(Securite::htmlPurifier($_POST['titleTopic']));
-                        $this->topic->setTopicCategoryID($categoryID);
-                        $this->topic->setTopicUserID($_SESSION['profil']['userID']);
+        if ($this->VerifPostTrait()) {
+            if (!empty($_POST['titleTopic'])) {
+                $categoryID = htmlspecialchars($_POST['categoryID']);
+                //ajouter un appel de requete pour savoir si on a un retour d'une catégorie qui à un parent différent de null, sinon on va créer un topic sur une catégorie "parente" générale.
+                //OU BIEN vérifier que le champ "parent" soit différent de null directement depuis l'appel de  getInfoCategory
+                if ($this->categorysModel->getInfoCategory($categoryID)) {
+                    //si la catgéorie existe, je créer le titre du topic
 
-                        //si réponse du model ok
-                        if ($this->topicsModel->createTopic($this->topic)) {
-                            $topicID = $this->topicsModel->lastInsertId();
-                            Toolbox::dataJson(true, "createTopic ok", [
-                                'topicID' => $topicID,
-                            ]);
-                            exit;
-                        } else {
-                            Toolbox::dataJson(false, "erreur survenue lors de la création du topic");
-                            exit;
-                        }
+                    $this->topic->setTopicTitle(Securite::htmlPurifier($_POST['titleTopic']));
+                    $this->topic->setTopicCategoryID($categoryID);
+                    $this->topic->setTopicUserID($_SESSION['profil']['userID']);
+
+                    //si réponse du model ok
+                    if ($this->topicsModel->createTopic($this->topic)) {
+                        $topicID = $this->topicsModel->lastInsertId();
+                        Toolbox::dataJson(true, "createTopic ok", [
+                            'topicID' => $topicID,
+                        ]);
+                        exit;
                     } else {
-                        Toolbox::dataJson(false, "Catégorie introuvable");
+                        Toolbox::dataJson(false, "erreur survenue lors de la création du topic");
                         exit;
                     }
                 } else {
-                    Toolbox::dataJson(false, "Erreur : données manquantes");
+                    Toolbox::dataJson(false, "Catégorie introuvable");
                     exit;
                 }
             } else {
-                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                unset($_SESSION['profil']);
-                unset($_SESSION['tokenCSRF']);
-                Toolbox::dataJson(false, "expired token");
+                Toolbox::dataJson(false, "Erreur : données manquantes");
                 exit;
             }
-        } else {
-            Toolbox::dataJson(false, "no-connected");
-            exit;
         }
     }
 }

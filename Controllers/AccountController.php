@@ -2,18 +2,20 @@
 
 namespace Controllers;
 
-use Controllers\Services\JWTService\JWTService;
-use Controllers\Services\Securite;
-use Controllers\Services\Toolbox;
-use Entities\Users;
-use Models\TopicsModel;
-use Models\UsersModel;
 use SplFileInfo;
+use Entities\Users;
+use Models\UsersModel;
+use Models\TopicsModel;
+use Controllers\Services\Toolbox;
+use Controllers\Services\Securite;
+use Controllers\Traits\VerifPostTrait;
+use Controllers\Services\JWTService\JWTService;
 
 include 'Services\JWTService\configJWT.php';
 
 class AccountController extends MainController
 {
+    use VerifPostTrait;
     private $usersModel;
 
     public function __construct()
@@ -68,123 +70,110 @@ class AccountController extends MainController
     }
     public function editAvatar()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (Securite::verifCSRF()) {
-                if (isset($_FILES['avatarPhoto']) && $_FILES['avatarPhoto']['error'] == 0) {
-                    $dataPhoto = $_FILES['avatarPhoto'];
-                    //je crée un tableau avec les types mime autorisés
-                    $typeMime = [
-                        "jpg" => "image/jpg",
-                        "jpeg" => "image/jpeg",
-                        "gif" => "image/gif",
-                        "png" => "image/png",
-                    ];
 
-                    //on récupère les info de la photo
-                    $infoFichier = new SplFileInfo($dataPhoto['name']);
-                    //récupération de l'extension du fichier (en minuscule).
-                    $extension = strtolower($infoFichier->getExtension());
+        if ($this->VerifPostTrait()) {
+            if (isset($_FILES['avatarPhoto']) && $_FILES['avatarPhoto']['error'] == 0) {
+                $dataPhoto = $_FILES['avatarPhoto'];
+                //je crée un tableau avec les types mime autorisés
+                $typeMime = [
+                    "jpg" => "image/jpg",
+                    "jpeg" => "image/jpeg",
+                    "gif" => "image/gif",
+                    "png" => "image/png",
+                ];
 
-                    $regexExtention = '/^.*\.(jpeg|jpg|gif|png)$/i'; //le "i" c'est insensible à la casse
+                //on récupère les info de la photo
+                $infoFichier = new SplFileInfo($dataPhoto['name']);
+                //récupération de l'extension du fichier (en minuscule).
+                $extension = strtolower($infoFichier->getExtension());
 
-                    //on verifie le type mime du fichier
-                    if (!in_array($dataPhoto['type'], $typeMime)) {
-                        Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
-                        header("Location: " . URL . "account/profil");
-                        exit;
-                    }
-                    //on ajoute une couche de sécurité, peut-être inutile
-                    if (!preg_match($regexExtention, $dataPhoto['name'])) {
-                        Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
-                        header("Location: " . URL . "account/profil");
-                        exit;
-                    }
+                $regexExtention = '/^.*\.(jpeg|jpg|gif|png)$/i'; //le "i" c'est insensible à la casse
 
-                    //on vérifie sa taille
-                    if ($dataPhoto['size'] > 153600) {
-                        Toolbox::ajouterMessageAlerte("Le poids de l'image doit être inférieure à 150ko", 'rouge');
-                        header("Location: " . URL . "account/profil");
-                        exit;
-                    }
-                    $infoSize = getimagesize($dataPhoto['tmp_name']);
+                //on verifie le type mime du fichier
+                if (!in_array($dataPhoto['type'], $typeMime)) {
+                    Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
+                    header("Location: " . URL . "account/profil");
+                    exit;
+                }
+                //on ajoute une couche de sécurité, peut-être inutile
+                if (!preg_match($regexExtention, $dataPhoto['name'])) {
+                    Toolbox::ajouterMessageAlerte("Le fichier n'est pas une image valide. Extensions autorisées : png, gif ou jpeg(jpg)", 'rouge');
+                    header("Location: " . URL . "account/profil");
+                    exit;
+                }
 
-                    //et on vérifie ses dimensions
-                    if ($infoSize[0] > 200 || $infoSize[1] > 200) {
-                        Toolbox::ajouterMessageAlerte("Le fichier doit avoir une largeur et une hauteur maximale de 200 pixels", 'rouge');
-                        header("Location: " . URL . "account/profil");
-                        exit;
-                    }
+                //on vérifie sa taille
+                if ($dataPhoto['size'] > 153600) {
+                    Toolbox::ajouterMessageAlerte("Le poids de l'image doit être inférieure à 150ko", 'rouge');
+                    header("Location: " . URL . "account/profil");
+                    exit;
+                }
+                $infoSize = getimagesize($dataPhoto['tmp_name']);
 
-                    //si l'image respecte les conditions ...
-                    $userData = $this->usersModel->getUserById($_SESSION['profil']['userID']);
+                //et on vérifie ses dimensions
+                if ($infoSize[0] > 200 || $infoSize[1] > 200) {
+                    Toolbox::ajouterMessageAlerte("Le fichier doit avoir une largeur et une hauteur maximale de 200 pixels", 'rouge');
+                    header("Location: " . URL . "account/profil");
+                    exit;
+                }
 
-                    $userId = $userData->userID;
-                    $ancienAvatar = $userData->avatar;
-                    // On initialise le chemin du dossier dans lequel la photo sera enregistrée
-                    $filePath = 'images/profils/' . $userId;
+                //si l'image respecte les conditions ...
+                $userData = $this->usersModel->getUserById($_SESSION['profil']['userID']);
 
-                    //on va renommer la photo avec un identifiant unique.
-                    //2 paramètres avec uniqid : un préfix (ici ce sera $userId), et un booleen à true pour qu'il génère d'autre chiffres après afin de maximiser l'unicité du renommage. et on rajoute l'extension
-                    $nouvelAvatar = uniqid($userId, true) . '.' . $extension;
+                $userId = $userData->userID;
+                $ancienAvatar = $userData->avatar;
+                // On initialise le chemin du dossier dans lequel la photo sera enregistrée
+                $filePath = 'images/profils/' . $userId;
 
-                    //on instancie l'objet user
-                    // $user = new Users($userData->pseudo, $userData->userDate, $userId);
-                    $user = new Users();
+                //on va renommer la photo avec un identifiant unique.
+                //2 paramètres avec uniqid : un préfix (ici ce sera $userId), et un booleen à true pour qu'il génère d'autre chiffres après afin de maximiser l'unicité du renommage. et on rajoute l'extension
+                $nouvelAvatar = uniqid($userId, true) . '.' . $extension;
 
-                    //on lui attribue le nom du nouvel avatar
-                    $user->setUserId($userId);
-                    $user->setAvatar($nouvelAvatar);
+                //on instancie l'objet user
+                // $user = new Users($userData->pseudo, $userData->userDate, $userId);
+                $user = new Users();
 
-                    //on déplace l'image des "temporaire" dans le dossier du user
-                    $moveAvatar = move_uploaded_file($dataPhoto['tmp_name'], $filePath . '/' . $nouvelAvatar);
+                //on lui attribue le nom du nouvel avatar
+                $user->setUserId($userId);
+                $user->setAvatar($nouvelAvatar);
 
-                    //si déplacement du nouvel avatar ok
-                    if ($moveAvatar) {
+                //on déplace l'image des "temporaire" dans le dossier du user
+                $moveAvatar = move_uploaded_file($dataPhoto['tmp_name'], $filePath . '/' . $nouvelAvatar);
 
-                        //si enregistrement en bdd du nouvel avatar ok
-                        if ($this->usersModel->modifAvatarProfil($user)) {
-                            //on supprime l'ancien avatar
-                            unlink($filePath . DIRECTORY_SEPARATOR . $ancienAvatar);
-                            //on met à jour la session avec le nouvel avatar
-                            $_SESSION['profil']['filepathAvatar'] = $userId . '/' . $nouvelAvatar;
-                        } else {
-                            Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
-                            exit;
-                        }
+                //si déplacement du nouvel avatar ok
+                if ($moveAvatar) {
 
-                        //si déplacement du nouvel avatar échoué :
+                    //si enregistrement en bdd du nouvel avatar ok
+                    if ($this->usersModel->modifAvatarProfil($user)) {
+                        //on supprime l'ancien avatar
+                        unlink($filePath . DIRECTORY_SEPARATOR . $ancienAvatar);
+                        //on met à jour la session avec le nouvel avatar
+                        $_SESSION['profil']['filepathAvatar'] = $userId . '/' . $nouvelAvatar;
                     } else {
                         Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
                         exit;
                     }
 
-                    // Si aucun "exit" précédent
-
-                    //on créé les données que JS va récupérer
-                    $data = [
-                        'filepathAvatar' => $_SESSION['profil']['filepathAvatar'],
-                    ];
-                    //et on envoie la réponse en json
-                    Toolbox::dataJson(true, "Avatar ok", $data);
-                    exit;
+                    //si déplacement du nouvel avatar échoué :
                 } else {
-                    $message = "Une erreur est survenue...";
-                    Toolbox::dataJson(false, $message);
+                    Toolbox::dataJson(false, "Problème rencontré lors de l'enregistrement de l'image");
                     exit;
                 }
+
+                // Si aucun "exit" précédent
+
+                //on créé les données que JS va récupérer
+                $data = [
+                    'filepathAvatar' => $_SESSION['profil']['filepathAvatar'],
+                ];
+                //et on envoie la réponse en json
+                Toolbox::dataJson(true, "Avatar ok", $data);
+                exit;
             } else {
-                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                /**
-                 * ! Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
-                 */
-                unset($_SESSION['profil']);
-                unset($_SESSION['tokenCSRF']);
-                Toolbox::dataJson(false, "expired token");
+                $message = "Une erreur est survenue...";
+                Toolbox::dataJson(false, $message);
                 exit;
             }
-        } else {
-            header("Location: " . URL . "home");
-            exit;
         }
     }
     public function editEmail($tokenJWT = null)
@@ -253,8 +242,7 @@ class AccountController extends MainController
     }
     public function editPassword()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::verifCSRF()) {
-
+        if ($this->VerifPostTrait()) {
             if (!empty($_POST['ancienPassword']) && !empty($_POST['nouveauPassword']) && !empty($_POST['confirmPassword'])) {
                 $ancienPassword = htmlspecialchars($_POST['ancienPassword']);
                 $nouveauPassword = htmlspecialchars($_POST['nouveauPassword']);
@@ -294,19 +282,13 @@ class AccountController extends MainController
                 Toolbox::dataJson(false, "Erreur : données vides");
                 exit;
             }
-        } else {
-            Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-            unset($_SESSION['profil']);
-            unset($_SESSION['tokenCSRF']);
-            Toolbox::dataJson(false, "expired token");
-            exit;
         }
     }
 
     //section a propos
     public function editAbout()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && Securite::verifCSRF()) {
+        if ($this->VerifPostTrait()) {
             if (!empty($_POST['guitare']) && !empty($_POST['emploi']) && !empty($_POST['ville'])) {
 
                 $config = \HTMLPurifier_Config::createDefault();
@@ -346,48 +328,33 @@ class AccountController extends MainController
                 Toolbox::dataJson(false, "Erreur : données vides");
                 exit;
             }
-        } else {
-            Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-            unset($_SESSION['profil']);
-            unset($_SESSION['tokenCSRF']);
-            Toolbox::dataJson(false, "expired token");
-            exit;
         }
     }
 
     public function deleteAccount()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($this->VerifPostTrait()) {
+            $userID = $_SESSION['profil']['userID'];
 
-            if (Securite::verifCSRF()) {
-                $userID = $_SESSION['profil']['userID'];
-
-                $anonymousID = 2;
-                $topic = new TopicsModel();
-                if ($_SESSION['profil']['messagesCount'] > 0) {
-                    $action = $topic->anonymizeMessages($userID, $anonymousID);
-                    if (!$action) {
-                        Toolbox::ajouterMessageAlerte("Erreur inatendue", 'rouge');
-                        exit;
-                    }
+            $anonymousID = 2;
+            $topic = new TopicsModel();
+            if ($_SESSION['profil']['messagesCount'] > 0) {
+                $action = $topic->anonymizeMessages($userID, $anonymousID);
+                if (!$action) {
+                    Toolbox::ajouterMessageAlerte("Erreur inatendue", 'rouge');
+                    exit;
                 }
-                $user = $this->usersModel->getUserById($userID);
-                $imageAvatar = 'images/profils/' . $userID . '/' . $user->avatar;
-                unlink($imageAvatar);
-                rmdir('images/profils/' . $userID);
-                if ($this->usersModel->deleteAccount($userID)) {
-                    Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
-                    unset($_SESSION['profil']);
-                } else {
-                    Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
-                }
-            } else {
-                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
-                unset($_SESSION['profil']);
-                unset($_SESSION['tokenCSRF']);
             }
-            header("Location:index.php");
-            exit;
+            $user = $this->usersModel->getUserById($userID);
+            $imageAvatar = 'images/profils/' . $userID . '/' . $user->avatar;
+            unlink($imageAvatar);
+            rmdir('images/profils/' . $userID);
+            if ($this->usersModel->deleteAccount($userID)) {
+                Toolbox::ajouterMessageAlerte("Votre compte a été supprimé  avec succès", 'vert');
+                unset($_SESSION['profil']);
+            } else {
+                Toolbox::ajouterMessageAlerte("Une erreur est survenue lors de la suppression", 'rouge');
+            }
         }
 
         $tokenCSRF = $_SESSION["tokenCSRF"];

@@ -34,9 +34,8 @@ formMessage.addEventListener('submit', async (e) => {
 
     /**
      * !cas particulier
-     * si le user clique sur "enter" sans rien écrire, Quill va quand même insérer du contenu : des balises vides. Donc la vérification if (quill.root.innerHTML === "") ne fonctionne pas.
-     * l'astuce : 
-     * l'astuce c'est de remplacer les balises vides' par rien du tout, sauf si la chaîne contient au moins une balise img. La méthode replace prend en premier argument une expression régulière qui correspond à toutes les balises HTML (c’est-à-dire tout ce qui est entre < et >), et en second argument une fonction de callback (ou fléchée plus loin) qui renvoie la correspondance elle-même si elle contient la chaîne 'img', sinon une chaîne vide.
+     * si le user clique sur "enter" sans rien écrire, Quill va quand même insérer des balises vides. Donc la vérification if (quill.root.innerHTML === "") ne fonctionne pas.
+     * l'astuce c'est de remplacer les balises vides' par rien du tout, sauf si la chaîne contient au moins une balise img. La méthode replace prend en premier argument une regex qui correspond à toutes les balises HTML (c’est-à-dire tout ce qui est entre < et >), et en second argument une fonction de callback (ou fléchée plus loin) qui renvoie la correspondance elle-même si elle contient la chaîne 'img', sinon une chaîne vide.
      * 
      * Autre version plus "lisible" :
      * Dans cet exemple, nous utilisons une fonction de rappel pour vérifier si chaque correspondance de la regex contient la chaîne 'img'. Si c’est le cas, nous renvoyons la correspondance elle-même (c’est-à-dire que nous ne remplaçons rien), sinon nous renvoyons une chaîne vide pour remplacer la balise par rien du tout :
@@ -54,7 +53,7 @@ formMessage.addEventListener('submit', async (e) => {
     try {
 
 
-        // si la chaine n'est pas vide ou si il y a une balise img du type "<img src="data:image/"
+        // si la chaine est vide 
         if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
             throw new Error(`Veuillez entrer un contenu valide.`);
         }
@@ -87,6 +86,7 @@ formMessage.addEventListener('submit', async (e) => {
             resultat = await updateMessage(formMessage, messageID);
 
 
+            //si il n'y a pas d'image, inutile de créer un message avec contenu temporaire
         } else {
             resultat = await addMessage(formMessage);
         }
@@ -109,6 +109,7 @@ formMessage.addEventListener('submit', async (e) => {
         } else {
             alertMessageTopic.textContent = error.message;
             alertMessageTopic.style.display = "block";
+            alertMessageTopic.style.backgroundColor = "rgb(242, 50, 50)";
         }
     }
 
