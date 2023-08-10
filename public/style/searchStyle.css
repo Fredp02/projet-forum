@@ -1,0 +1,147 @@
+/* .aside {
+    display: none;
+} */
+
+
+.blocSearch {
+    width: 100%;
+    height: auto;
+    /* margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px; */
+    padding: 10px;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; 
+    flex-direction: column; */
+    
+}
+
+
+.blocSearch h1 {
+    
+    font-size: 25px;
+    text-transform: uppercase;
+    /* width: 40%; */
+}
+
+/* .messageInscription {
+    display: none;
+    margin-bottom: 10px;
+    text-align: center;
+    padding: 5px;
+    width: 100%;
+} */
+
+.formSearch input
+ {
+    background-color: var(--text-primary);
+    color: var(--noir-clair);
+    border: none;
+    width: 100%;
+    padding: 10px;
+    
+}
+.formSearch > div{
+    display: flex;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    /* padding: 3px; */
+    /* width: 100%; */
+}
+.formSearch > div > div:first-of-type{
+    /* background-color: green; */
+    width: 30%;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    padding: 15px 10px;
+    margin-left: 15px;
+    /* width: 100%; */
+}
+.formSearch > div > div:last-of-type{
+    /* background-color: rgb(0, 109, 128); */
+    width: 70%;
+    /* width: 100%; */
+}
+.checkboxBloc{
+    display: flex;
+    margin-top: 5px;
+}
+.checkboxBloc input{
+    width: auto;
+    margin: 0;
+    margin-right: 10px;
+}
+.dateBloc>div:last-of-type {
+    display: flex;
+}
+.dateBloc>div:last-of-type>div {
+    margin-left: 5px;
+    margin-right: 5px;
+    width: 30%;
+}
+.dateBloc>div:last-of-type input {
+    
+    margin-top: 5px;
+}
+
+.selectForumBloc>div:last-of-type select{
+    width: 100%;
+    height: 100px;
+}
+.postedByBloc>div:last-of-type,
+.sortBloc>div:last-of-type{
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+}
+.sortBloc select{
+    padding: 8px;
+}
+/* .inputConfirmPassword {
+    margin-bottom: 0;
+} */
+
+/* .inputPasswordInscription{
+    margin-bottom: 10px;
+} */
+.inputError {
+    border: solid 1px #FF4242;
+    box-shadow: 0 0 8px 5px #ff424281;
+}
+
+.inputError::placeholder {
+    /* font-weight: bold; */
+    color: #FF4242;
+}
+
+.btnSearchBloc,
+.blocTitleSearch{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.blocTitleSearch{
+    background-color: #272727;
+    
+}
+
+.btnSearch {
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--orange);
+    padding: 13px 19px;
+    color: white;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+    /* margin-top: 20px; */
+    /* width: 100%; */
+}
+
+.btnSearch:hover {
+    background-color: var(--orange2);
+}

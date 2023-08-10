@@ -14,12 +14,18 @@ class SearchModel extends DbConnect
     }
 
     //recherche basique
-    public function findByTitle($searchString)
+    public function defaultSearch($searchString)
     {
 
-        $req = "SELECT topics.*, messages.* FROM topics
+        $req = "SELECT topics.*, messages.*, COUNT(messages.messageID) AS totalMessages, users.userID, users.pseudo
+        FROM topics
         JOIN messages ON messages.topicID = topics.topicID
-        WHERE topics.topicTitle LIKE :searchString OR messages.messageText LIKE :searchString";
+        JOIN users ON messages.userID = users.userID
+        WHERE topics.topicTitle LIKE :searchString OR messages.messageText LIKE :searchString
+        GROUP BY topics.topicID, messages.messageID
+        ORDER BY messages.messageDate DESC        
+        ";
+
 
         $sql = $this->getBdd()->prepare($req);
 

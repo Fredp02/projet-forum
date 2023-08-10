@@ -51,59 +51,72 @@ class LoginController extends MainController
     }
     public function validationlogin()
     {
-        if ($this->VerifPostTrait()) {
-            if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
-                $pseudo = htmlspecialchars($_POST['pseudo']);
-                $password = htmlspecialchars($_POST['password']);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (Securite::verifCSRF()) {
+                if (!empty($_POST['pseudo']) && !empty($_POST['password'])) {
+                    $pseudo = htmlspecialchars($_POST['pseudo']);
+                    $password = htmlspecialchars($_POST['password']);
 
-                //j'ai placé un input hidden qui contient l'url précédent. 
-                $previousURL = filter_var($_POST['previousURL'] ?? "index.php", FILTER_SANITIZE_URL);
-                $userPassBDD = $this->usersModel->getUserByPseudo($pseudo)->password;
+                    //j'ai placé un input hidden qui contient l'url précédent. 
+                    $previousURL = filter_var($_POST['previousURL'] ?? "index.php", FILTER_SANITIZE_URL);
+                    $userPassBDD = $this->usersModel->getUserByPseudo($pseudo)->password;
 
-                if (Securite::verifPassword($password, $userPassBDD)) {
+                    if (Securite::verifPassword($password, $userPassBDD)) {
 
-                    $user = $this->usersModel->getUserinfo($pseudo);
+                        $user = $this->usersModel->getUserinfo($pseudo);
 
-                    // Toolbox::dataJson(false, 'hahahhala',  $user);
-                    // die;
-                    if ($user->isValid) {
+                        // Toolbox::dataJson(false, 'hahahhala',  $user);
+                        // die;
+                        if ($user->isValid) {
 
-                        //du coup je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur ????, avec des sessions qui pourrait contenir trop d'info ???. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
-                        $filepathAvatar = $user->userID . '/' . $user->avatar;
-                        $_SESSION['profil'] = [
-                            'userID' => $user->userID,
-                            'pseudo' => $user->pseudo,
-                            'filepathAvatar' => $filepathAvatar,
-                            'userGuitare' => $user->guitare,
-                            'messagesCount' => $user->messagesCount,
-                        ];
-
-                        Toolbox::dataJson(
-                            true,
-                            "Connexion OK",
-                            $data = [
+                            //je décide d'enregistrer un minium d'info pour ne pas surcharger le serveur ????, avec des sessions qui pourrait contenir trop d'info ???. je vais privilgier les requête sql pour afficher des infos détaillées, comme les données personelles, et les messages associé à l'utilisateur.
+                            $filepathAvatar = $user->userID . '/' . $user->avatar;
+                            $_SESSION['profil'] = [
+                                'userID' => $user->userID,
                                 'pseudo' => $user->pseudo,
                                 'filepathAvatar' => $filepathAvatar,
-                                'id' => $user->userID,
-                                'previousURL' => $previousURL
-                            ]
-                        );
-                        exit;
+                                'userGuitare' => $user->guitare,
+                                'messagesCount' => $user->messagesCount,
+                            ];
+
+                            Toolbox::dataJson(
+                                true,
+                                "Connexion OK",
+                                $data = [
+                                    'pseudo' => $user->pseudo,
+                                    'filepathAvatar' => $filepathAvatar,
+                                    'id' => $user->userID,
+                                    'previousURL' => $previousURL
+                                ]
+                            );
+                            exit;
+                        } else {
+                            $userID =  $user->userID;
+                            $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
+                            Toolbox::dataJson(false, $message);
+                            exit;
+                        }
                     } else {
-                        $userID =  $user->userID;
-                        $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
-                        Toolbox::dataJson(false, $message);
+                        Toolbox::dataJson(false, "Identifiants incorrects");
                         exit;
                     }
                 } else {
-                    Toolbox::dataJson(false, "Identifiants incorrects");
+                    Toolbox::dataJson(false, "Erreur champs de saisie");
+                    header("Location:index.php");
                     exit;
                 }
             } else {
-                Toolbox::dataJson(false, "Erreur champs de saisie");
-                header("Location:index.php");
+                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+
+                //Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
+                unset($_SESSION['profil']);
+                unset($_SESSION['tokenCSRF']);
+                Toolbox::dataJson(false, "expired token");
                 exit;
             }
+        } else {
+            header("Location:index.php");
+            exit;
         }
     }
 }

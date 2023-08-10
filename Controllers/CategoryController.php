@@ -29,6 +29,7 @@ class CategoryController extends MainController
                 "css" => "./style/homeStyle.css",
                 "template" => "../Views/common/template.php",
                 'getDetailsParentCat' => $getDetailsParentCat,
+                "tokenCSRF" => $_SESSION['tokenCSRF']
             ];
             $this->render($data_page);
         } else {

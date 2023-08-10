@@ -53,11 +53,11 @@ use Controllers\Services\Securite; ?>
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
 
-                        <a href="#">
+                        <!-- <a href="index.php?controller=seach">
                             <button class="button">
                                 <i class="fa-solid fa-gear"></i>
                             </button>
-                        </a>
+                        </a> -->
                         <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF; ?>" />
                     </form>
                 </div>

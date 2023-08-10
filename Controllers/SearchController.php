@@ -3,11 +3,11 @@
 namespace Controllers;
 
 // use vendor\mrfakename\PHPSearch\PHPSearch;
-use Models\PHPSearch;
+// use Models\PHPSearch;
 use Models\SearchModel;
 use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
-use Wamania\Snowball\StemmerManager;
+// use Wamania\Snowball\StemmerManager;
 
 
 class SearchController extends MainController
@@ -24,19 +24,14 @@ class SearchController extends MainController
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
             if (Securite::verifCSRF()) {
 
                 if (!empty($_POST['inputSearch'])) {
 
                     //on nettoie la chaine en supprimant les "mots vides" et en utilisant un stemmer
                     $string = Toolbox::cleanSearch(htmlspecialchars($_POST['inputSearch']));
-                    // dd('laaa ! : ' . $string);
 
-
-
-
-                    $result = $this->searchModel->findByTitle($string);
+                    $result = $this->searchModel->defaultSearch($string);
                     dd($result);
                 }
             } else {
@@ -44,9 +39,18 @@ class SearchController extends MainController
                 unset($_SESSION['profil']);
                 unset($_SESSION['tokenCSRF']);
             }
-        } else {
-            header("Location:index.php");
-            exit;
         }
+
+        $data_page = [
+            "pageDescription" => "Recherche sur guitare forum",
+            "pageTitle" => "Recherche",
+            "view" => "../Views/search.php",
+            "template" => "../Views/common/template.php",
+            "css" => "./style/searchStyle.css",
+            // "script" => "./js/validFormRegister.js",
+            "tokenCSRF" => $_SESSION['tokenCSRF']
+        ];
+
+        $this->render($data_page);
     }
 }

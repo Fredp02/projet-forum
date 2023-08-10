@@ -62,7 +62,8 @@ class TopicsController extends MainController
                 "categoryID" => $infosCategory->categoryID,
                 "listTopics" => $listTopics,
                 'categoryParentName' => $infosCategory->categoryParentName,
-                'categoryParentID' => $infosCategory->categoryParentID
+                'categoryParentID' => $infosCategory->categoryParentID,
+                "tokenCSRF" => $_SESSION['tokenCSRF']
 
             ];
 
