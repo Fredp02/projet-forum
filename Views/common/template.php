@@ -48,7 +48,7 @@ use Controllers\Services\Securite; ?>
                 </a>
                 <div class="search">
                     <form action="?controller=search" method="POST">
-                        <input type="text" name="inputSearch" class="inputSearch" placeholder="Rechercher..." />
+                        <input type="text" name="keywords" class="inputSearch" placeholder="Rechercher..." />
                         <button class="button" type="submit">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>

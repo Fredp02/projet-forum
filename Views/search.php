@@ -1,15 +1,12 @@
-<?php
-
-
-?>
-
-
 <section class="blocSearch">
+    <?php
+    // dump($categorysList);
+    ?>
     <div class="blocTitleSearch">
         <h1>Recherche avancée</h1>
     </div>
 
-    <form class="formSearch">
+    <form class="formSearch" action="" method="GET">
         <div class="keywordsBloc">
             <div>
                 <label for="keywords" class="">Mots clés</label>
@@ -54,13 +51,9 @@
             <div>
                 <select name="selectForum" id="selectForum" multiple>
                     <option value="">Tous les forums</option>
-                    <option value="#">forum1</option>
-                    <option value="#">forum2</option>
-                    <option value="#">forum3</option>
-                    <option value="#">forum4</option>
-                    <option value="#">forum5</option>
-                    <option value="#">forum6</option>
-                    <option value="#">forum7</option>
+                    <?php foreach ($categorysList as $key) : ?>
+                        <option value="<?= $key->categoryID; ?>"><?= $key->categoryParentID !== null ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp" : "&bull;&nbsp"; ?><?= $key->categoryName; ?></option>
+                    <?php endforeach; ?>
 
                 </select>
                 <span>Maintenez "Ctrl" ou "Commande" pour sélectionner plusieurs forums</span>
@@ -83,7 +76,7 @@
         <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF;  ?>" />
 
         <div class="btnSearchBloc">
-            <button class="btnSearch">Rechercher</button>
+            <button class="btnSearch" type="submit">Rechercher</button>
         </div>
 
     </form>

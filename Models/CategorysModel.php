@@ -152,6 +152,20 @@ class CategorysModel extends DbConnect
     //     }
     // }
 
+    public function getCategorysOrderByParent()
+    {
+        $req = "SELECT * FROM categorys ORDER BY COALESCE(categoryParentID, categoryID), categoryParentID IS NOT NULL, categoryID";
+        $sql = $this->getBdd()->prepare($req);
+        try {
+            $sql->execute();
+            $resultat = $sql->fetchAll();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+
     public function getDetailsParentCat($parentID)
     {
         $req = "SELECT 
