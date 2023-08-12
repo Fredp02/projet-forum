@@ -26,11 +26,33 @@ class SearchModel extends DbConnect
         ORDER BY messages.messageDate DESC        
         ";
 
+        // SELECT topics.*, messages.*, COUNT(messages.messageID) AS totalMessages, users.userID, users.pseudo
+        // FROM topics
+        // JOIN messages ON messages.topicID = topics.topicID
+        // JOIN users ON messages.userID = users.userID
+        // WHERE topics.topicTitle LIKE '%corde%' OR messages.messageText LIKE '%corde%'
+        // GROUP BY topics.topicID, messages.messageID
+        // ORDER BY messages.messageDate DESC 
+
 
         $sql = $this->getBdd()->prepare($req);
 
         try {
             $sql->bindValue(":searchString", $searchString);
+            $sql->execute();
+            $resultat = $sql->fetchAll();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function search($req, $string)
+    {
+        $sql = $this->getBdd()->prepare($req);
+
+        try {
+            $sql->bindValue(":string", $string);
             $sql->execute();
             $resultat = $sql->fetchAll();
             $sql->closeCursor();

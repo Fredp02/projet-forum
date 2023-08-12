@@ -77,8 +77,8 @@
     display: flex;
 }
 .dateBloc>div:last-of-type>div {
-    margin-left: 5px;
-    margin-right: 5px;
+    /* margin-left: 5px; */
+    margin-right: 10px;
     width: 30%;
 }
 .dateBloc>div:last-of-type input {
@@ -91,21 +91,33 @@
     height: 100px;
 }
 .postedByBloc>div:last-of-type,
-.sortBloc>div:last-of-type{
+.orderBloc>div:last-of-type{
     display: flex;
     align-items: center;
     /* justify-content: center; */
 }
-.sortBloc select{
+.orderBloc select{
     padding: 8px;
 }
-/* .inputConfirmPassword {
-    margin-bottom: 0;
-} */
-
-/* .inputPasswordInscription{
-    margin-bottom: 10px;
-} */
+.orderBlocInput{
+    width: 100%;
+}
+.orderBlocInput>div:first-of-type{
+    width: 30%;
+}
+.orderBlocInput>div:last-of-type{
+    width: 70%;
+}
+.orderBlocInput>div:last-of-type input{
+    width: auto;
+}
+.orderBlocInput>div:last-of-type label{
+    margin-left: 5px;
+    margin-right: 20px;
+}
+.orderBlocInput>div:last-of-type div{
+    display: flex;
+}
 .inputError {
     border: solid 1px #FF4242;
     box-shadow: 0 0 8px 5px #ff424281;

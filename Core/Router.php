@@ -23,6 +23,7 @@ class Router
         try {
 
             if (!empty($_GET) && !array_key_exists("controller", $_GET)) {
+
                 throw new Exception('Cette page n\'existe pas');
             }
             //on intialise le controller
