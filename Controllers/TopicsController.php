@@ -15,11 +15,11 @@ use Controllers\Traits\VerifPostTrait;
 class TopicsController extends MainController
 {
 
-    private $categorysModel;
-    private $topicsModel;
-    private $messagesModel;
-    private $message;
-    private $topic;
+    private CategorysModel $categorysModel;
+    private TopicsModel $topicsModel;
+    private MessagesModel $messagesModel;
+    private Messages $message;
+    private Topics $topic;
     use VerifPostTrait;
 
     public function __construct()

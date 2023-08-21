@@ -16,11 +16,11 @@ use Controllers\Services\Toolbox;
         <h1><?= $infosTopic->topicTitle; ?></h1>
     </div>
     <div class="contentTopic">
-        <!-- <?php dump($messagesTopics); ?> -->
+<!--         --><?php //dump($messagesTopics); ?>
         <div class="messageList">
 
             <?php foreach ($messagesTopics as $message) : ?>
-                <div class="messageBloc">
+                <div class="messageBloc" id="<?=$message->messageID?>">
                     <div class="userInfos">
                         <div class="avatar"><img src="./images/profils/<?= $message->userID . '/'; ?><?= $message->avatar; ?>" alt="photo de profil de l'utilisateur"></div>
                         <div class="pseudo">
@@ -85,7 +85,7 @@ use Controllers\Services\Toolbox;
         </div>
 
         <template class="template-item">
-            <div class="messageBloc">
+            <div class="messageBloc" id="">
                 <div class="userInfos">
                     <div class="avatar"><img src="" alt="photo de profil de l'utilisateur"></div>
                     <div class="pseudo"><span></span></div>

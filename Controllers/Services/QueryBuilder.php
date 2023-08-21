@@ -7,17 +7,20 @@ class QueryBuilder
     private string $query;
 
     public function __construct(
-        private bool $title,
-        private string $author,
-        private string $from,
-        private string $to,
+        private bool           $title,
+        private string         $author,
+        private string         $from,
+        private string         $to,
         private array | string $select,
-        private string $order,
-        private string $sort,
+        private string         $order,
+        private string         $sort,
+        private bool           $paginate,
+        private ?int           $limite,
+        private ?int           $offset
     ) {
     }
 
-    public function create()
+    public function create(): string
     {
         // Construire la requête SQL en fonction des critères de recherche spécifiés
         $this->query = "
@@ -123,6 +126,10 @@ class QueryBuilder
                     break;
             }
         }
+        if ($this->paginate){
+            $this->query .= " LIMIT $this->limite OFFSET $this->offset";
+        }
+
         return $this->query;
     }
 }

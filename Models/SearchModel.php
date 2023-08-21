@@ -47,6 +47,7 @@ class SearchModel extends DbConnect
             die('Erreur : ' . $e->getMessage());
         }
     }
+
     public function search($req, $string)
     {
         $sql = $this->getBdd()->prepare($req);

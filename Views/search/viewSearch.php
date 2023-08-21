@@ -8,7 +8,7 @@
 
     <form class="formSearch" action="" method="GET">
         <input type="hidden" name="controller" value="search">
-        <input type="hidden" name="action" value="build">
+        <input type="hidden" name="action" value="display">
         <div class="keywordsBloc">
             <div>
                 <label for="keywords" class="">Mots clés</label>
@@ -97,72 +97,3 @@
 
     </form>
 </section>
-
-
-
-<!-- <section>
-    <div class="forumListBloc">
-        <?php
-        // dump($listTopics);
-        ?>
-        <div class="topformList">
-            <div class="filAriane"><a href="index.php">Accueil</a> <i class="fa-solid fa-caret-right"></i>
-                <a href="">categoryParentName</a>
-                <i class="fa-solid fa-caret-right"></i>
-            </div>
-            <div class="divBtnCreateTopic">
-                <a href="#">
-                    <button class="btnCreateTopic">Créer un topic</button>
-                </a>
-            </div>
-        </div>
-
-
-        <div class="categorys">
-
-            <li class="headerCategory">
-                <div class="headerCategoryContent">
-                    <div class="headerCategoryIcone">
-                        <span></span>
-                    </div>
-                    <div class="infosTopic">
-                        <h3 class="titreCat">categoryName</h3>
-                    </div>
-                    <div class="responsesNumber"><span>Réponses</span></div>
-                    <div class="viewNumber"><span>Vues</span></div>
-                    <div class="lastResponse">
-                        <span>Dernier message</span>
-                    </div>
-                </div>
-            </li>
-            <li class="subCategorysList">
-                <div class="subCategory">
-                    <div class="subCategoryIcon">
-                        <span></span>
-                    </div>
-                    <div class="infosTopic">
-
-
-                        <div class="topicName"><a href="">topicTitle</a>
-                        </div>
-                        <div class="topicAuthor">topicCreator - topicDate </div>
-                    </div>
-                    <div class="responsesNumber">totalMessages</div>
-                    <div class="viewNumber">views</div>
-                    <div class="lastResponse">
-
-                        <div class="lastActivityDate">
-                            <span>latestMessageDate</span>
-                        </div>
-                        <div class="lastActivityUser">
-                            <span>Par : latestMessageUser</span>
-                        </div>
-
-
-                    </div>
-                </div>
-            </li>
-
-        </div>
-    </div>
-</section> -->

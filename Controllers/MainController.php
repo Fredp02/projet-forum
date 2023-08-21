@@ -12,12 +12,12 @@ abstract class MainController
     //         $this->mainManager = new MainManager();
     //     }
 
-    protected function render($data)
+    protected function render($data): void
     {
         /**
          * extract($data) : 
          * génère les variable suivante : $page_description, $page_title, $view, et $template
-         * elle viennent du tableau $data_page de la méthode accueil ou page erreur ou les autres
+         * elles viennent du tableau $data_page de la méthode accueil ou page erreur ou les autres
          */
 
         extract($data);

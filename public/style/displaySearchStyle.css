@@ -1,0 +1,68 @@
+.sectionDisplaySearch{
+    width: 100%;
+}
+
+.blocResultat{
+    background-color: #272727;
+    padding: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+h1{
+    font-size: 36px;
+    margin: 15px 0;
+}
+h2,h4{
+    margin: 0;
+}
+h4{
+    margin-top: 5px;
+}
+a{
+    text-decoration: none;
+    color: var(--text-primary);
+}
+.blocResultatFooter{
+    display: flex;
+    align-items: center;
+}
+.totalMessage,
+.nbrVues{
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    margin-right: 50px;
+}
+
+.totalMessage span:first-of-type,
+.nbrVues span:first-of-type{
+    /** Permet de changer la couleur du SVG*/
+    display: block;
+    width: 25px;
+    height: 25px;
+    -webkit-mask: url(../images/icons/comments-regular.svg) no-repeat center;
+    mask: url(../images/icons/comments-regular.svg) no-repeat center;
+    background-color: var(--orange);
+    margin-left: 3px;
+}
+
+.totalMessage span:last-of-type,
+.nbrVues span:last-of-type{
+    display: block;
+    margin-left: 5px;
+    margin-top: 5px;
+    font-size: 20px;
+}
+.nbrVues span:first-of-type{
+    -webkit-mask: url(../images/icons/eye-regular.svg) no-repeat center;
+    mask: url(../images/icons/eye-regular.svg) no-repeat center;
+}
+
+.author,
+.dateMessage{
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+    margin-top: 7px;
+}
