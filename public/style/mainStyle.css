@@ -465,7 +465,37 @@ nav {
 
 
 
+.paginator{
+    display: flex;
+}
 
+.paginator button {
+    border: none;
+    cursor: pointer;
+    padding: 5px 11px;
+    font-size: 22px;
+    transition: .2s;
+    /*color: var(--text-primary);*/
+    /*background-color: #272727;*/
+}
+
+.paginator button:hover {
+    background-color: var(--orange);
+
+}
+.paginator > div:first-child,
+.paginator > div:last-child{
+    /* ajouter des styles ici */
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.btnPaginatorActive{
+    background-color: var(--orange);
+}
+/*.paginatorDisabled{*/
+/*    cursor: none;*/
+/*    pointer-events: none;*/
+/*}*/
 
 
 
