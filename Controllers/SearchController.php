@@ -62,8 +62,9 @@ class SearchController extends MainController
             }
 //            dd($_SERVER);
 // Récupération des données du formulaire
-            $searchData = [
-                'key' => isset($_GET['key']) ? htmlspecialchars($_GET['key']),
+            $key = isset($_GET['key']) ? htmlspecialchars($_GET['key']) : '';
+            $numPage = isset($_GET['numPage']) ? (int)htmlspecialchars($_GET['numPage']) : 1;
+            $queryData = [
                 'title' => isset($_GET['title']), //isset($_GET['title']) ? true : false;
                 'author' => isset($_GET['author']) ? htmlspecialchars($_GET['author']) : '',
                 'from' => isset($_GET['from']) ? htmlspecialchars($_GET['from']) : '',
@@ -71,23 +72,20 @@ class SearchController extends MainController
                 'select' => $_GET['select'] ?? '', //isset($_GET['select']) ? $_GET['select'] : '';
                 'order' => isset($_GET['order']) ? htmlspecialchars($_GET['order']) : '',
                 'sort' => isset($_GET['sort']) ? htmlspecialchars($_GET['sort']) : '',
-                'numPage' => isset($_GET['numPage']) ? (int)htmlspecialchars($_GET['numPage']) : 1
+
+                // Je convertis $numPage en "int" dans tous les cas. Cela garantit que c'est un "int" et permettra ensuite d'utiliser la stricte égalité.
             ];
 
-
-            // Je convertis $numPage en "int" dans tous les cas. Cela garantit que c'est un "int" et permettra ensuite d'utiliser la stricte égalité.
-
-
-            if ($author && !$this->usersModel->getUserByPseudo($author)) {
+            // $searchData['']
+            if ($queryData['author'] && !$this->usersModel->getUserByPseudo($queryData['author'])) {
                 throw new Exception('Ce membre n\'a pas été trouvé');
             }
-
-
             //on nettoie la chaine en supprimant les "mots vides" et en utilisant un stemmer
             $string = Toolbox::cleanSearch($key);
 
             //j'initialise la requete sans pagination, ni limite ni offset
-            $initQuery = new QueryBuilder($title, $author, $from, $to, $select, $order, $sort, false, null, null);
+            $initQuery = new QueryBuilder($queryData, false, null, null);
+
             $result = $this->searchModel->search($initQuery->create(), $string);
             //si aucun résultats, on entre dans le catch
 
@@ -120,7 +118,7 @@ class SearchController extends MainController
                 //on calcule l'offset en fonction du numéro de la page et de la limite
                 $offset = ($numPage - 1) * self::LIMITE;
                 //et on initialise la requete finale avec la pagination = "true" + limite et offset
-                $queryPaginated = new QueryBuilder($title, $author, $from, $to, $select, $order, $sort, true, self::LIMITE, $offset);
+                $queryPaginated = new QueryBuilder($queryData, true, self::LIMITE, $offset);
 
                 //Et on lance le model pour récupérer les résultats
                 $result = $this->searchModel->search($queryPaginated->create(), $string);
@@ -136,7 +134,7 @@ class SearchController extends MainController
                 }
                 if ($nombrePageTotal < $NBR_LINKS_PAGINATOR) {
                     $NBR_LINKS_PAGINATOR = $nombrePageTotal;
-                }elseif ($numPage === $nombrePageTotal){ //si on est sur la dernière page
+                } elseif ($numPage === $nombrePageTotal) { //si on est sur la dernière page
                     $targetPage = -2;
                 }
 

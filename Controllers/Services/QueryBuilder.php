@@ -7,17 +7,12 @@ class QueryBuilder
     private string $query;
 
     public function __construct(
-        private bool           $title,
-        private string         $author,
-        private string         $from,
-        private string         $to,
-        private array | string $select,
-        private string         $order,
-        private string         $sort,
-        private bool           $paginate,
-        private ?int           $limite,
-        private ?int           $offset
-    ) {
+        private array $queryData,
+        private bool  $paginate,
+        private ?int  $limite,
+        private ?int  $offset
+    )
+    {
     }
 
     public function create(): string
@@ -30,45 +25,45 @@ class QueryBuilder
         JOIN users ON messages.userID = users.userID
         JOIN categorys ON topics.categoryID = categorys.categoryID
         ";
-        if ($this->title) {
+        if ($this->queryData['title']) {
             // Recherche dans le titre seulement
             $this->query .= "WHERE topics.topicTitle LIKE :string";
         } else {
             // Recherche dans tous les champs pertinents
             $this->query .= "WHERE (topics.topicTitle LIKE :string OR messages.messageText LIKE :string)";
         }
-        if (!empty($this->author)) {
+        if (!empty($this->queryData['author'])) {
             // Filtre par auteur
-            $this->query .= " AND users.pseudo ='$this->author'";
+            $this->query .= " AND users.pseudo ='$this->queryData['author']'";
         }
         //si date début mais pas de date fin
-        if (!empty($this->from) && empty($this->to)) {
+        if (!empty($this->queryData['from']) && empty($this->queryData['to'])) {
             // Filtre par date
-            $this->query .= " AND messageDate >= '$this->from'";
+            $this->query .= " AND messageDate >= '$this->queryData['from']'";
         }
         //si date fin mais pas date début
-        if (empty($this->from) && !empty($this->to)) {
+        if (empty($this->queryData['from']) && !empty($this->queryData['to'])) {
             // Filtre par date
-            $this->query .= " AND messageDate <= '$this->to'";
+            $this->query .= " AND messageDate <= '$this->queryData['to']'";
         }
         //si date début et date fin
-        if (!empty($this->from) && !empty($this->to)) {
+        if (!empty($this->queryData['from']) && !empty($this->queryData['to'])) {
             // Filtre par date
-            $this->query .= " AND messageDate BETWEEN '$this->from' AND '$this->to'";
+            $this->query .= " AND messageDate BETWEEN '$this->queryData['from']' AND '$this->queryData['to']'";
         }
 
         //Si le select contient des données ET si il n'y a pas la valeur 'all'
-        if (!empty($this->select) && !in_array('all', $this->select)) {
+        if (!empty($this->queryData['select']) && !in_array('all', $this->queryData['select'])) {
 
             //Cette ligne utilise la fonction array_filter pour filtrer les éléments du tableau $array qui se terminent par la chaîne '-p'. Ces éléments représentent les ID des catégories parentes sélectionnées par l’utilisateur. La fonction substr est utilisée pour vérifier si chaque élément du tableau se termine par '-p'. Si c’est le cas, l’élément est conservé dans le tableau filtré $parentCategories.
             //on ne modifie pas encore ce tableau car on va avoir besoin de faire une comparaison dans la ligne suivante
-            $parentCategories = array_filter($this->select, fn ($value) => substr($value, -2) === '-p');
+            $parentCategories = array_filter($this->queryData['select'], fn($value) => substr($value, -2) === '-p');
 
             //Cette ligne utilise la fonction array_diff pour voir la différence entre les tableaux $array et $parentCategories. Le résultat est un nouveau tableau $childCategories contenant les éléments de $array qui ne sont pas présents dans $parentCategories. Ces éléments représentent les ID des catégories enfants sélectionnées par l’utilisateur.
-            $childCategories = array_diff($this->select, $parentCategories);
+            $childCategories = array_diff($this->queryData['select'], $parentCategories);
 
             //Cette ligne utilise la fonction array_map pour supprimer la chaîne '-p' de chaque élément du tableau $parentCategories. La fonction substr est utilisée pour renvoyer une sous-chaîne de chaque élément en supprimant les deux derniers caractères ('-p'). Le résultat est un nouveau tableau $parentCategories contenant les ID des catégories parentes sélectionnées par l’utilisateur, sans la chaîne '-p'.
-            $parentCategories = array_map(fn ($value) => substr($value, 0, -2), $parentCategories);
+            $parentCategories = array_map(fn($value) => substr($value, 0, -2), $parentCategories);
 
             //si l’un des tableaux $childCategories ou $parentCategories n’est pas vide. Si l’un de ces tableaux n’est pas vide, cela signifie que des conditions supplémentaires doivent être ajoutées à la chaîne SQL pour spécifier les catégories pour lesquelles effectuer la recherche. La chaîne " AND (" est ajoutée à la variable $sql pour commencer une nouvelle condition dans la clause WHERE.
             if (!empty($childCategories) || !empty($parentCategories)) {
@@ -96,8 +91,8 @@ class QueryBuilder
         $this->query .= " GROUP BY topics.topicID, messages.messageID";
 
         // Tri des résultats
-        if (!empty($this->order)) {
-            switch ($this->order) {
+        if (!empty($this->queryData['order'])) {
+            switch ($this->queryData['order']) {
                 case 'forum':
                     $this->query .= " ORDER BY categorys.categoryName";
                     break;
@@ -115,8 +110,8 @@ class QueryBuilder
                     break;
             }
         }
-        if (!empty($this->sort)) {
-            switch ($this->sort) {
+        if (!empty($this->queryData['sort'])) {
+            switch ($this->queryData['sort']) {
                 case 'asc':
                     $this->query .= " ASC";
                     break;
@@ -126,7 +121,7 @@ class QueryBuilder
                     break;
             }
         }
-        if ($this->paginate){
+        if ($this->paginate) {
             $this->query .= " LIMIT $this->limite OFFSET $this->offset";
         }
 
