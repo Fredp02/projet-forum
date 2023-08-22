@@ -7,7 +7,7 @@ use Models\SearchModel;
 
 class PaginatorBuilder
 {
-    private const LIMITE = 2;
+    private const LIMITE = 10;
     private int $nbrLinksPaginator = 3;
     private SearchModel $searchModel;
     public function __construct(
