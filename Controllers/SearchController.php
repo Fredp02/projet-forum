@@ -62,15 +62,19 @@ class SearchController extends MainController
             }
 //            dd($_SERVER);
 // Récupération des données du formulaire
-            $key = isset($_GET['key']) ? htmlspecialchars($_GET['key']) : '';
-            $title = isset($_GET['title']); //isset($_GET['title']) ? true : false;
-            $author = isset($_GET['author']) ? htmlspecialchars($_GET['author']) : '';
-            $from = isset($_GET['from']) ? htmlspecialchars($_GET['from']) : '';
-            $to = isset($_GET['to']) ? htmlspecialchars($_GET['to']) : '';
-            $select = $_GET['select'] ?? ''; //isset($_GET['select']) ? $_GET['select'] : '';
-            $order = isset($_GET['order']) ? htmlspecialchars($_GET['order']) : '';
-            $sort = isset($_GET['sort']) ? htmlspecialchars($_GET['sort']) : '';
-            $numPage = isset($_GET['numPage']) ? (int)htmlspecialchars($_GET['numPage']) : 1;
+            $searchData = [
+                'key' => isset($_GET['key']) ? htmlspecialchars($_GET['key']),
+                'title' => isset($_GET['title']), //isset($_GET['title']) ? true : false;
+                'author' => isset($_GET['author']) ? htmlspecialchars($_GET['author']) : '',
+                'from' => isset($_GET['from']) ? htmlspecialchars($_GET['from']) : '',
+                'to' => isset($_GET['to']) ? htmlspecialchars($_GET['to']) : '',
+                'select' => $_GET['select'] ?? '', //isset($_GET['select']) ? $_GET['select'] : '';
+                'order' => isset($_GET['order']) ? htmlspecialchars($_GET['order']) : '',
+                'sort' => isset($_GET['sort']) ? htmlspecialchars($_GET['sort']) : '',
+                'numPage' => isset($_GET['numPage']) ? (int)htmlspecialchars($_GET['numPage']) : 1
+            ];
+
+
             // Je convertis $numPage en "int" dans tous les cas. Cela garantit que c'est un "int" et permettra ensuite d'utiliser la stricte égalité.
 
 
