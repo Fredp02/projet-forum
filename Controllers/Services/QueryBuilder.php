@@ -84,7 +84,7 @@ class QueryBuilder
                     $this->query .= "topics.categoryID IN (SELECT categoryID FROM categorys WHERE categoryParentID IN ($parentCategoriesString))";
                 }
 
-                //cette ligne ferment la parenthèse ouverte précédemment pour terminer la condition ajoutée à la clause WHERE.
+                //cette ligne ferme la parenthèse ouverte précédemment pour terminer la condition ajoutée à la clause WHERE.
                 $this->query .= ")";
             }
         }

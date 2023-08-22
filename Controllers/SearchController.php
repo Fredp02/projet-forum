@@ -4,6 +4,7 @@ namespace Controllers;
 
 // use vendor\mrfakename\PHPSearch\PHPSearch;
 // use Models\PHPSearch;
+use Controllers\Services\PaginatorBuilder;
 use Exception;
 use Entities\Categorys;
 use Models\SearchModel;
@@ -18,7 +19,7 @@ use Models\UsersModel;
 
 class SearchController extends MainController
 {
-    private const LIMITE = 4;
+
 
     private SearchModel $searchModel;
     private CategorysModel $categorysModel;
@@ -96,48 +97,13 @@ class SearchController extends MainController
 
             $nombreResultatTotal = count($result);
             $paginator = false;
-            /**
-             * $nombreResultatTotal
-             * $numPage
-             * LIMTE
-             */
-            $NBR_LINKS_PAGINATOR = 3;
-            if ($nombreResultatTotal > self::LIMITE) {
 
-                //Pagintation true:
+            $paginatorBuilder = new PaginatorBuilder($queryData,$numPage,$nombreResultatTotal,$string);
+
+            if ($nombreResultatTotal > $paginatorBuilder->getLimite()) {
                 $paginator = true;
-
-
-                //Je détermine le nombre de résultats visible dans la page
-                //ainsi que le nombre total de pages pour gérer l'affichage du chevron droit :
-                $nombrePageTotal = (int)ceil($nombreResultatTotal / self::LIMITE);
-                // Attention ici, je convertis $nombrePageTotal en "int" car le "ceil" garde la variable en "float". Cela permettra ensuite d'utiliser la stricte égalité.
-                if ($numPage > $nombrePageTotal) {
-                    throw new Exception('Aucun résultat');
-                }
-                //on calcule l'offset en fonction du numéro de la page et de la limite
-                $offset = ($numPage - 1) * self::LIMITE;
-                //et on initialise la requete finale avec la pagination = "true" + limite et offset
-                $queryPaginated = new QueryBuilder($queryData, true, self::LIMITE, $offset);
-
-                //Et on lance le model pour récupérer les résultats
-                $result = $this->searchModel->search($queryPaginated->create(), $string);
-
-
-                //On initialise l'uri sans la valeur du numéro de la page. Cela nous permettra dans la vue,
-                // de concaténer l'uri avec un numéro de page spécifique à la pagination.
-                $baseUri = preg_replace('/&numPage=\d+/', '', $_SERVER['REQUEST_URI']) . '&numPage=';
-
-                $targetPage = -1;
-                if ($numPage === 1) {//Si on est sur la page 1, $targetPage = 0
-                    $targetPage = 0;
-                }
-                if ($nombrePageTotal < $NBR_LINKS_PAGINATOR) {
-                    $NBR_LINKS_PAGINATOR = $nombrePageTotal;
-                } elseif ($numPage === $nombrePageTotal) { //si on est sur la dernière page
-                    $targetPage = -2;
-                }
-
+                $dataSearchPaginated = $paginatorBuilder->create();
+                $result = $dataSearchPaginated['result'];
             }
 
 
@@ -147,15 +113,13 @@ class SearchController extends MainController
                 "view" => "../Views/search/viewDisplaySearch.php",
                 "template" => "../Views/common/template.php",
                 "css" => "./style/displaySearchStyle.css",
-                'result' => $result,
+                'result' => $result, //c'est soit le 1er resultat ou le second si pagination
                 'numPage' => $numPage,
                 'paginator' => $paginator,
-                'key' => $key,
-                'baseUri' => $baseUri ?? '',
-                'targetPage' => $targetPage ?? 0,
-                'nombrePageTotal' => $nombrePageTotal ?? 1,
-                'nbrLinksPaginator' => $NBR_LINKS_PAGINATOR
+                'dataSearchPaginated' =>$dataSearchPaginated??[],
+                'key' => $key
             ];
+
             $this->render($data_page);
         } catch (Exception $e) {
             Toolbox::ajouterMessageAlerte($e->getMessage(), 'rouge');

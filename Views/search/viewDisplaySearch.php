@@ -36,44 +36,8 @@
     </div>
 
 
-    <?php if ($paginator) : ?>
-        <div class="paginator">
-            <?php if ($numPage > 1) : ?>
-                <div>
-                    <a href="<?= $baseUri . $numPage - 1 ?>">
-                        <button><i class="fa-solid fa-chevron-left"></i></button>
-                    </a>
-                </div>
-            <?php endif; ?>
-            <?php
-//            dump($numPage);
-//            dump($targetPage);
-            ?>
-            <div>
-                <?php for ($i = 0; $i < $nbrLinksPaginator; $i++): ?>
-                    <!--                    Premiere version : -->
-                    <!--                --><?php //if ($numPage == $nombrePageTotal): ?>
-                    <!--                <a href="--><?php //=$baseUri.$numPage+($i-2) ?><!--"><button>--><?php //= $numPage+($i-2)?><!--</button></a>-->
-                    <!--                --><?php //else :?>
-                    <!--                <a href="--><?php //=$baseUri.($numPage > 1 ? $numPage+($i-1):$numPage+$i);?><!--"><button>--><?php //= $numPage > 1 ? $numPage+($i-1):$numPage+$i ?><!--</button></a>-->
-                    <!--                --><?php //endif;?>
-
-                    <!--                Deuxième version :-->
-
-                    <a href="<?= $baseUri . $numPage + $i + $targetPage ?>">
-                        <button class="<?= $numPage + $i + $targetPage === $numPage ? "btnPaginatorActive" : "" ?>"><?= $numPage + $i + $targetPage ?></button>
-                    </a>
-                <?php endfor; ?>
-
-            </div>
-            <?php if ($numPage < $nombrePageTotal) : ?>
-                <div>
-                    <a href="<?= $baseUri . $numPage + 1 ?>">
-                        <button><i class="fa-solid fa-chevron-right"></i></button>
-                    </a>
-                </div>
-            <?php endif; ?>
-        </div>
-    <?php endif; ?>
+    <?php if ($paginator){
+        include 'viewPaginated.php';
+    }?>
 
 </section>
