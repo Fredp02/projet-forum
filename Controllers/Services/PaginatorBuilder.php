@@ -34,7 +34,7 @@ class PaginatorBuilder
         $nombrePageTotal = (int)ceil($this->nombreResultatTotal / self::LIMITE);
         // Attention ici, je convertis $nombrePageTotal en "int" car le "ceil" garde la variable en "float". Cela permettra ensuite d'utiliser la stricte égalité.
         if ($this->numPage > $nombrePageTotal) {
-            return throw new Exception('Aucun résultat');
+            return throw new \RuntimeException('Aucun résultat');
         }
         //on calcule l'offset en fonction du numéro de la page et de la limite
         $offset = ($this->numPage - 1) * self::LIMITE;
@@ -49,6 +49,8 @@ class PaginatorBuilder
         // de concaténer l'uri avec un numéro de page spécifique à la pagination.
         $baseUri = preg_replace('/&numPage=\d+/', '', $_SERVER['REQUEST_URI']) . '&numPage=';
 
+        //$targetPage permet de faire le calcule des liens de la pagintation dans la vue.
+        //Par defaut, -1
         $targetPage = -1;
         if ($this->numPage === 1) {//Si on est sur la page 1, $targetPage = 0
             $targetPage = 0;

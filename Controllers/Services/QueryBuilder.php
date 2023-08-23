@@ -52,8 +52,8 @@ class QueryBuilder
             $this->query .= " AND messageDate BETWEEN '$this->queryData['from']' AND '$this->queryData['to']'";
         }
 
-        //Si le select contient des données ET si il n'y a pas la valeur 'all'
-        if (!empty($this->queryData['select']) && !in_array('all', $this->queryData['select'])) {
+        //Si le select contient des données ET s'il n'y a pas la valeur 'all'
+        if (!empty($this->queryData['select']) && !in_array('all', $this->queryData['select'], true)) {
 
             //Cette ligne utilise la fonction array_filter pour filtrer les éléments du tableau $array qui se terminent par la chaîne '-p'. Ces éléments représentent les ID des catégories parentes sélectionnées par l’utilisateur. La fonction substr est utilisée pour vérifier si chaque élément du tableau se termine par '-p'. Si c’est le cas, l’élément est conservé dans le tableau filtré $parentCategories.
             //on ne modifie pas encore ce tableau car on va avoir besoin de faire une comparaison dans la ligne suivante
@@ -92,30 +92,18 @@ class QueryBuilder
 
         // Tri des résultats
         if (!empty($this->queryData['order'])) {
-            switch ($this->queryData['order']) {
-                case 'forum':
-                    $this->query .= " ORDER BY categorys.categoryName";
-                    break;
-
-                case 'title':
-                    $this->query .= " ORDER BY topics.topicTitle";
-                    break;
-
-                case 'author':
-                    $this->query .= " ORDER BY users.pseudo";
-                    break;
-
-                default:
-                    $this->query .= " ORDER BY messages.messageDate";
-                    break;
-            }
+            $this->query .= match ($this->queryData['order']) {
+                'forum' => " ORDER BY categorys.categoryName",
+                'title' => " ORDER BY topics.topicTitle",
+                'author' => " ORDER BY users.pseudo",
+                default => " ORDER BY messages.messageDate",
+            };
         }
         if (!empty($this->queryData['sort'])) {
             switch ($this->queryData['sort']) {
                 case 'asc':
                     $this->query .= " ASC";
                     break;
-
                 case 'desc':
                     $this->query .= " DESC";
                     break;

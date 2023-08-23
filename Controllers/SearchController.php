@@ -2,11 +2,8 @@
 
 namespace Controllers;
 
-// use vendor\mrfakename\PHPSearch\PHPSearch;
-// use Models\PHPSearch;
 use Controllers\Services\PaginatorBuilder;
 use Exception;
-use Entities\Categorys;
 use Models\SearchModel;
 use Models\CategorysModel;
 use Controllers\Services\Toolbox;
@@ -14,13 +11,9 @@ use Controllers\Services\Securite;
 use Controllers\Services\QueryBuilder;
 use Models\UsersModel;
 
-// use Wamania\Snowball\StemmerManager;
-
 
 class SearchController extends MainController
 {
-
-
     private SearchModel $searchModel;
     private CategorysModel $categorysModel;
     private UsersModel $usersModel;
@@ -59,7 +52,7 @@ class SearchController extends MainController
 
             if (empty($key)) {
                 // Le champ "Mots clés" est vide
-                throw new Exception('Vous devez entrer un mot clé pour effectuer une recherche');
+                throw new \RuntimeException('Vous devez entrer un mot clé pour effectuer une recherche');
             }
 //            dd($_SERVER);
 // Récupération des données du formulaire
@@ -79,7 +72,7 @@ class SearchController extends MainController
 
             // $searchData['']
             if ($queryData['author'] && !$this->usersModel->getUserByPseudo($queryData['author'])) {
-                throw new Exception('Ce membre n\'a pas été trouvé');
+                throw new \RuntimeException('Ce membre n\'a pas été trouvé');
             }
             //on nettoie la chaine en supprimant les "mots vides" et en utilisant un stemmer
             $string = Toolbox::cleanSearch($key);
@@ -88,12 +81,11 @@ class SearchController extends MainController
             $initQuery = new QueryBuilder($queryData, false, null, null);
 
             $result = $this->searchModel->search($initQuery->create(), $string);
-            //si aucun résultats, on entre dans le catch
 
             //si on entre manuellement un numero de page dans l'url ou s'il n'y a pas de résultat
             if ($numPage < 1 || !$result) {
-                throw new Exception('Aucun résultat');
-            }
+                throw new \RuntimeException('Aucun résulta');
+            } //[EA] \Exception is too general. Consider throwing one of SPL exceptions instead.
 
             $nombreResultatTotal = count($result);
             $paginator = false;
