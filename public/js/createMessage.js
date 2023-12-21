@@ -54,8 +54,8 @@ formMessage.addEventListener('submit', async (e) => {
 
 
         // si la chaine est vide 
-        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
-            throw new Error(`Veuillez entrer un contenu valide.`);
+        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src=') ? match : '')) {
+            throw new Error(`Veuillez entrer un contenu valide !`);
         }
 
 
@@ -72,7 +72,7 @@ formMessage.addEventListener('submit', async (e) => {
             verifImageBase64(images);
 
             //si type et poids ok, le code continu : 
-            //on créé un message avec contenu temporaire POUR obtenir son ID: 
+            //ont créé un message avec contenu temporaire POUR obtenir son ID:
             const messageID = await addMessageWithTempContent(inputMessage, formMessage);
 
             //on boucle pour enregistrer les images sur le serveur

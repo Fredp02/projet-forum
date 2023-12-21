@@ -105,6 +105,7 @@ class SearchController extends MainController
                 "view" => "../Views/search/viewDisplaySearch.php",
                 "template" => "../Views/common/template.php",
                 "css" => "./style/displaySearchStyle.css",
+                "quillEmojiCSS" => "./quill/dist/quill-emoji.css",
                 'result' => $result, //c'est soit le 1er resultat ou le second si pagination
                 'numPage' => $numPage,
                 'paginator' => $paginator,

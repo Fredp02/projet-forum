@@ -96,6 +96,8 @@ async function uploadImage(imageBase64, messageID, topicID) {
 }
 
 export async function updateMessage(formMessage, messageID) {
+
+
     const formData = new FormData(formMessage);
     const response = await fetch(`?controller=message&action=update&messageID=${messageID}`, {
         method: 'POST',

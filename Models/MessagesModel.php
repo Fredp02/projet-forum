@@ -104,7 +104,8 @@ class MessagesModel extends DbConnect
 
     public function editMessage(Messages $message)
     {
-
+//                    var_dump($message);
+//                    exit;
         $messageId = $message->getMessageID();
         $messageText = $message->getMessageText();
         $req = "UPDATE messages set messageText = :messageText WHERE messageId = :messageId";

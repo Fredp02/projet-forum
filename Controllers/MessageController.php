@@ -2,6 +2,9 @@
 
 namespace Controllers;
 
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
 use Entities\Topics;
 use Entities\Messages;
 use Models\TopicsModel;
@@ -124,6 +127,12 @@ class MessageController extends MainController
                     $topicID = htmlspecialchars($_POST['topicID']);
                     //On nettoie l'html
                     $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
+                    // Supprimez les balises <p><br></p> vides
+
+                    $cleanHTML = Securite::removeEmptyTags($cleanHTML);
+
+//                    $cleanHTML = str_replace('&iuml;&raquo;&iquest;', '', $cleanHTML);
+                    $cleanHTML = Securite::deleteQlCursorQuill($cleanHTML);
 
                     $this->message->setMessageText($cleanHTML);
                     $this->message->setUserID($_SESSION['profil']['userID']);
@@ -181,22 +190,27 @@ class MessageController extends MainController
 
                 if ($this->verifContent($_POST['inputMessage'])) {
 
-                    //!est ce que l'on vérifie l'intégrité de messageID ????
                     //On nettoie l'html
                     $cleanHTML = Securite::htmlPurifier($_POST['inputMessage']);
-
+//                    $cleanHTML = $this->supprimerBalisesVides($cleanHTML);
+                    $cleanHTML = Securite::removeEmptyTags($cleanHTML);
+                    $cleanHTML = Securite::deleteQlCursorQuill($cleanHTML);
+//                    $cleanHTML = str_replace(array('&iuml;&raquo;&iquest;', '<span class="ql-cursor"></span>'), '', $cleanHTML);
                     $infoMessage = $this->messagesModel->getInfoMessage($messageID);
+
                     $messageInBDD = $infoMessage->messageText;
                     $topicID = $infoMessage->messageTopicID;
 
-                    //on supprime les éventuelles images que le user à supprimé de son message
+                    //on supprime les éventuelles images que le user a supprimées de son message
                     $this->deleteImage($messageInBDD, $cleanHTML);
 
+
                     $this->message->setMessageText($cleanHTML);
-                    // $this->message->setUserID($_SESSION['profil']['userID']);
+
                     $this->message->setMessageID($messageID);
 
                     //je fais appel à mon messageModel pour EDITER les données:
+
                     if (
                         $infoMessage->messageUserID === $_SESSION['profil']['userID'] &&
                         $this->messagesModel->editMessage($this->message)
@@ -268,6 +282,39 @@ class MessageController extends MainController
                 return '';
             }
         }, $content);
+    }
+    private function supprimerBalisesVides($html) {
+
+        // Créez un nouveau document DOM
+        $dom = new DOMDocument;
+
+        // Ajoutez une balise <div> autour de votre HTML pour pouvoir le charger dans le DOM
+        $dom->loadHTML('<div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        // Obtenez la première balise <div>
+        $div = $dom->getElementsByTagName('div')->item(0);
+
+        // Supprimez tous les espaces blancs et les nouvelles lignes entre les balises <p> et </p>
+        foreach ($div->getElementsByTagName('p') as $p) {
+            if ($p->firstChild && $p->firstChild->nodeType === XML_TEXT_NODE && trim($p->firstChild->textContent) === '') {
+                $p->removeChild($p->firstChild);
+            }
+        }
+
+        // Supprimez les balises <p><br></p> et <p></p> vides au début
+        while ($div->firstChild && $div->firstChild->nodeName === 'p' && ($div->firstChild->childNodes->length === 0 || ($div->firstChild->childNodes->length === 1 && $div->firstChild->firstChild->nodeName === 'br'))) {
+            $div->removeChild($div->firstChild);
+        }
+
+        // Supprimez les balises <p><br></p> et <p></p> vides à la fin
+        while ($div->lastChild && $div->lastChild->nodeName === 'p' && ($div->lastChild->childNodes->length === 0 || ($div->lastChild->childNodes->length === 1 && $div->lastChild->firstChild->nodeName === 'br'))) {
+            $div->removeChild($div->lastChild);
+        }
+
+        // Retournez le HTML modifié sans la balise <div> extérieure
+        $html = str_replace(array('<div>', '</div>'), '', $dom->saveHTML());
+
+        return trim($html);
     }
 
     public function viewEdit($messageID)

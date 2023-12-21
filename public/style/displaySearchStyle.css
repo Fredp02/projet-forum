@@ -66,3 +66,21 @@ a{
     margin-right: 15px;
     margin-top: 7px;
 }
+blockquote {
+    background-color: #464646;
+    margin: 0;
+    padding: 0 8px;
+
+}
+
+blockquote:first-of-type {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: solid 1px var(--text-primary);
+}
+
+blockquote:last-of-type {
+    padding-top: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}

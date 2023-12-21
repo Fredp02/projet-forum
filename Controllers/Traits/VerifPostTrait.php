@@ -20,7 +20,9 @@ trait VerifPostTrait
             } else {
                 Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
 
-                //Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
+                //Les "unset" peuvent être utiles pour des raisons de sécurité,
+                // car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises.
+                // De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre.,
                 unset($_SESSION['profil']);
                 unset($_SESSION['tokenCSRF']);
                 Toolbox::dataJson(false, "expired token");

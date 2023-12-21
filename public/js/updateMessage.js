@@ -20,8 +20,11 @@ formMessage.addEventListener('submit', async (e) => {
     try {
 
         // si la chaine n'est pas vide ou si il y a une balise img du type "<img src="data:image/"
-        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
-            throw new Error(`Veuillez entrer un contenu valide.`);
+        // if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src="data:image/') ? match : '')) {
+        //     throw new Error(`Veuillez entrer un contenu valide`);
+        // }
+        if (!quill.root.innerHTML.replace(/<[^>]*>/g, match => match.includes('<img src=') ? match : '')) {
+            throw new Error(`Veuillez entrer un contenu valide`);
         }
 
         // parcourir le contenu de l'éditeur pour trouver les images encodées en base64

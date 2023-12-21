@@ -45,6 +45,7 @@ formMessage.addEventListener('submit', async (e) => {
         let resultat = await response.json();
         //si le boolen est à false
         if (!resultat.boolean) throw new Error(resultat.message);
+        //sinon on continu...
 
         //on stock l'id du topic fraichement crée qui nous servira à relier le message
         topicID.value = resultat.data.topicID;

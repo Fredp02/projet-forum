@@ -1,21 +1,24 @@
 {
-    "require-dev": {
-        "symfony/var-dumper": "^6.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "Controllers\\": "Controllers/",
-            "Models\\": "Models/",
-            "Core\\": "Core/",
-            "Entities\\": "Entities/"
-        }
-    },
-    "require": {
-        "phpmailer/phpmailer": "^6.8",
-        "ezyang/htmlpurifier": "^4.16",
-        "mrfakename/phpsearch": "dev-main",
-      "ext-intl": "*",
-        "wamania/php-stemmer": "dev-master"
-    },
-    "minimum-stability": "dev"
+  "require-dev": {
+    "symfony/var-dumper": "^6.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Controllers\\": "Controllers/",
+      "Models\\": "Models/",
+      "Core\\": "Core/",
+      "Entities\\": "Entities/"
+    }
+  },
+  "require": {
+    "phpmailer/phpmailer": "^6.8",
+    "ezyang/htmlpurifier": "^4.16",
+    "mrfakename/phpsearch": "dev-main",
+    "ext-intl": "*",
+    "wamania/php-stemmer": "dev-master",
+    "ext-dom": "*",
+    "ext-libxml": "*",
+    "ext-pdo": "*"
+  },
+  "minimum-stability": "dev"
 }
