@@ -36,35 +36,5 @@ abstract class DbConnect
         }
         return $this->pdo;
     }
-    // protected function setMysqli()
-    // {
-    //     return mysqli_connect('localhost', 'root', '', 'guitareforum');
-    // }
 
-    //!OVH CEFII
-    // private function setBdd()
-    // {
-    //     $server = "sqlprive-pc2372-001.eu.clouddb.ovh.net:35167";
-    //     $base = "cefiidev1352";
-    //     $user = "cefiidev1352";
-    //     $password = "qDx2e47S";
-    //     $options = [
-    //         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    //         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-    //         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
-    //         PDO::MYSQL_ATTR_INIT_COMMAND => "SET CHARACTER SET utf8"
-    //     ];
-    //     try {
-    //         $this->pdo = new PDO("mysql:host=$server;dbname=$base", $user, $password, $options);
-    //     } catch (PDOException $e) {
-    //         die('Erreur : ' . $e->getMessage());
-    //     }
-    // }
-    // protected function getBdd()
-    // {
-    //     if ($this->pdo === null) {
-    //         $this->setBdd();
-    //     }
-    //     return $this->pdo;
-    // }
 }
