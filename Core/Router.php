@@ -7,19 +7,8 @@ use Controllers\HomeController;
 
 class Router
 {
-    public function routes()
+    public function routes(): void
     {
-
-        // ! index.php?controller=register&action=registerView 
-        // $_GET = [
-        //     'controller' => 'register',
-        //     'action' => 'registerView'
-        // ];
-        // ! index.php?controller=forgotPass&action=sendEmail= 
-        // $_GET = [
-        //     'controller' => 'register',
-        //     'action' => 'registerView'
-        // ];
         try {
 
             if (!empty($_GET) && !array_key_exists("controller", $_GET)) {

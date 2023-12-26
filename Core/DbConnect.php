@@ -9,7 +9,7 @@ abstract class DbConnect
 {
     private $pdo;
 
-    private function setBdd()
+    private function setBdd(): void
     {
         $host = "localhost";
         $dbname = "guitareforum";

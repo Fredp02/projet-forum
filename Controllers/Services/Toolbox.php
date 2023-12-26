@@ -26,7 +26,6 @@ class Toolbox
             'message' => $message,
             'data' => $data
         ];
-        // header('Content-Type: application/json');
         print_r(json_encode($Data));
     }
 
@@ -71,7 +70,7 @@ class Toolbox
         $contentMail = str_replace('{activation_link}', $route, $contentMail);
         return $contentMail;
 
-        //on peu imaginer beaucoup plus de chose à remplacer, dans ce cas ce code est une meilleurs solution : 
+        //on peut imaginer beaucoup plus de chose à remplacer, dans ce cas ce code est une meilleure solution :
         // $contentMail = file_get_contents($template);
         // $replacements = array('{name}' => $pseudo, '{activation_link}' => $route);
         // return str_replace(array_keys($replacements), array_values($replacements), $contentMail);
