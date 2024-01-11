@@ -25,7 +25,7 @@ class QueryBuilder
         JOIN users ON messages.userID = users.userID
         JOIN categorys ON topics.categoryID = categorys.categoryID
         ";
-        if ($this->queryData['title']) {
+        if (!empty($this->queryData['title'])) {
             // Recherche dans le titre seulement
             $this->query .= "WHERE topics.topicTitle LIKE :string";
         } else {

@@ -6,7 +6,7 @@
         <h1>Recherche avancée</h1>
     </div>
 
-    <form class="formSearch" action="" method="GET">
+    <form class="formSearch">
         <input type="hidden" name="controller" value="search">
         <input type="hidden" name="action" value="display">
         <div class="keywordsBloc">

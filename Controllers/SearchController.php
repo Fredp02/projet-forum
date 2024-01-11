@@ -29,6 +29,11 @@ class SearchController extends MainController
 
     public function index(): void
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["keywords"] && Securite::verifCSRF()) ) {
+            $key =  htmlspecialchars($_POST["keywords"]);
+            header("Location: " . URL . "?controller=search&action=display&key=".$key);
+            exit;
+        }
 
         $categorysList = $this->categorysModel->getCategorysOrderByParent();
 
@@ -54,7 +59,7 @@ class SearchController extends MainController
                 // Le champ "Mots clés" est vide
                 throw new \RuntimeException('Vous devez entrer un mot clé pour effectuer une recherche');
             }
-//            dd($_SERVER);
+
 // Récupération des données du formulaire
             $key = isset($_GET['key']) ? htmlspecialchars($_GET['key']) : '';
             $numPage = isset($_GET['numPage']) ? (int)htmlspecialchars($_GET['numPage']) : 1;
@@ -70,7 +75,7 @@ class SearchController extends MainController
                 // Je convertis $numPage en "int" dans tous les cas. Cela garantit que c'est un "int" et permettra ensuite d'utiliser la stricte égalité.
             ];
 
-            // $searchData['']
+
             if ($queryData['author'] && !$this->usersModel->getUserByPseudo($queryData['author'])) {
                 throw new \RuntimeException('Ce membre n\'a pas été trouvé');
             }
@@ -84,7 +89,7 @@ class SearchController extends MainController
 
             //si on entre manuellement un numero de page dans l'url ou s'il n'y a pas de résultat
             if ($numPage < 1 || !$result) {
-                throw new \RuntimeException('Aucun résulta');
+                throw new \RuntimeException('Aucun résultats');
             } //[EA] \Exception is too general. Consider throwing one of SPL exceptions instead.
 
             $nombreResultatTotal = count($result);
@@ -112,8 +117,8 @@ class SearchController extends MainController
                 'dataSearchPaginated' =>$dataSearchPaginated??[],
                 'key' => $key
             ];
-
             $this->render($data_page);
+
         } catch (Exception $e) {
             Toolbox::ajouterMessageAlerte($e->getMessage(), 'rouge');
             header('Location:index.php?controller=search');
@@ -137,19 +142,22 @@ class SearchController extends MainController
 //     unset($_SESSION['profil']);
 //     unset($_SESSION['tokenCSRF']);
 // }
-        $categorysList = $this->categorysModel->getCategorysOrderByParent();
 
-        $data_page = [
-            "pageDescription" => "Recherche sur guitare forum",
-            "pageTitle" => "Recherche",
-            "view" => "../Views/search/viewSearch.php",
-            "template" => "../Views/common/template.php",
-            "css" => "./style/searchStyle.css",
-            'categorysList' => $categorysList,
-            // "script" => "./js/validFormRegister.js",
-            "tokenCSRF" => $_SESSION['tokenCSRF']
-        ];
 
-        $this->render($data_page);
+
+//        $categorysList = $this->categorysModel->getCategorysOrderByParent();
+//
+//        $data_page = [
+//            "pageDescription" => "Recherche sur guitare forum",
+//            "pageTitle" => "Recherche",
+//            "view" => "../Views/search/viewSearch.php",
+//            "template" => "../Views/common/template.php",
+//            "css" => "./style/searchStyle.css",
+//            'categorysList' => $categorysList,
+//            // "script" => "./js/validFormRegister.js",
+//            "tokenCSRF" => $_SESSION['tokenCSRF']
+//        ];
+//
+//        $this->render($data_page);
     }
 }
