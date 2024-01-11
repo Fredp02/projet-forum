@@ -64,6 +64,7 @@ class LoginController extends MainController
                     if (Securite::verifPassword($password, $userPassBDD)) {
 
                         $user = $this->usersModel->getUserinfo($pseudo);
+//                        var_dump($user);
 
                         // Toolbox::dataJson(false, 'hahahhala',  $user);
                         // die;
@@ -77,6 +78,7 @@ class LoginController extends MainController
                                 'filepathAvatar' => $filepathAvatar,
                                 'userGuitare' => $user->guitare,
                                 'messagesCount' => $user->messagesCount,
+                                'roleName' => $user->roleName,
                             ];
 
                             Toolbox::dataJson(
@@ -90,33 +92,32 @@ class LoginController extends MainController
                                 ]
                             );
                             exit;
-                        } else {
-                            $userID =  $user->userID;
-                            $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
-                            Toolbox::dataJson(false, $message);
-                            exit;
                         }
-                    } else {
-                        Toolbox::dataJson(false, "Identifiants incorrects");
+
+                        $userID =  $user->userID;
+                        $message = "Compte non validé ! Cliquez sur <a href='" . URL . "index.php?controller=register&action=returnToken&userID=" . $userID . "'>CE LIEN</a> pour renvoyer un mail d'activation.";
+                        Toolbox::dataJson(false, $message);
                         exit;
                     }
-                } else {
-                    Toolbox::dataJson(false, "Erreur champs de saisie");
-                    header("Location:index.php");
+
+                    Toolbox::dataJson(false, "Identifiants incorrects");
                     exit;
                 }
-            } else {
-                Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
 
-                //Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
-                unset($_SESSION['profil']);
-                unset($_SESSION['tokenCSRF']);
-                Toolbox::dataJson(false, "expired token");
+                Toolbox::dataJson(false, "Erreur champs de saisie");
+                header("Location:index.php");
                 exit;
             }
-        } else {
-            header("Location:index.php");
+
+            Toolbox::ajouterMessageAlerte("Session expirée, veuillez recommencer", 'rouge');
+
+            //Les "unset" peuvent être utiles pour des raisons de sécurité, car cela empêche toute utilisation ultérieure de ces données de session potentiellement compromises. De plus, cela garantit que l’utilisateur doit se reconnecter et obtenir un nouveau jeton CSRF avant de poursuivre,
+            unset($_SESSION['profil'], $_SESSION['tokenCSRF']);
+            Toolbox::dataJson(false, "expired token");
             exit;
         }
+
+        header("Location:index.php");
+        exit;
     }
 }

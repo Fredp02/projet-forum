@@ -25,34 +25,40 @@ class AccountController extends MainController
 
     public function index()
     {
+        if (Securite::isConnected()){
+            $tokenCSRF = $_SESSION["tokenCSRF"];
+            $pseudo = $_SESSION['profil']['pseudo'];
+            $user = $this->usersModel->getUserinfo($pseudo);
 
-        $tokenCSRF = $_SESSION["tokenCSRF"];
-        $pseudo = $_SESSION['profil']['pseudo'];
-        $user = $this->usersModel->getUserinfo($pseudo);
+            $userDatas = [
+                'userID' => $user->userID,
+                'pseudo' => $user->pseudo,
+                'userDate' => Toolbox::convertDate($user->userDate, "EEEE dd MMMM yyyy"),
+                'role' => $user->roleName,
+                'email' => $user->email,
+                'guitare' => $user->guitare,
+                'ville' => $user->ville,
+                'emploi' => $user->emploi,
+                'filepathAvatar' => $_SESSION['profil']['filepathAvatar'],
+            ];
 
-        $userDatas = [
-            'userID' => $user->userID,
-            'pseudo' => $user->pseudo,
-            'userDate' => Toolbox::convertDate($user->userDate, "EEEE dd MMMM yyyy"),
-            'role' => $user->roleName,
-            'email' => $user->email,
-            'guitare' => $user->guitare,
-            'ville' => $user->ville,
-            'emploi' => $user->emploi,
-            'filepathAvatar' => $_SESSION['profil']['filepathAvatar'],
-        ];
+            $data_page = [
+                "pageDescription" => "Page du profil",
+                "pageTitle" => "Profil",
+                "view" => "../Views/account/viewProfil.php",
+                "template" => "../Views/common/template.php",
+                "css" => "./style/profilStyle.css",
+                "script" => "./js/profil.js",
+                'tokenCSRF' => $tokenCSRF,
+                "userDatas" => $userDatas,
+            ];
+            $this->render($data_page);
+        }else{
+            header("Location: index.php?controller=login");
+            exit;
+        }
 
-        $data_page = [
-            "pageDescription" => "Page du profil",
-            "pageTitle" => "Profil",
-            "view" => "../Views/account/viewProfil.php",
-            "template" => "../Views/common/template.php",
-            "css" => "./style/profilStyle.css",
-            "script" => "./js/profil.js",
-            'tokenCSRF' => $tokenCSRF,
-            "userDatas" => $userDatas,
-        ];
-        $this->render($data_page);
+
     }
     public function dataInput()
     {

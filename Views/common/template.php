@@ -68,6 +68,9 @@ use Controllers\Services\Securite; ?>
                     <?php else : ?>
                         <a href="?controller=account" class="linkProfil">
                             <?= htmlspecialchars($_SESSION['profil']['pseudo']); ?></a>
+                        <?php if ($_SESSION['profil']['roleName'] === 'Administrateur') : ?>
+                        <a href="?controller=dashboard" class="logout">DASHBOARD</a>
+                        <?php endif; ?>
                         <a href="?controller=logout" class="logout">Déconnexion</a>
                     <?php endif; ?>
 
