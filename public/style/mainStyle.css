@@ -25,7 +25,9 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     color: var(--text-primary);
-
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .overflowHidden {
@@ -244,13 +246,13 @@ nav {
 }
 
 
-/* .topContainer{
+/* .topconteneur{
     position: relative;
 } */
 
 
 /******** M A I N *****************/
-.container {
+.conteneur {
     max-width: 1500px;
     margin-left: auto;
     margin-right: auto;
@@ -324,7 +326,7 @@ nav {
     outline: none;
 }
 
-
+button,
 .btnLogin,
 .btnEnvoyer,
 .btnCreateTopic,
@@ -340,7 +342,7 @@ nav {
     cursor: pointer;
     text-transform: uppercase;
 }
-
+button:hover,
 .btnLogin:hover,
 .btnEnvoyer:hover,
 .btnCreateTopic:hover,
@@ -511,7 +513,7 @@ nav {
 footer {
     height: 200px;
     background-color: var(--noir-clair);
-    margin-top: 20px;
+    margin-top: auto;
     display: flex;
 }
 

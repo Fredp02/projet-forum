@@ -15,14 +15,17 @@ use Controllers\Services\Securite; ?>
     <link href="<?= $quillSnowCSS ?? ''; ?>" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="<?= $quillImageCSS ?? ''; ?>">
     <link rel="stylesheet" type="text/css" href="<?= $quillEmojiCSS ?? ''; ?>">
+    <link rel="stylesheet" href="<?= $bootstrapCSS ?? '' ?>" />
     <link rel="stylesheet" href="./style/mainStyle.css" />
-    <link rel="stylesheet" href="<?= $css ?? ''; ?>" />
+    <link rel="stylesheet" href="<?= $css ?? '' ?>" />
+
     <script src="./js/app.js" defer></script>
 
     <script src="<?= $quillJS ?? ''; ?>" defer></script>
     <script src="<?= $quillImageJS ?? ''; ?>" defer></script>
     <script src="<?= $quillEmojiJS ?? ''; ?>" defer></script>
-    <script type="module" src="<?= $script ?? ''; ?>" defer></script>
+    <script type="module" src="<?= $script ?? ''; ?>"></script>
+    <script src="<?= $bootstrapJS ?? '' ?>"></script>
     <title><?= htmlspecialchars($pageTitle); ?></title>
 </head>
 
@@ -79,7 +82,7 @@ use Controllers\Services\Securite; ?>
         </nav>
     </header>
 
-    <div class="container">
+    <div class="conteneur">
 
 
         <div class="forumContent">

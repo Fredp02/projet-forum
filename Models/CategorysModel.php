@@ -10,11 +10,35 @@ use Core\DbConnect;
 class CategorysModel extends DbConnect
 {
 
+    public function getAllWithParent()
+    {
+        $req = "
+        SELECT p.categoryName AS categoryName,
+               p.categoryID AS categoryID,
+               c.categoryName AS parentCategoryName,
+               c.categoryID AS parentCategoryID
+        FROM categorys c
+        RIGHT JOIN categorys p ON c.categoryID = p.categoryParentID
+        ";
+//        SELECT c.categoryName AS categoryName,
+//                c.categoryID AS categoryID,
+//                p.categoryName AS parentCategoryName,
+//                p.categoryID AS parentCategoryID
+//                FROM categorys c
+//                RIGHT JOIN categorys p ON c.categoryID = p.categoryParentID
+//        ";
+        $sql = $this->getBdd()->prepare($req);
+        try {
+            $sql->execute();
+            $resultat = $sql->fetchAll();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
     public function getCategorysList()
     {
-
-
-
         // $req = "SELECT 
         // c1.categoryName AS category, 
         // c2.categoryName AS subcategory, 
