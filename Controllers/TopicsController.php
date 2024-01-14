@@ -47,8 +47,9 @@ class TopicsController extends MainController
 
 
         $listTopics = $this->topicsModel->getListTopicsByCat($catID);
+//        dd($listTopics);
         //si $souscategoryID est un id existant et que la requête à renvoyer un résultat
-        if ($listTopics) {
+//        if ($listTopics) {
             $infosCategory = $this->categorysModel->getInfoCategory($catID);
 
             $data_page = [
@@ -58,20 +59,18 @@ class TopicsController extends MainController
                 "css" => "./style/topicsByCat.css",
                 "template" => "../Views/common/template.php",
                 "categoryName" => $infosCategory->categoryName,
-                "categorySlug" => $infosCategory->categorySlug,
+//                "categorySlug" => $infosCategory->categorySlug,
                 "categoryID" => $infosCategory->categoryID,
                 "listTopics" => $listTopics,
                 'categoryParentName' => $infosCategory->categoryParentName,
                 'categoryParentID' => $infosCategory->categoryParentID,
                 "tokenCSRF" => $_SESSION['tokenCSRF']
-
             ];
 
-
             $this->render($data_page);
-        } else {
-            header("Location:index.php");
-        }
+//        } else {
+//            header("Location:index.php");
+//        }
     }
 
     /**

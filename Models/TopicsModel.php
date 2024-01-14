@@ -62,7 +62,7 @@ class TopicsModel extends DbConnect
     {
         // Je souhaite obtenir toutes les colonnes du topic, ainsi que les infos de la catégorie associée à ce topic
         // j'ajoute aussi la catégorie parente de sa catégorie grace à JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID
-        $req = "SELECT topics.*,  categorys.categoryName, categorys.categoryID, categorys.categorySlug, parent.categoryName AS parentCategoryName, parent.categoryID AS parentCategoryID   
+        $req = "SELECT topics.*,  categorys.categoryName, categorys.categoryID, parent.categoryName AS parentCategoryName, parent.categoryID AS parentCategoryID   
         FROM topics
         JOIN categorys ON topics.categoryID = categorys.categoryID
         JOIN categorys parent ON categorys.CategoryParentID = parent.categoryID

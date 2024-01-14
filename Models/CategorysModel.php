@@ -2,6 +2,7 @@
 
 namespace Models;
 
+use Entities\Categorys;
 use PDO;
 use Exception;
 use Core\DbConnect;
@@ -20,13 +21,6 @@ class CategorysModel extends DbConnect
         FROM categorys c
         RIGHT JOIN categorys p ON c.categoryID = p.categoryParentID
         ";
-//        SELECT c.categoryName AS categoryName,
-//                c.categoryID AS categoryID,
-//                p.categoryName AS parentCategoryName,
-//                p.categoryID AS parentCategoryID
-//                FROM categorys c
-//                RIGHT JOIN categorys p ON c.categoryID = p.categoryParentID
-//        ";
         $sql = $this->getBdd()->prepare($req);
         try {
             $sql->execute();
@@ -90,13 +84,12 @@ class CategorysModel extends DbConnect
         //*(SELECT COUNT(*) FROM topics t WHERE t.categoryID = c.categoryID) AS totalTopics
         //! MAIS l’utilisation de sous-requêtes peut affecter les performances de la requête en fonction de la taille de votre base de données.
 
-
+// c.categorySlug AS subCategorySlug,
         $req = "SELECT 
             p.categoryName AS parentCategoryName,
             p.categoryID AS parentCategoryID,
             c.categoryName AS subCategoryName,
-            c.categoryID AS subCategoryID,
-            c.categorySlug AS subCategorySlug,
+            c.categoryID AS subCategoryID,           
             c.categoryDescription AS subCategoryDesc,
             COUNT(DISTINCT t.topicID) AS totalTopics,
             COUNT(m.messageID) AS totalMessages,
@@ -104,9 +97,9 @@ class CategorysModel extends DbConnect
             MAX(m.messageDate) AS lastMessageDate,
             (SELECT u.pseudo FROM messages m2 JOIN users u ON m2.userID = u.userID WHERE m2.messageID = MAX(m.messageID)) AS lastMessageUser
         FROM categorys p
-        JOIN categorys c ON p.categoryID = c.categoryParentID
-        JOIN topics t ON c.categoryID = t.categoryID
-        JOIN messages m ON t.topicID = m.topicID
+        LEFT JOIN categorys c ON p.categoryID = c.categoryParentID
+        LEFT JOIN topics t ON c.categoryID = t.categoryID
+        LEFT JOIN messages m ON t.topicID = m.topicID
         WHERE p.categoryParentID IS NULL
         GROUP BY p.categoryID, c.categoryID        
         ";
@@ -257,6 +250,98 @@ class CategorysModel extends DbConnect
     //         die('Erreur : ' . $e->getMessage());
     //     }
     // }
+
+    public function getParentCategory()
+    {
+        $req = "SELECT * FROM categorys WHERE categoryParentID IS null";
+        $sql = $this->getBdd()->prepare($req);
+        try {
+            $sql->execute();
+            $resultat = $sql->fetchAll();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function categoryHasChildren($categoryID)
+    {
+        $req = "SELECT COUNT(*)  as countChildren
+                FROM categorys 
+                WHERE categoryParentID = :categoryID";
+        $sql = $this->getBdd()->prepare($req);
+        try {
+            $sql->bindValue(":categoryID", $categoryID);
+            $sql->execute();
+            $resultat = $sql->fetch();
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function addCategory(Categorys $categorys)
+    {
+        $categoryName = $categorys->getCategoryName();
+        $categoryDescription = $categorys->getCategoryDescription();
+        $categoryParentID  = $categorys->getCategoryIdParent();
+
+        $req = "INSERT INTO categorys (categoryName, categoryDescription, categoryParentID ) VALUES (:categoryName, :categoryDescription, :categoryParentID)";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":categoryName", $categoryName);
+        $sql->bindValue(":categoryDescription", $categoryDescription);
+        $sql->bindValue(":categoryParentID", $categoryParentID);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function editCategory(Categorys $categorys)
+    {
+
+        $categoryID = $categorys->getCategoryId();
+        $categoryName = $categorys->getCategoryName();
+        $categoryDescription = $categorys->getCategoryDescription();
+        $categoryParentID  = $categorys->getCategoryIdParent();
+
+        $req = "UPDATE categorys set 
+                     categoryName = :categoryName , 
+                     categoryDescription = :categoryDescription,
+                     categoryParentID = :categoryParentID  
+                 WHERE categoryID = :categoryID";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":categoryID", $categoryID, \PDO::PARAM_INT);
+        $sql->bindValue(":categoryName", $categoryName);
+        $sql->bindValue(":categoryDescription", $categoryDescription);
+        $sql->bindValue(":categoryParentID", $categoryParentID);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function deleteCategory($id)
+    {
+
+        $req = "DELETE FROM categorys WHERE categoryID = :categoryID";
+        $sql = $this->getBdd()->prepare($req);
+        $sql->bindValue(":categoryID", $id, PDO::PARAM_INT);
+        try {
+            $sql->execute();
+            $resultat = ($sql->rowCount() > 0);
+            $sql->closeCursor();
+            return $resultat;
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
 }
 
 // $stmt = $pdo->prepare($sql);

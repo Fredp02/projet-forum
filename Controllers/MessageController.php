@@ -19,11 +19,11 @@ use Controllers\Traits\VerifPostTrait;
 class MessageController extends MainController
 {
     use VerifPostTrait;
-    private $categorysModel;
-    private $topicsModel;
-    private $messagesModel;
-    private $message;
-    private $topic;
+    private CategorysModel $categorysModel;
+    private TopicsModel $topicsModel;
+    private MessagesModel $messagesModel;
+    private Messages $message;
+    private Topics $topic;
 
 
     public function __construct()
@@ -180,6 +180,7 @@ class MessageController extends MainController
     public function update($messageID)
     {
 
+
         if ($this->VerifPostTrait()) {
             if (!empty($_POST['inputMessage'])) {
 
@@ -319,6 +320,7 @@ class MessageController extends MainController
 
     public function viewEdit($messageID)
     {
+        dd($messageID);
         $infoMessage = $this->messagesModel->getInfoMessage($messageID);
         // dump($infoMessage);
         if (Securite::isConnected() && $infoMessage->messageUserID === $_SESSION['profil']['userID']) {

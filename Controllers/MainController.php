@@ -36,7 +36,7 @@ abstract class MainController
 
 
 
-    protected function pageErreur($msg)
+    protected function pageErreur($msg): void
     {
         $data_page = [
             "page_description" => "Page inexistante",

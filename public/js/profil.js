@@ -523,9 +523,6 @@ elBtnEditAbout.addEventListener('click', async (e) => {
                 elAlertAbout.textContent = "";
             }, 5000);
         }
-
-
-
     }
 })
 

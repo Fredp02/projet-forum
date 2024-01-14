@@ -7,6 +7,7 @@ class Categorys
     private $categoryId;
     private $categoryName;
     private $categoryIdParent;
+    private ?string $categoryDescription;
 
     /**
      * Get the value of categoryId
@@ -21,7 +22,7 @@ class Categorys
      *
      * @return  self
      */
-    public function setCategoryId($categoryId)
+    public function setCategoryId($categoryId): static
     {
         $this->categoryId = $categoryId;
 
@@ -41,7 +42,7 @@ class Categorys
      *
      * @return  self
      */
-    public function setCategoryName($categoryName)
+    public function setCategoryName($categoryName): static
     {
         $this->categoryName = $categoryName;
 
@@ -61,10 +62,27 @@ class Categorys
      *
      * @return  self
      */
-    public function setCategoryIdParent($categoryIdParent)
+    public function setCategoryIdParent($categoryIdParent): static
     {
         $this->categoryIdParent = $categoryIdParent;
 
         return $this;
     }
+
+    /**
+     * @return ?string
+     */
+    public function getCategoryDescription(): ?string
+    {
+        return $this->categoryDescription;
+    }
+
+    /**
+     * @param ?string $categoryDescription
+     */
+    public function setCategoryDescription(?string $categoryDescription): void
+    {
+        $this->categoryDescription = $categoryDescription;
+    }
+
 }

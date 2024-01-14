@@ -8,7 +8,7 @@ use Controllers\Services\Toolbox;
 
 class HomeController extends MainController
 {
-    private $categorysModel;
+    private CategorysModel $categorysModel;
     private $usersModel;
 
     public function __construct()
@@ -21,7 +21,7 @@ class HomeController extends MainController
     {
 
         $allCategorys = $this->categorysModel->getCategorysList();
-
+//        dd($allCategorys);
         //Ce code parcourt les résultats d’une requête SQL qui sélectionne des informations sur les catégories parentes et les sous-catégories, ainsi que des statistiques sur les sujets et les messages dans ces catégories. Le code utilise une boucle foreach pour parcourir chaque ligne de résultat de la requête, représentée par la variable $row.
 
         //Pour chaque ligne de résultat, le code crée un tableau associatif $subCategory contenant des informations sur la sous-catégorie représentée par cette ligne. Les informations incluent le nom de la sous-catégorie, sa description, son ID, son URL, le nombre total de sujets et de messages dans cette sous-catégorie, ainsi que des informations sur le dernier message posté dans cette sous-catégorie.
@@ -42,12 +42,13 @@ class HomeController extends MainController
                 'totalTopics' => $row->totalTopics,
                 'totalMessages' => $row->totalMessages,
                 'lastTopicTitle' => $row->lastTopicTitle,
-                'lastMessageDate' => Toolbox::convertDate($row->lastMessageDate, 'd MMMM Y'),
+                'lastMessageDate' => $row->lastMessageDate ? Toolbox::convertDate($row->lastMessageDate, 'd MMMM Y'):'',
                 'lastMessageUser' => $row->lastMessageUser
             ];
             $acc[$row->parentCategoryName][] = $subCategory;
             return $acc;
         }, []);
+//        dd($groupedCategories);
 
             // //même chose avec forecach : 
             // foreach ($allCategorys as $row) {
@@ -94,9 +95,9 @@ class HomeController extends MainController
         $this->render($data_page);
     }
 
-    public function pageErreur($msg)
-    {
-        //on utilise la méthode dans mainController
-        parent::pageErreur($msg);
-    }
+//    public function pageErreur($msg): void
+//    {
+//        //on utilise la méthode dans mainController
+//        parent::pageErreur($msg);
+//    }
 }

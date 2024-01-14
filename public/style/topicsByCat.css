@@ -160,3 +160,8 @@
     font-size: 12px;
     padding: 3px;
 }
+
+.noTopics{
+    margin-top: 50px;
+    text-align: center;
+}
