@@ -25,6 +25,7 @@ class AccountController extends MainController
 
     public function index()
     {
+        //verif
         if (Securite::isConnected()){
             $tokenCSRF = $_SESSION["tokenCSRF"];
             $pseudo = $_SESSION['profil']['pseudo'];
