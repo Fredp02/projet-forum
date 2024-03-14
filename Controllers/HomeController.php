@@ -2,11 +2,12 @@
 
 namespace Controllers;
 
+use Controllers\Interfaces\HomeControllerInterface;
 use Models\UsersModel;
 use Models\CategorysModel;
 use Controllers\Services\Toolbox;
 
-class HomeController extends MainController
+class HomeController extends MainController implements HomeControllerInterface
 {
     private CategorysModel $categorysModel;
     private $usersModel;

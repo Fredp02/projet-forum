@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Controllers\Interfaces\DashboardControllerInterface;
 use Controllers\Services\Securite;
 use Controllers\Traits\VerifPostTrait;
 use Entities\Categorys;
@@ -10,7 +11,7 @@ use Models\UsersModel;
 use Models\CategorysModel;
 use Controllers\Services\Toolbox;
 
-class DashboardController extends MainController
+class DashboardController extends MainController implements DashboardControllerInterface
 {
     use VerifPostTrait;
     private CategorysModel $categorysModel;

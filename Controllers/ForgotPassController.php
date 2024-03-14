@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Controllers\Interfaces\ForgotPassControllerInterface;
 use Entities\Users;
 use Models\UsersModel;
 use Controllers\MainController;
@@ -11,7 +12,7 @@ use Controllers\Services\JWTService\JWTService;
 
 include 'Services\JWTService\configJWT.php';
 
-class ForgotPassController extends MainController
+class ForgotPassController extends MainController implements ForgotPassControllerInterface
 {
     public $usersModel;
 

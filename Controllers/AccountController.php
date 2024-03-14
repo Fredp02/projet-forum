@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Controllers\Interfaces\AccountControllerInterface;
 use SplFileInfo;
 use Entities\Users;
 use Models\UsersModel;
@@ -13,7 +14,7 @@ use Controllers\Services\JWTService\JWTService;
 
 include 'Services\JWTService\configJWT.php';
 
-class AccountController extends MainController
+class AccountController extends MainController implements AccountControllerInterface
 {
     use VerifPostTrait;
     private $usersModel;
@@ -376,4 +377,7 @@ class AccountController extends MainController
         $this->render($data_page);
     }
 }
+
+
+
 

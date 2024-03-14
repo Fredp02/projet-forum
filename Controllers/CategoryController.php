@@ -2,11 +2,12 @@
 
 namespace Controllers;
 
+use Controllers\Interfaces\CategoryControllerInterface;
 use Models\UsersModel;
 use Models\CategorysModel;
 use Controllers\Services\Toolbox;
 
-class CategoryController extends MainController
+class CategoryController extends MainController implements CategoryControllerInterface
 {
     private $categorysModel;
     private $usersModel;

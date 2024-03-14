@@ -4,6 +4,7 @@ namespace Controllers;
 
 
 
+use Controllers\Interfaces\LoginControllerInterface;
 use Models\UsersModel;
 use Controllers\MainController;
 use Controllers\Services\Toolbox;
@@ -14,7 +15,7 @@ use Controllers\Traits\VerifPostTrait;
 // include '../Controllers\Services\JWTService\configJWT.php';
 
 // require_once '/path/to/HTMLPurifier.auto.php';
-class LoginController extends MainController
+class LoginController extends MainController implements LoginControllerInterface
 {
 
     use VerifPostTrait;
