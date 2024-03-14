@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Controllers\Interfaces\TopicsControllerInterface;
 use Entities\Topics;
 use Entities\Messages;
 use Models\TopicsModel;
@@ -12,7 +13,7 @@ use Controllers\Services\Toolbox;
 use Controllers\Services\Securite;
 use Controllers\Traits\VerifPostTrait;
 
-class TopicsController extends MainController
+class TopicsController extends MainController implements TopicsControllerInterface
 {
 
     private CategorysModel $categorysModel;
@@ -34,13 +35,10 @@ class TopicsController extends MainController
 
 
     /**
-     * Affiche la liste des topics
-     *
      * @param  mixed $catID
      * @return void
      */
-    public function list($catID)
-    {
+    public function list($catID)    {
 
         //en cliquant sur le nom de la sous catégorie depuis la page d'acceuil, il faudra afficher la liste des topics en fonction de l'ID de la sous catégorie      
 
@@ -74,7 +72,6 @@ class TopicsController extends MainController
     }
 
     /**
-     * Affiche le contenu d'un topic : son titre est les messages associés
      *
      * @param  mixed $threadID
      * @return void
@@ -121,7 +118,6 @@ class TopicsController extends MainController
 
 
     /**
-     * Affiche la vue qui permet de créer un topic. Le texte descriptif du premier topic est considéré comme message numéro 1 du topci  , donc géré par les méthodes uploadImage() si besoin et validation(). 
      *
      * @param  mixed $categoryID
      * @return void
@@ -158,7 +154,6 @@ class TopicsController extends MainController
 
 
     /**
-     * Crée le titre du topic
      *
      * @return void
      */

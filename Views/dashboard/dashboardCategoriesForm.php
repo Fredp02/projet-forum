@@ -71,7 +71,7 @@
 
             <input type="hidden" name="tokenCSRF" value="<?= $tokenCSRF; ?>">
             <div class="text-center mb-5">
-                <a class="btn btn-primary" href="?controller=dashboard&action=categoriesListShow">Retour</a>
+                <a class="btn btn-warning me-3" href="?controller=dashboard&action=categoriesListShow">Retour à la liste</a>
 
                 <button type="submit" class="btn btn-primary btnForm "><?= $action;?></button>
             </div>

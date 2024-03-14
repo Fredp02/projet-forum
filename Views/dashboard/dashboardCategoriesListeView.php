@@ -29,6 +29,8 @@
         </tbody>
     </table>
     <div class="text-center">
+        <a class="btn btn-warning me-3" href="?controller=dashboard">Retour au Dashboad</a>
+
         <a class="btn btn-primary m-3" href="?controller=dashboard&action=categoryAdd">
             Ajouter une catégorie
         </a>
